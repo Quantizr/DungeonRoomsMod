@@ -1,0 +1,16 @@
+[
+{
+  "modid": "dungeonrooms",
+  "name": "Dungeon Rooms Mod",
+  "description": "Tells you the name of the room you are in for Hypixel Skyblock Dungeons",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["_risk (aka Quantizr)"],
+  "credits": "",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
