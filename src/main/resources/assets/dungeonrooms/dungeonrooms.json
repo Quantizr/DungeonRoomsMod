@@ -3,7 +3,7 @@
     {
       "name":"Entrance Room",
       "category":"General",
-      "dsg":false,
+      "dsg":"null",
       "secrets":0
     }
   ],
@@ -11,7 +11,7 @@
     {
       "name":"Entrance Room",
       "category":"General",
-      "dsg":false,
+      "dsg":"null",
       "secrets":0
     }
   ],
@@ -19,7 +19,7 @@
     {
       "name":"Fairy Room",
       "category":"General",
-      "dsg":false,
+      "dsg":"null",
       "secrets":0
     }
   ],
@@ -27,7 +27,7 @@
     {
       "name":"Trivia-Room",
       "category":"Puzzle",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/739026749781835786/769725317274140733",
       "secrets":0
     }
   ],
@@ -35,7 +35,7 @@
     {
       "name":"3-Chests",
       "category":"Puzzle",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/732032683890311260/734367658476044289",
       "secrets":0
     }
   ],
@@ -43,7 +43,7 @@
     {
       "name":"Water Puzzle",
       "category":"Puzzle",
-      "dsg":false,
+      "dsg":"null",
       "secrets":0
     }
   ],
@@ -52,7 +52,8 @@
       "name":"Blaze-Room-1",
       "notes": "(Shoot lowest HP to highest)",
       "category":"Puzzle",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/732386618056638576/732409365872508938",
+      "sbp":"blaze",
       "secrets":1
     }
   ],
@@ -61,7 +62,8 @@
       "name":"Blaze-Room-1",
       "notes":"(Shoot highest HP to lowest)",
       "category":"Puzzle",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/732386618056638576/732409365872508938",
+      "sbp":"blaze",
       "secrets":1
     }
   ],
@@ -69,14 +71,14 @@
     {
       "name":"Boxes-Room",
       "category":"Puzzle",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/732393810750865468/796097575710883920",
       "secrets":0,
       "floorhash":"e617eff1d7b77faf0f8dd53ec93a220f"
     },
     {
       "name":"Ice-Silverfish-Room",
       "category":"Puzzle",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/732392830437294162/734613698194440232",
       "secrets":0,
       "floorhash":"94fb12c91c4b46bd0c254edadaa49a3d"
     }
@@ -85,7 +87,7 @@
     {
       "name":"Creeper-Room",
       "category":"Puzzle",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/732393043679903864/734613061125799967",
       "secrets":0
     }
   ],
@@ -93,7 +95,7 @@
     {
       "name":"Defusal",
       "category":"Puzzle",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/779899404453806120/779899693210927145",
       "secrets":0
     }
   ],
@@ -101,7 +103,7 @@
     {
       "name":"Ice-Path",
       "category":"Puzzle",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/732392995051143188/732796910229913670",
       "secrets":0
     }
   ],
@@ -109,14 +111,15 @@
     {
       "name":"Teleport-Pad-Room",
       "category":"Puzzle",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/732393155017834616/732393341374824488",
       "secrets":0,
       "floorhash":"2cb477d23f2c428f44c05ca2a533d84b"
     },
     {
       "name":"Tic-Tac-Toe-1",
       "category":"Puzzle",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/732386638214332517/733858846048518215",
+      "sbp":"tictactoe",
       "secrets":1,
       "floorhash":"e9ada27912057a5998106531b990cb97"
     }
@@ -125,7 +128,8 @@
     {
       "name":"Trap-Hard-4",
       "category":"Trap",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/733916299964710933/733922649360695366",
+      "sbp":"arrow",
       "secrets":4
     }
   ],
@@ -133,7 +137,8 @@
     {
       "name":"Trap-Very-Hard-3",
       "category":"Trap",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/750984996155686912/756322825350152242",
+      "sbp":"crusher",
       "secrets":3
     }
   ],
@@ -141,7 +146,8 @@
     {
       "name":"Trap-Very-Hard-3",
       "category":"Trap",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/750984996155686912/756322825350152242",
+      "sbp":"crusher",
       "secrets":3
     }
   ],
@@ -149,7 +155,7 @@
     {
       "name":"Miniboss Room",
       "category":"Yellow",
-      "dsg":false,
+      "dsg":"null",
       "secrets":0
     }
   ],
@@ -157,7 +163,7 @@
     {
       "name":"Miniboss Room",
       "category":"Yellow",
-      "dsg":false,
+      "dsg":"null",
       "secrets":0
     }
   ],
@@ -165,7 +171,7 @@
     {
       "name":"Miniboss Room",
       "category":"Yellow",
-      "dsg":false,
+      "dsg":"null",
       "secrets":0
     }
   ],
@@ -173,7 +179,7 @@
     {
       "name":"Miniboss Room",
       "category":"Yellow",
-      "dsg":false,
+      "dsg":"null",
       "secrets":0
     }
   ],
@@ -181,7 +187,7 @@
     {
       "name":"Miniboss Room",
       "category":"Yellow",
-      "dsg":false,
+      "dsg":"null",
       "secrets":0
     }
   ],
@@ -189,8 +195,17 @@
     {
       "name":"Admin-0",
       "category":"1x1",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/750984974794227844/752939761534238880",
       "secrets":0
+    }
+  ],
+  "8dd796d9b740875048e862f4a82b851c":[
+    {
+      "name":"Banners-1",
+      "category":"1x1",
+      "dsg":"/channels/727426780381577291/733845562000146552/733846122761682954",
+      "sbp":"banners",
+      "secrets":1
     }
   ],
   "412f0946ac8f246c47a05a4ebc2b7c08":[
@@ -198,7 +213,7 @@
       "name":"Beams and Platforms",
       "notes":"Not in DSG (?)",
       "category":"1x1",
-      "dsg":false,
+      "dsg":"null",
       "secrets":1
     }
   ],
@@ -206,7 +221,8 @@
     {
       "name":"Blue-Skulls-1",
       "category":"1x1",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/733898880655294516/733899092597669891",
+      "sbp":"blue-skulls",
       "secrets":1
     }
   ],
@@ -214,39 +230,8 @@
     {
       "name":"Cage-1",
       "category":"1x1",
-      "dsg":true,
-      "secrets":1
-    }
-  ],
-  "927d27cbab1287d1598bb7db9db1af29":[
-    {
-      "name":"Carpets-1",
-      "category":"1x1",
-      "dsg":true,
-      "secrets":1
-    }
-  ],
-  "e5dda6773216296c3802513ae632f466":[
-    {
-      "name":"Silvers-Sword-1",
-      "category":"1x1",
-      "dsg":true,
-      "secrets":1
-    }
-  ],
-  "db77190d05449674f334c8c1b8d6a75b":[
-    {
-      "name":"Golden-Oasis-1",
-      "category":"1x1",
-      "dsg":true,
-      "secrets":1
-    }
-  ],
-  "518625e41df39d4cea9db1f00c08baba":[
-    {
-      "name":"Jumping-Skulls-1",
-      "category":"1x1",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/733879290353025055/733879414399434773",
+      "sbp":"cage",
       "secrets":1
     }
   ],
@@ -254,39 +239,62 @@
     {
       "name":"Arrow-Trap-1",
       "category":"1x1",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/761340021344567317/766954830027423764",
+      "sbp":"arrow-trap",
       "secrets":1
     }
   ],
-  "8dd796d9b740875048e862f4a82b851c":[
+  "927d27cbab1287d1598bb7db9db1af29":[
     {
-      "name":"Banners-1",
+      "name":"Carpets-1",
       "category":"1x1",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/769368732333637672/793225115340505099",
+      "sbp":"carpets",
+      "secrets":1
+    }
+  ],
+  "db77190d05449674f334c8c1b8d6a75b":[
+    {
+      "name":"Golden-Oasis-1",
+      "category":"1x1",
+      "dsg":"/channels/727426780381577291/750952925248880640/750955896707874846",
+      "sbp":"golden-oasis",
+      "secrets":1
+    }
+  ],
+  "518625e41df39d4cea9db1f00c08baba":[
+    {
+      "name":"Jumping-Skulls-1",
+      "category":"1x1",
+      "dsg":"/channels/727426780381577291/741109587108823088/741110218015899648",
+      "sbp":"jumping-skulls",
       "secrets":1
     }
   ],
   "6812d277eebae36de86369c6e0ce7333":[
     {
-      "name":"Leaves-1",
-      "category":"1x1",
-      "dsg":true,
-      "secrets":1,
-      "floorhash":"502b13b5733f97d1689f2220824bae3d"
-    },
-    {
       "name": "Duncan-1",
       "category": "1x1",
-      "dsg": true,
+      "dsg":"/channels/727426780381577291/750985143325294672/766951315715653634",
+      "sbp":"duncan",
       "secrets": 1,
       "floorhash":"fdf54dd7bd1699620ae3d2138e24d3ce"
+    },
+    {
+      "name":"Leaves-1",
+      "category":"1x1",
+      "dsg":"/channels/727426780381577291/734299006246846514/734299567599648840",
+      "sbp":"leaves",
+      "secrets":1,
+      "floorhash":"502b13b5733f97d1689f2220824bae3d"
     }
   ],
   "682e648a29a2d647c15dd44f6ece5173":[
     {
       "name":"Mirror-1",
       "category":"1x1",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/733906682408730676/733906866769231960",
+      "sbp":"mirror",
       "secrets":1
     }
   ],
@@ -294,7 +302,8 @@
     {
       "name":"Mural-1",
       "category":"1x1",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/733927175492993064/733928355807756308",
+      "sbp":"mural",
       "secrets":1
     }
   ],
@@ -302,7 +311,17 @@
     {
       "name":"Sand-Dragon-1",
       "category":"1x1",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/750985055026806865/759159016211087401",
+      "sbp":"sand-dragon",
+      "secrets":1
+    }
+  ],
+  "e5dda6773216296c3802513ae632f466":[
+    {
+      "name":"Silvers-Sword-1",
+      "category":"1x1",
+      "dsg":"/channels/727426780381577291/769368880295444500/791782731498520597",
+      "sbp":"silvers-sword",
       "secrets":1
     }
   ],
@@ -310,7 +329,8 @@
     {
       "name":"Sloth-1",
       "category":"1x1",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/732404646529859614/733866850353676399",
+      "sbp":"sloth",
       "secrets":1
     }
   ],
@@ -318,65 +338,72 @@
     {
       "name":"Steps-1",
       "category":"1x1",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/733981651469598781/733982190412627988",
+      "sbp":"steps",
       "secrets":1
     }
   ],
   "fa8d506d2a83538a7c53ff2063e65844":[
     {
-      "name":"Cell-1",
-      "category":"1x1",
-      "dsg":true,
-      "secrets":1,
-      "floorhash":"93beec3446e545f19487bc2d78586844"
-    },
-    {
       "name":"Hall",
       "category":"1x1",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/750985072399614012/760732650653614100",
       "secrets":0,
       "floorhash":"e00b8ffdf60f892859647323b7bf7751"
     },
     {
       "name":"Tomioka",
       "category":"1x1",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/733858157008388157/733858193695834133",
       "secrets":0,
       "fairysoul":true,
       "floorhash":"d1a328ab92b41e3b4aaf315b0b30b183 "
     },
     {
-      "name":"Prison-Cell-1",
+      "name":"Cell-1",
       "category":"1x1",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/741308041378398309/744400045188579461",
+      "sbp":"cell",
       "secrets":1,
-      "floorhash":"45897d699b5154ee2b23dc4f538241eb"
+      "floorhash":"93beec3446e545f19487bc2d78586844"
     },
     {
       "name":"Locked-Away-1",
       "category":"1x1",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/769368759085039618/791687775674040320",
+      "sbp":"locked-away",
       "secrets":1,
       "floorhash":"8b5e6e929e8c56c9921e68adb5710f5d"
     },
     {
       "name":"Mushroom-1",
       "category":"1x1",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/732499836091367467/733871633688690749",
+      "sbp":"mushroom",
       "secrets":1,
       "floorhash":"460cd2113ddeae9b8685b0446fc70f2a"
     },
     {
+      "name":"Prison-Cell-1",
+      "category":"1x1",
+      "dsg":"/channels/727426780381577291/732199219619692574/732399578942275634",
+      "sbp":"prison-cell",
+      "secrets":1,
+      "floorhash":"45897d699b5154ee2b23dc4f538241eb"
+    },
+    {
       "name":"Andesite-2",
       "category":"1x1",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/750970140652208228/750976087143481376",
+      "sbp":"andesite",
       "secrets":2,
       "floorhash":"352813b06b3311882b450f36f5c47eff"
     },
     {
       "name":"Scaffolding-2",
       "category":"1x1",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/732794387016319017/759325264848617482",
+      "sbp":"scaffolding",
       "secrets":2,
       "floorhash":"00040e573c81d58aa3f6b2d9e894ccb9"
     }
@@ -385,23 +412,34 @@
     {
       "name":"Multicolored-1",
       "category":"1x1",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/733822576194879509/733904367844851752",
+      "sbp":"multicolored",
       "secrets":1,
       "floorhash":"22989f2aa4b70cf3da8691fe0058dd7b"
     },
     {
       "name":"Cobble-Wall-Pillar-2",
       "category":"1x1",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/737685130449125509/737686110523752508",
+      "sbp":"cobble-wall-pillar",
       "secrets":2,
       "floorhash":"ecbedd127fc91827be7c997d51903ca2"
+    },
+    {
+      "name":"Quad-Lava-2",
+      "category":"1x1",
+      "dsg":"/727426780381577291/734721591648452628/734948461794820196",
+      "sbp":"quad-lava",
+      "secrets":2,
+      "floorhash":"ebfc84ae16f856ec3310884e701dc6c4"
     }
   ],
   "548cb5a9cea0de986e240aa08ebb8a03":[
     {
       "name":"Beams-2",
       "category":"1x1",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/769368654315389009/779118152176762911",
+      "sbp":"beams",
       "secrets":2
     }
   ],
@@ -409,7 +447,8 @@
     {
       "name":"Big-Red-Flag-2",
       "category":"1x1",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/733854519934451732/733854644564131902",
+      "sbp":"big-red-flag",
       "secrets":2
     }
   ],
@@ -417,7 +456,8 @@
     {
       "name":"Chains-2",
       "category":"1x1",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/733456615927185439/733460684851118080",
+      "sbp":"chains",
       "secrets":2
     }
   ],
@@ -425,7 +465,8 @@
     {
       "name":"Dip-2",
       "category":"1x1",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/733823742274175016/733901751471570954",
+      "sbp":"dip",
       "secrets":2
     }
   ],
@@ -433,7 +474,8 @@
     {
       "name":"Dome-2",
       "category":"1x1",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/769368678352814131/779904763823128577",
+      "sbp":"dome",
       "secrets":2
     }
   ],
@@ -441,7 +483,8 @@
     {
       "name":"Drop-2",
       "category":"1x1",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/733828110432206899/733829191270793216",
+      "sbp":"drop",
       "secrets":2
     }
   ],
@@ -449,7 +492,8 @@
     {
       "name":"Granite-2",
       "category":"1x1",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/733907465011200001/733907705361858582",
+      "sbp":"granite",
       "secrets":2
     }
   ],
@@ -457,7 +501,8 @@
     {
       "name":"Painting-2",
       "category":"1x1",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/769368462421786655/783514346479157268",
+      "sbp":"painting",
       "secrets":2
     }
   ],
@@ -465,7 +510,8 @@
     {
       "name":"Perch-2",
       "category":"1x1",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/733839339427201135/733841512420605973",
+      "sbp":"perch",
       "secrets":2
     }
   ],
@@ -473,7 +519,8 @@
     {
       "name":"Slabs-2",
       "category":"1x1",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/735238062187085984/735238264591482880",
+      "sbp":"slabs",
       "secrets":2
     }
   ],
@@ -481,7 +528,8 @@
     {
       "name":"Small-Stairs-2",
       "category":"1x1",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/769368511872237599/789160479125012531",
+      "sbp":"small-stairs",
       "secrets":2
     }
   ],
@@ -489,7 +537,8 @@
     {
       "name":"Water-2",
       "category":"1x1",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/733522388377141289/733985939843579916",
+      "sbp":"water",
       "secrets":2
     }
   ],
@@ -497,14 +546,16 @@
     {
       "name":"Waterfall-2",
       "category":"1x1",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/733536654639235083/734330554870399048",
+      "sbp":"waterfall",
       "secrets":2,
       "floorhash":"cbbc4c8810c96db055fcb7129da91620"
     },
     {
       "name":"Raccoon-4",
       "category":"1x1",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/733927767502225409/733928650755407933",
+      "sbp":"raccoon",
       "secrets":4,
       "fairysoul":true,
       "floorhash":"96579369ac6da0e04e5bf884e90c5120"
@@ -514,31 +565,8 @@
     {
       "name":"Black-Flag-3",
       "category":"1x1",
-      "dsg":true,
-      "secrets":3
-    }
-  ],
-  "51341a85232f3de41cf9d967c78886c0":[
-    {
-      "name":"Temple-3",
-      "category":"1x1",
-      "dsg":true,
-      "secrets":3
-    }
-  ],
-  "025599b4cec4f40d9ca2dfe903e96712":[
-    {
-      "name":"Lots-Of-Floors-3",
-      "category":"1x1",
-      "dsg":true,
-      "secrets":3
-    }
-  ],
-  "d508addc961f6ee547226606677131a3":[
-    {
-      "name":"Knight-3",
-      "category":"1x1",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/769368576175374346/803798156818120704",
+      "sbp":"black-flag",
       "secrets":3
     }
   ],
@@ -546,7 +574,26 @@
     {
       "name":"Dueces-3",
       "category":"1x1",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/736416554215800873/736416920416419961",
+      "sbp":"dueces",
+      "secrets":3
+    }
+  ],
+  "d508addc961f6ee547226606677131a3":[
+    {
+      "name":"Knight-3",
+      "category":"1x1",
+      "dsg":"/channels/727426780381577291/739944030825087117/741310655583486033",
+      "sbp":"knight",
+      "secrets":3
+    }
+  ],
+  "025599b4cec4f40d9ca2dfe903e96712":[
+    {
+      "name":"Lots-Of-Floors-3",
+      "category":"1x1",
+      "dsg":"/channels/727426780381577291/733856132086628459/733856220544368720",
+      "sbp":"lots-of-floors",
       "secrets":3
     }
   ],
@@ -554,7 +601,8 @@
     {
       "name":"Overgrown-3",
       "category":"1x1",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/769368622778286111/779264739544662016",
+      "sbp":"overgrown",
       "secrets":3
     }
   ],
@@ -562,7 +610,8 @@
     {
       "name":"Redstone-Key-3",
       "category":"1x1",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/733879689533456484/733880517736398900",
+      "sbp":"redstone-key",
       "secrets":3
     }
   ],
@@ -570,7 +619,8 @@
     {
       "name":"Sarcophagus-3",
       "category":"1x1",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/734660581004673075/734661195663015967",
+      "sbp":"sarcophagus",
       "secrets":3
     }
   ],
@@ -578,7 +628,17 @@
     {
       "name":"Spikes-3",
       "category":"1x1",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/733868639572197459/733868731297431660",
+      "sbp":"spikes",
+      "secrets":3
+    }
+  ],
+  "51341a85232f3de41cf9d967c78886c0":[
+    {
+      "name":"Temple-3",
+      "category":"1x1",
+      "dsg":"/channels/727426780381577291/769368563160317972/778664588996509706",
+      "sbp":"temple",
       "secrets":3
     }
   ],
@@ -586,7 +646,8 @@
     {
       "name":"Logs-4",
       "category":"1x1",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/734220175800401970/734297922153218068",
+      "sbp":"logs",
       "secrets":4
     }
   ],
@@ -594,7 +655,8 @@
     {
       "name":"Gold-1",
       "category":"1x2",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/732406315137368126/733900679181238343",
+      "sbp":"gold",
       "secrets":1
     }
   ],
@@ -602,7 +664,8 @@
     {
       "name":"Skull-2",
       "category":"1x2",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/732805467721695292/732807820776439818",
+      "sbp":"skull",
       "secrets":2
     }
   ],
@@ -610,7 +673,8 @@
     {
       "name":"Archway-3",
       "category":"1x2",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/733909034654236742/733909154254815305",
+      "sbp":"archway",
       "secrets":3
     }
   ],
@@ -618,39 +682,35 @@
     {
       "name":"Redstone-Warrior-3",
       "category":"1x2",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/737886448740728965/737887558591053936",
+      "sbp":"redstone-warrior",
       "secrets":3
-    }
-  ],
-  "8384d07e2bda40ea14273612cf27feea":[
-    {
-      "name":"Mage-4",
-      "category":"1x2",
-      "dsg":true,
-      "secrets":4
     }
   ],
   "39f77f46031907cf82dda6d3dbbbd2e2":[
     {
       "name":"Balcony-4",
       "category":"1x2",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/733845349164122146/733845463152984114",
+      "sbp":"balcony",
       "secrets":4
     }
   ],
-  "5ece8478446682a03407254feba5d23d":[
+  "8384d07e2bda40ea14273612cf27feea":[
     {
-      "name":"Pedestal-5",
+      "name":"Mage-4",
       "category":"1x2",
-      "dsg":true,
-      "secrets":5
+      "dsg":"/channels/727426780381577291/732835428377296937/733823880753578075",
+      "sbp":"mage",
+      "secrets":4
     }
   ],
   "bef41342659d6365d175a25c93d9110c":[
     {
       "name":"Crypt-5",
       "category":"1x2",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/733455710578409592/733856625802346562",
+      "sbp":"crypt",
       "secrets":5,
       "fairysoul":true
     }
@@ -659,7 +719,17 @@
     {
       "name":"Doors-5",
       "category":"1x2",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/732810268568059937/732811162986479656",
+      "sbp":"doors",
+      "secrets":5
+    }
+  ],
+  "5ece8478446682a03407254feba5d23d":[
+    {
+      "name":"Pedestal-5",
+      "category":"1x2",
+      "dsg":"/channels/727426780381577291/733033960342290533/733914274157822062",
+      "sbp":"pedestal",
       "secrets":5
     }
   ],
@@ -667,7 +737,8 @@
     {
       "name":"Purple-Flags-5",
       "category":"1x2",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/732416718244151398/733876200761458699",
+      "sbp":"purple-flags",
       "secrets":5
     }
   ],
@@ -675,7 +746,8 @@
     {
       "name":"Bridges-6",
       "category":"1x2",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/739403470494498896/739406168253792306",
+      "sbp":"bridges",
       "secrets":6
     }
   ],
@@ -683,15 +755,8 @@
     {
       "name":"Pressure-Plates-6",
       "category":"1x2",
-      "dsg":true,
-      "secrets":6
-    }
-  ],
-  "a4e8f63547ffaccbee4320014d5220d0":[
-    {
-      "name":"Catwalk-6",
-      "category":"1x3",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/761340150789308446/766599389463707668",
+      "sbp":"pressure-plate",
       "secrets":6
     }
   ],
@@ -699,7 +764,8 @@
     {
       "name":"Diagonal-4",
       "category":"1x3",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/733846259936526356/733848085549285436",
+      "sbp":"diagonal",
       "secrets":4,
       "fairysoul":true
     }
@@ -708,7 +774,8 @@
     {
       "name":"Red-Blue-4",
       "category":"1x3",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/733825061726715904/733825904354001038",
+      "sbp":"red-blue",
       "secrets":4
     }
   ],
@@ -716,15 +783,17 @@
     {
       "name":"Wizard-4",
       "category":"1x3",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/739247421917364324/739249863845478493",
+      "sbp":"wizard",
       "secrets":4
     }
   ],
-  "18bf4a943b8c58ae672891e3825df102":[
+  "a4e8f63547ffaccbee4320014d5220d0":[
     {
-      "name":"Gravel-6",
+      "name":"Catwalk-6",
       "category":"1x3",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/732389363031474226/733856410579763372",
+      "sbp":"catwalk",
       "secrets":6
     }
   ],
@@ -732,7 +801,17 @@
     {
       "name":"Deathmite-6",
       "category":"1x3",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/734266445869088808/734267107880992848",
+      "sbp":"deathmite",
+      "secrets":6
+    }
+  ],
+  "18bf4a943b8c58ae672891e3825df102":[
+    {
+      "name":"Gravel-6",
+      "category":"1x3",
+      "dsg":"/channels/727426780381577291/733874409089138778/733877168752295986",
+      "sbp":"gravel",
       "secrets":6
     }
   ],
@@ -740,7 +819,8 @@
     {
       "name":"Hallway-3",
       "category":"1x4",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/732407914333077616/733909116866527243",
+      "sbp":"hallway",
       "secrets":3
     }
   ],
@@ -748,7 +828,8 @@
     {
       "name":"Mossy-4",
       "category":"1x4",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/733881124173905930/733885339369865288",
+      "sbp":"mossy",
       "secrets":4,
       "fairysoul":true
     }
@@ -757,7 +838,8 @@
     {
       "name":"Pit-5",
       "category":"1x4",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/733831210870243348/733831342793556038",
+      "sbp":"pit",
       "secrets":5
     }
   ],
@@ -765,7 +847,8 @@
     {
       "name":"Quartz-Knight-7",
       "category":"1x4",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/732199310690746368/733869839680012370",
+      "sbp":"quartz-knight",
       "secrets":7
     }
   ],
@@ -773,7 +856,8 @@
     {
       "name":"Stairs-4",
       "category":"2x2",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/733291327470698546/734217944040734851",
+      "sbp":"stairs",
       "secrets":4,
       "fairysoul":true
     }
@@ -782,7 +866,8 @@
     {
       "name":"Buttons-5",
       "category":"2x2",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/761340098864087110/762900777571319818",
+      "sbp":"buttons",
       "secrets":5
     }
   ],
@@ -790,7 +875,8 @@
     {
       "name":"Museum-5",
       "category":"2x2",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/737882727130595390/739341655530012764",
+      "sbp":"museum",
       "secrets":5
     }
   ],
@@ -798,7 +884,8 @@
     {
       "name":"Atlas-6",
       "category":"2x2",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/737877644107841637/737879380189249588",
+      "sbp":"atlas",
       "secrets":6
     }
   ],
@@ -806,7 +893,8 @@
     {
       "name":"Super-Tall-6",
       "category":"2x2",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/739237284385128600/739242994385027234",
+      "sbp":"super-tall",
       "secrets":6,
       "fairysoul":true
     }
@@ -815,7 +903,8 @@
     {
       "name":"Flags-7",
       "category":"2x2",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/733046323556777988/733827872740999189",
+      "sbp":"flags",
       "secrets":7
     }
   ],
@@ -823,7 +912,8 @@
     {
       "name":"Cathedral-8",
       "category":"2x2",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/733869699305046067/733871215797731480",
+      "sbp":"cathedral",
       "secrets":8
     }
   ],
@@ -831,7 +921,8 @@
     {
       "name":"Rail-Track-9",
       "category":"2x2",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/732199320048369754/733842101976170556",
+      "sbp":"rail-track",
       "secrets":9
     }
   ],
@@ -839,7 +930,8 @@
     {
       "name":"Dino-Dig-Site-4",
       "category":"L-shape",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/756412502996287539/756498573536788550",
+      "sbp":"dino-dig-site",
       "secrets":4
     }
   ],
@@ -847,7 +939,8 @@
     {
       "name":"Chambers-5",
       "category":"L-shape",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/732407775468191846/733855957934669845",
+      "sbp":"chambers",
       "secrets":5
     }
   ],
@@ -855,7 +948,8 @@
     {
       "name":"Market-5",
       "category":"L-shape",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/733840047941353562/733845015960354876",
+      "sbp":"market",
       "secrets":5
     }
   ],
@@ -863,29 +957,33 @@
     {
       "name":"Withermancers-4",
       "category":"L-shape",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/756271429153980477/756414928142860308",
+      "sbp":"withermancers",
       "secrets":4
     },
     {
       "name":"Lava-Ravine-6",
       "category":"L-shape",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/739254148024893522/739261066667884544",
+      "sbp":"lava-ravine",
       "secrets":6
-    }
-  ],
-  "d2d634317ebd59101a00d2c66b93f9bc":[
-    {
-      "name":"Well-7",
-      "category":"L-shape",
-      "dsg":true,
-      "secrets":7
     }
   ],
   "3282e72df338605973d42643b6b1562b":[
     {
       "name":"Melon-7",
       "category":"L-shape",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/732813026830319659/732814245045075980",
+      "sbp":"melon",
+      "secrets":7
+    }
+  ],
+  "d2d634317ebd59101a00d2c66b93f9bc":[
+    {
+      "name":"Well-7",
+      "category":"L-shape",
+      "dsg":"/channels/727426780381577291/732809439371067466/733912767811027046",
+      "sbp":"well",
       "secrets":7
     }
   ],
@@ -893,7 +991,8 @@
     {
       "name":"Spider-9",
       "category":"L-shape",
-      "dsg":true,
+      "dsg":"/channels/727426780381577291/732154637506969650/733875583536201820",
+      "sbp":"spider",
       "secrets":9
     }
   ],
@@ -901,7 +1000,7 @@
     {
       "name":"Blood Room",
       "category":"General",
-      "dsg":false,
+      "dsg":"null",
       "secrets":0
     }
   ],
@@ -909,7 +1008,7 @@
     {
       "name":"Blood Room",
       "category":"General",
-      "dsg":false,
+      "dsg":"null",
       "secrets":0
     }
   ],
@@ -917,7 +1016,7 @@
     {
       "name":"Blood Room",
       "category":"General",
-      "dsg":false,
+      "dsg":"null",
       "secrets":0
     }
   ],
@@ -925,7 +1024,7 @@
     {
       "name":"F1",
       "category":"Boss Room",
-      "dsg":false,
+      "dsg":"null",
       "secrets":0
     }
   ],
@@ -933,7 +1032,7 @@
     {
       "name":"F2",
       "category":"Boss Room",
-      "dsg":false,
+      "dsg":"null",
       "secrets":0
     }
   ],
@@ -941,7 +1040,7 @@
     {
       "name":"F3",
       "category":"Boss Room",
-      "dsg":false,
+      "dsg":"null",
       "secrets":0
     }
   ],
@@ -949,7 +1048,16 @@
     {
       "name":"F4",
       "category":"Boss Room",
-      "dsg":false,
+      "notes":"Tell _risk if this ever shows up",
+      "dsg":"null",
+      "secrets":0
+    }
+  ],
+  "89a4d92924afa3554dd93097f73073bc":[
+    {
+      "name":"F4",
+      "category":"Boss Room",
+      "dsg":"null",
       "secrets":0
     }
   ],
@@ -957,7 +1065,7 @@
     {
       "name":"F5",
       "category":"Boss Room",
-      "dsg":false,
+      "dsg":"null",
       "secrets":0
     }
   ],
@@ -965,7 +1073,7 @@
     {
       "name":"F6",
       "category":"Boss Room",
-      "dsg":false,
+      "dsg":"null",
       "secrets":0
     }
   ]

@@ -97,9 +97,71 @@ public class DungeonRoomCommand extends CommandBase {
                         player.addChatMessage(new ChatComponentText("\n" + EnumChatFormatting.GOLD + " Dungeon Rooms Mod Version " + DungeonRooms.VERSION + "\n" +
                                 EnumChatFormatting.DARK_PURPLE + " /room" + EnumChatFormatting.AQUA + " - Tells you in chat what room you are standing in.\n" +
                                 EnumChatFormatting.DARK_PURPLE + " /room help" + EnumChatFormatting.AQUA + " - Displays this message.\n" +
-                                EnumChatFormatting.DARK_PURPLE + " /room move <x> <y>" + EnumChatFormatting.AQUA + " - Moves the GUI room name display to a coordinate. <x> and <y> are numbers between 0 and 100. Default is 50 for <x> and 5 for <y>.\n" +
+                                EnumChatFormatting.DARK_PURPLE + " /room open" + EnumChatFormatting.AQUA + " - Opens the gui for opening either DSG or SBP.\n" +
+                                EnumChatFormatting.DARK_PURPLE + " /room dsg" + EnumChatFormatting.AQUA + " - Directly opens DSG in the Discord client.\n" +
+                                EnumChatFormatting.DARK_PURPLE + " /room sbp" + EnumChatFormatting.AQUA + " - Directly opens the SBP secrets (if you have the mod installed).\n" +
+                                EnumChatFormatting.DARK_PURPLE + " /room set <gui | dsg | sbp>" + EnumChatFormatting.AQUA + " - Configure whether the hotkey opens the selector GUI or directly goes to DSG/SBP\n" +
+                                EnumChatFormatting.DARK_PURPLE + " /room move <x> <y>" + EnumChatFormatting.AQUA + " - Moves the GUI room name text to a coordinate. <x> and <y> are numbers between 0 and 100. Default is 50 for <x> and 5 for <y>.\n" +
                                 EnumChatFormatting.DARK_PURPLE + " /room togglegui" + EnumChatFormatting.AQUA + " - Toggles whether room name is automatically displayed in GUI. Default is on.\n" +
                                 EnumChatFormatting.DARK_PURPLE + " /room togglechat" + EnumChatFormatting.AQUA + " - Toggles whether room name is automatically displayed in Chat. Default is off.\n"));
+                        break;
+                    case "open":
+                        if (!Utils.inDungeons) {
+                            player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED
+                                    + "Dungeon Rooms: Use this command in dungeons"));
+                            return;
+                        }
+                        OpenLink.checkForLink("gui");
+                        break;
+
+                    case "dsg":
+                        if (!Utils.inDungeons) {
+                            player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED
+                                    + "Dungeon Rooms: Use this command in dungeons"));
+                            return;
+                        }
+                        OpenLink.checkForLink("dsg");
+                        break;
+
+                    case "sbp":
+                        if (!Utils.inDungeons) {
+                            player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED
+                                    + "Dungeon Rooms: Use this command in dungeons"));
+                            return;
+                        }
+                        OpenLink.checkForLink("sbp");
+                        break;
+
+                    case "set":
+                        switch (arg1[1].toLowerCase()) {
+                            case "gui":
+                                DungeonRooms.hotkeyOpen = "gui";
+                                player.addChatMessage(new ChatComponentText("Hotkey has been set to open: GUI"));
+                                ConfigHandler.writeStringConfig("gui", "hotkeyOpen", "gui");
+                                break;
+                            case "dsg":
+                                DungeonRooms.hotkeyOpen = "dsg";
+                                player.addChatMessage(new ChatComponentText("Hotkey has been set to open: DSG"));
+                                ConfigHandler.writeStringConfig("gui", "hotkeyOpen", "dsg");
+                                break;
+                            case "sbp":
+                                DungeonRooms.hotkeyOpen = "sbp";
+                                player.addChatMessage(new ChatComponentText("Hotkey has been set to open: SBP"));
+                                ConfigHandler.writeStringConfig("gui", "hotkeyOpen", "sbp");
+                                break;
+                            default:
+                                player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED
+                                        + "Dungeon Rooms: Valid options are <gui | dsg | sbp>"));
+                                break;
+                        }
+                        break;
+
+                    case "move":
+                        AutoRoom.scaleX = Integer.parseInt(arg1[1]);
+                        AutoRoom.scaleY  = Integer.parseInt(arg1[2]);
+                        ConfigHandler.writeIntConfig("gui", "scaleX", AutoRoom.scaleX);
+                        ConfigHandler.writeIntConfig("gui", "scaleY", AutoRoom.scaleY);
+                        player.addChatMessage(new ChatComponentText("Room GUI have been moved to " + arg1[1] + ", " + arg1[2]));
                         break;
 
                     case "toggle":
@@ -116,14 +178,6 @@ public class DungeonRoomCommand extends CommandBase {
                         AutoRoom.chatToggled = !AutoRoom.chatToggled;
                         ConfigHandler.writeBooleanConfig("toggles", "chatToggled", AutoRoom.chatToggled);
                         player.addChatMessage(new ChatComponentText("Display room names in Chat has been set to: " + AutoRoom.chatToggled));
-                        break;
-
-                    case "move":
-                        AutoRoom.scaleX = Integer.parseInt(arg1[1]);
-                        AutoRoom.scaleY  = Integer.parseInt(arg1[2]);
-                        ConfigHandler.writeIntConfig("gui", "scaleX", AutoRoom.scaleX);
-                        ConfigHandler.writeIntConfig("gui", "scaleY", AutoRoom.scaleY);
-                        player.addChatMessage(new ChatComponentText("Room GUI have been moved to " + arg1[1] + ", " + arg1[2]));
                         break;
 
                     case "json":
@@ -168,6 +222,7 @@ public class DungeonRoomCommand extends CommandBase {
                     //For adding room info
                     case "copy":
                         if (!Utils.inDungeons) return;
+                        player.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + Utils.getDimensions(x, top, z)));
                         player.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + size + " " + MD5));
                         break;
 

@@ -22,7 +22,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 public class Utils {
-
     /*
     checkForSkyblock and checkForDungeons were taken from Danker's Skyblock Mod (https://github.com/bowser0000/SkyblockMod/).
     Those methods were released under GNU General Public License v3.0 and remains under said license.
@@ -87,7 +86,7 @@ public class Utils {
                 if (checkedNorth==8 || checkedSouth == 8 || checkedEast == 8 || checkedWest == 8){
                     return i;
                 } else {
-                    System.out.println("Detected block was not large flat surface");
+                    System.out.println("Player does not appear to be in a room.");
                 }
             }
         }
@@ -185,7 +184,6 @@ public class Utils {
         if (y == -1) return null;
         Minecraft mc = Minecraft.getMinecraft();
         World world = mc.theWorld;
-        EntityPlayerSP player = mc.thePlayer;
 
         List<String> blockList = new ArrayList<>();
         List<String> frequencies = new ArrayList<>();

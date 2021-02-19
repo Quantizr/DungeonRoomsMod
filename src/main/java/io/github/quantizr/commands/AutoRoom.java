@@ -9,6 +9,7 @@ You should have received a copy of the GNU General Public License along with DRM
 package io.github.quantizr.commands;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import io.github.quantizr.DungeonRooms;
 import io.github.quantizr.handlers.TextRenderer;
 import io.github.quantizr.utils.Utils;
@@ -19,6 +20,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
@@ -32,8 +34,10 @@ public class AutoRoom {
     static List<String> autoTextOutput = null;
     public static boolean chatToggled = false;
     public static boolean guiToggled = true;
-    private static String lastHash = null;
+    public static String lastRoomHash = null;
+    public static JsonObject lastRoomJson;
     private static boolean newRoom = false;
+    public static int worldLoad = 0;
 
     public static int scaleX = 50;
     public static int scaleY = 5;
@@ -45,9 +49,12 @@ public class AutoRoom {
         EntityPlayerSP player = mc.thePlayer;
 
         tickAmount++;
+        if (worldLoad < 60) { //3 seconds
+            worldLoad++;
+        }
 
         // Checks every 1.5 seconds
-        if (tickAmount % 30 == 0 && Utils.inDungeons) {
+        if (tickAmount % 30 == 0 && Utils.inDungeons && worldLoad == 60) {
             new Thread(() -> {
                 if (AutoRoom.chatToggled || AutoRoom.guiToggled){
                     List<String> autoText = autoText();
@@ -63,6 +70,13 @@ public class AutoRoom {
         }
     }
 
+    @SubscribeEvent
+    public void onWorldChange(WorldEvent.Load event) {
+        Utils.inDungeons = false;
+        autoTextOutput = null;
+        worldLoad = 0;
+    }
+
     public static List<String> autoText() {
         List<String> output = new ArrayList<>();
         EntityPlayer player = Minecraft.getMinecraft().thePlayer;
@@ -72,30 +86,29 @@ public class AutoRoom {
 
         int top = Utils.dungeonTop(x, y, z);
         String blockFrequencies = Utils.blockFrequency(x, top, z);
-        if (blockFrequencies == null) return null; //if not in room (under hallway or render distance too low)
+        if (blockFrequencies == null) return output; //if not in room (under hallway or render distance too low)
         String MD5 = Utils.getMD5(blockFrequencies);
         String floorFrequencies = Utils.floorFrequency(x, top, z);
         String floorHash = Utils.getMD5(floorFrequencies);
         String text = "Dungeon Rooms: You are in " + EnumChatFormatting.GREEN;
-        if (MD5.equals(lastHash)) {
+        if (MD5.equals(lastRoomHash)) {
             newRoom = false;
             return null;
         } else {
             newRoom = true;
-            lastHash = MD5;
+            lastRoomHash = MD5;
         }
 
-        if (DungeonRooms.roomsJson.get(MD5) == null) {
+        if (DungeonRooms.roomsJson.get(MD5) == null && Utils.getSize(x,top,z).equals("1x1")) {
             output.add(EnumChatFormatting.LIGHT_PURPLE + "Dungeon Rooms: If you see this message in game, screenshot this and send");
             output.add(EnumChatFormatting.LIGHT_PURPLE + "either directly to _risk#2091 or in the #bug-report channel in the Discord");
             output.add(EnumChatFormatting.LIGHT_PURPLE + "You'll get a special role in the Discord and we'll all love you forever");
             output.add(EnumChatFormatting.AQUA + MD5);
             output.add(EnumChatFormatting.AQUA + floorHash);
-            output.add("Dungeon Rooms: You are in one of the following: ");
+            output.add("Dungeon Rooms: You are probably in one of the following: ");
             output.add(EnumChatFormatting.GREEN + "1x1 - Hanging-Vines-1");
             output.add(EnumChatFormatting.GREEN + "1x1 - Pillars-1");
             output.add(EnumChatFormatting.GREEN + "1x1 - Sanctuary-1");
-            output.add(EnumChatFormatting.GREEN + "1x1 - Quad-Lava-2");
             output.add(EnumChatFormatting.GREEN + "1x1 - Tombstone-2");
             output.add(EnumChatFormatting.GREEN + "1x1 - Lava-Pool-3");
             output.add(EnumChatFormatting.GREEN + "1x1 - Lava-Skull-3");
@@ -103,7 +116,11 @@ public class AutoRoom {
             output.add(EnumChatFormatting.GREEN + "1x1 - Stone-Window-2");
             output.add(EnumChatFormatting.GREEN + "1x1 - Trinity-4");
             return output;
+        } else if (DungeonRooms.roomsJson.get(MD5) == null) {
+            return output;
         }
+
+
         int arraySize = DungeonRooms.roomsJson.get(MD5).getAsJsonArray().size();
 
         if (arraySize >= 2) {
@@ -125,6 +142,7 @@ public class AutoRoom {
                         if (notes != null) {
                             output.add(EnumChatFormatting.GREEN + notes.getAsString());
                         }
+                        lastRoomJson = DungeonRooms.roomsJson.get(MD5).getAsJsonArray().get(i).getAsJsonObject();
                         floorHashFound = true;
                     }
                 } else {
@@ -145,6 +163,13 @@ public class AutoRoom {
                 output.add("Dungeon Rooms: You are in one of the following: ");
                 output.add(EnumChatFormatting.AQUA + "(check # of secrets to narrow down rooms)");
                 output.addAll(chatMessages);
+                if (chatMessages.size() == 0) {
+                    output.add(EnumChatFormatting.LIGHT_PURPLE + "Dungeon Rooms: If you see this message in game, screenshot this and send, along with");
+                    output.add(EnumChatFormatting.LIGHT_PURPLE + "the room name, to _risk#2091 or in the #bug-report channel in the Discord");
+                    output.add(EnumChatFormatting.AQUA + MD5);
+                    output.add(EnumChatFormatting.AQUA + floorHash);
+                }
+                lastRoomJson = null;
             }
         } else {
             String name = DungeonRooms.roomsJson.get(MD5).getAsJsonArray().get(0).getAsJsonObject().get("name").getAsString();
@@ -158,6 +183,7 @@ public class AutoRoom {
             if (notes != null) {
                 output.add(EnumChatFormatting.GREEN + notes.getAsString());
             }
+            lastRoomJson = DungeonRooms.roomsJson.get(MD5).getAsJsonArray().get(0).getAsJsonObject();
         }
         return output;
     }

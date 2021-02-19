@@ -6,6 +6,7 @@ Modified by Quantizr (_risk) in Feb. 2021.
 
 package io.github.quantizr.handlers;
 
+import io.github.quantizr.DungeonRooms;
 import io.github.quantizr.commands.AutoRoom;
 import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
@@ -172,10 +173,12 @@ public class ConfigHandler {
         if (!hasKey("toggles", "guiToggled")) writeBooleanConfig("toggles", "guiToggled", true);
         if (!hasKey("gui", "scaleX")) writeIntConfig("gui", "scaleX", 50);
         if (!hasKey("gui", "scaleY")) writeIntConfig("gui", "scaleY", 5);
+        if (!hasKey("gui", "hotkeyOpen")) writeStringConfig("gui", "hotkeyOpen", "gui");
 
         AutoRoom.chatToggled = getBoolean("toggles", "chatToggled");
         AutoRoom.guiToggled = getBoolean("toggles", "guiToggled");
         AutoRoom.scaleX = getInt("gui", "scaleX");
         AutoRoom.scaleY = getInt("gui", "scaleY");
+        DungeonRooms.hotkeyOpen = getString("gui", "hotkeyOpen");
     }
 }

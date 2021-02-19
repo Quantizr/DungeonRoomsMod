@@ -20,9 +20,9 @@ plugins {
     id "net.minecraftforge.gradle.forge" version "2.0.2"
 }
 */
-version = "0.4.1-BETA"
+version = "1.0.0"
 group= "io.github.quantizr.DungeonRooms" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
-archivesBaseName = "Dungeon Rooms"
+archivesBaseName = "Dungeon_Rooms"
 
 sourceCompatibility = targetCompatibility = 1.8
 
