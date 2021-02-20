@@ -310,6 +310,10 @@ public class Utils {
                 }
             }
         }
+        if (getSize(x,y,z).equals("L-shape")) {
+            blockList.add(String.valueOf(dungeonTop(x,68,z)));
+        }
+
         if (blockList.isEmpty()) return null;
 
         Set<String> distinct = new HashSet<>(blockList);

@@ -357,7 +357,7 @@
       "dsg":"/channels/727426780381577291/733858157008388157/733858193695834133",
       "secrets":0,
       "fairysoul":true,
-      "floorhash":"d1a328ab92b41e3b4aaf315b0b30b183 "
+      "floorhash":"d1a328ab92b41e3b4aaf315b0b30b183"
     },
     {
       "name":"Cell-1",
@@ -959,14 +959,16 @@
       "category":"L-shape",
       "dsg":"/channels/727426780381577291/756271429153980477/756414928142860308",
       "sbp":"withermancers",
-      "secrets":4
+      "secrets":4,
+      "floorhash":"dcd50351647473a500c75f85e8aa850d"
     },
     {
       "name":"Lava-Ravine-6",
       "category":"L-shape",
       "dsg":"/channels/727426780381577291/739254148024893522/739261066667884544",
       "sbp":"lava-ravine",
-      "secrets":6
+      "secrets":6,
+      "floorhash":"4971561a00d15eaa4a72d6f2686179e4"
     }
   ],
   "3282e72df338605973d42643b6b1562b":[

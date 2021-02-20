@@ -22,7 +22,7 @@ https://discord.gg/7B5RbsArYK
  - /room dsg - Directly opens DSG in the Discord client.
  - room sbp - Directly opens the SBP secrets (if you have the mod installed).
  - /room set \<gui | dsg | sbp\> - Configure whether the hotkey opens the selector GUI or directly goes to DSG/SBP      
- - /room move \<x\> \<y\> - Moves the GUI room name display to a coordinate. <x> and <y> are numbers between 0 and 100. Default is 50 for <x> and 5 for <y>
+ - /room move \<x\> \<y\> - Moves the GUI room name display to a coordinate. \<x\> and \<y\> are numbers between 0 and 100. Default is 50 for \<x\> and 5 for \<y\>
  - /room togglegui - Toggles whether room name is automatically displayed in GUI. Default is on
  - /room togglechat - Toggles whether room name is automatically displayed in Chat. Default is off
 

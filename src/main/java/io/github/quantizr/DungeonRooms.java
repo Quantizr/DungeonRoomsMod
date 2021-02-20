@@ -10,6 +10,7 @@ package io.github.quantizr;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import io.github.quantizr.commands.AutoRoom;
 import io.github.quantizr.commands.DungeonRoomCommand;
 import io.github.quantizr.commands.OpenLink;
@@ -18,6 +19,8 @@ import io.github.quantizr.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.settings.KeyBinding;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.event.ClickEvent;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.util.ResourceLocation;
@@ -25,6 +28,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Mod;
@@ -35,19 +39,23 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
+import net.minecraftforge.fml.common.versioning.DefaultArtifactVersion;
 import org.lwjgl.input.Keyboard;
 
 import java.io.*;
+import java.net.URL;
+import java.net.URLConnection;
 
 @Mod(modid = DungeonRooms.MODID, version = DungeonRooms.VERSION)
 public class DungeonRooms
 {
     public static final String MODID = "dungeonrooms";
-    public static final String VERSION = "1.0.0";
+    public static final String VERSION = "1.0.1";
 
     Minecraft mc = Minecraft.getMinecraft();
 
     public static JsonObject roomsJson;
+    static boolean updateChecked = false;
     public static boolean usingSBPSecrets = false;
     static KeyBinding[] keyBindings = new KeyBinding[1];
     public static String hotkeyOpen = "gui";
@@ -85,6 +93,52 @@ public class DungeonRooms
     public void postInit(final FMLPostInitializationEvent event) {
         usingSBPSecrets = Loader.isModLoaded("dgnscrts");
         System.out.println("SBP Dungeon Secrets detection: " + usingSBPSecrets);
+    }
+
+    /*
+    Update Checker taken from Danker's Skyblock Mod (https://github.com/bowser0000/SkyblockMod/).
+    This code was released under GNU General Public License v3.0 and remains under said license.
+    Modified by Quantizr (_risk) in Feb. 2021.
+    */
+    @SubscribeEvent
+    public void onJoin(EntityJoinWorldEvent event) {
+        if (!updateChecked) {
+            updateChecked = true;
+
+            // MULTI THREAD DRIFTING
+            new Thread(() -> {
+                EntityPlayer player = Minecraft.getMinecraft().thePlayer;
+                try {
+                    System.out.println("Checking for updates...");
+
+                    URL url = new URL("https://api.github.com/repos/Quantizr/DungeonRoomsMod/releases/latest");
+                    URLConnection request = url.openConnection();
+                    request.connect();
+                    JsonParser json = new JsonParser();
+                    JsonObject latestRelease = json.parse(new InputStreamReader((InputStream) request.getContent())).getAsJsonObject();
+
+                    String latestTag = latestRelease.get("tag_name").getAsString();
+                    DefaultArtifactVersion currentVersion = new DefaultArtifactVersion(VERSION);
+                    DefaultArtifactVersion latestVersion = new DefaultArtifactVersion(latestTag.substring(1));
+
+                    if (currentVersion.compareTo(latestVersion) < 0) {
+                        String releaseURL = "https://discord.gg/kr2M7WutgJ";
+                        ChatComponentText update = new ChatComponentText(EnumChatFormatting.GREEN + "" + EnumChatFormatting.BOLD + "  [UPDATE]  ");
+                        update.setChatStyle(update.getChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, releaseURL)));
+
+                        try {
+                            Thread.sleep(2000);
+                        } catch (InterruptedException ex) {
+                            ex.printStackTrace();
+                        }
+                        player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "Dungeon Rooms Mod is outdated. Please update to " + latestTag + ".\n").appendSibling(update));
+                    }
+                } catch (IOException e) {
+                    player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "An error has occured. See logs for more details."));
+                    e.printStackTrace();
+                }
+            }).start();
+        }
     }
 
     @SubscribeEvent
