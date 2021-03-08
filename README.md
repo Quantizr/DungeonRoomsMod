@@ -15,8 +15,16 @@ channel for you in Discord.
 ### Discord:
 https://discord.gg/7B5RbsArYK
 
+### Main Hotkey:
+ - By default, the hotkey is set to "O"
+ - You can change the hotkey in the normal Minecraft controls menu
+ - The hotkey opens a GUI menu that allows you to select whether you want to open secret images in the Dungeon Secret
+  Guide (DSG) Discord or in the Skyblock Personalized (SBP) Dungeon Secrets Mod (separate mod, made by a different dev)
+ - You can make the hotkey directly open either DSG or SBP and bypass the menu by running: /room set \<gui | dsg | sbp\>
+ 
 ### Commands:
- - /room - Tells you in chat what room you are standing in.
+You probably won't need to use any of these:
+ - /room - Tells you in chat what room you are standing in, in the chat.
  - /room help - Displays this message in chat.
  - /room open - Opens the gui for opening either DSG or SBP.
  - /room dsg - Directly opens DSG in the Discord client.
@@ -29,4 +37,4 @@ https://discord.gg/7B5RbsArYK
 ### Credits:
 Big thanks to Danker's Skyblock Mod (https://github.com/bowser0000/SkyblockMod) for the handlers code used in this mod.
 
-Also thanks to the Room Contributors in the Discord, especially Abd#5832, for submitting rooms.
+Also, thanks to the Room Contributors in the Discord, especially Abd#5832 and Fawless#9843, for submitting rooms.

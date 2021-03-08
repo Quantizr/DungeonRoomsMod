@@ -31,6 +31,15 @@
       "secrets":0
     }
   ],
+  "3e877ad473671a2767362a93348b9f7f":[
+    {
+      "name":"Trivia-Room",
+      "category":"Puzzle",
+      "dsg":"/channels/727426780381577291/739026749781835786/769725317274140733",
+      "secrets":0,
+      "comment (not displayed)":"Temporary fix for missing block causing error in certain part of trivia room"
+    }
+  ],
   "02a3b3453421672be5d05aed0177680c":[
     {
       "name":"3-Chests",
@@ -105,6 +114,15 @@
       "category":"Puzzle",
       "dsg":"/channels/727426780381577291/732392995051143188/732796910229913670",
       "secrets":0
+    }
+  ],
+  "1d104fa1f828f60074dfc345dcf35032":[
+    {
+      "name":"Ice-Path",
+      "category":"Puzzle",
+      "dsg":"/channels/727426780381577291/732392995051143188/732796910229913670",
+      "secrets":0,
+      "comment (not displayed)":"Temporary fix for missing block causing error in certain part of ice-path room"
     }
   ],
   "b876c5a6d29903ff0dcce66f65248730":[
@@ -196,7 +214,8 @@
       "name":"Admin-0",
       "category":"1x1",
       "dsg":"/channels/727426780381577291/750984974794227844/752939761534238880",
-      "secrets":0
+      "secrets":0,
+      "fairysoul":true
     }
   ],
   "8dd796d9b740875048e862f4a82b851c":[
@@ -286,6 +305,7 @@
       "dsg":"/channels/727426780381577291/734299006246846514/734299567599648840",
       "sbp":"leaves",
       "secrets":1,
+      "fairysoul":true,
       "floorhash":"502b13b5733f97d1689f2220824bae3d"
     }
   ],
@@ -304,6 +324,15 @@
       "category":"1x1",
       "dsg":"/channels/727426780381577291/733927175492993064/733928355807756308",
       "sbp":"mural",
+      "secrets":1
+    }
+  ],
+  "2cfcecf71825b76faa4f97787da2e996":[
+    {
+      "name":"Sanctuary-1",
+      "category":"1x1",
+      "dsg":"/channels/727426780381577291/750985107640156210/769371253869248532",
+      "sbp":"sanctuary",
       "secrets":1
     }
   ],
@@ -533,6 +562,15 @@
       "secrets":2
     }
   ],
+  "1bb4fa5f1f60f1daf6798c05f787f4a7":[
+    {
+      "name":"Tombstone-2",
+      "category":"1x1",
+      "dsg":"/channels/727426780381577291/769368894225121280/793146978712289290",
+      "sbp":"tombstone",
+      "secrets":2
+    }
+  ],
   "b9b9f11a7d09e758dda13195fe8ad013":[
     {
       "name":"Water-2",
@@ -586,6 +624,49 @@
       "dsg":"/channels/727426780381577291/739944030825087117/741310655583486033",
       "sbp":"knight",
       "secrets":3
+    }
+  ],
+  "ec6fc723fd4be970aec629536a662090":[
+    {
+      "name":"Pillars-1",
+      "category":"1x1",
+      "dsg":"/channels/727426780381577291/750985035418566706/757896936274657340",
+      "sbp":"pillars",
+      "secrets":1,
+      "floorhash":"c146ec0effb94ef2eb53f62d952dd8c7"
+    },
+    {
+      "name":"Lava-Pool-3",
+      "category":"1x1",
+      "dsg":"/channels/727426780381577291/750985126506266636/762941546084564993",
+      "sbp":"lava-pool",
+      "secrets":3,
+      "floorhash":"87ba278cc87946d8e192823db1039d4c"
+    }
+  ],
+  "7d8a3dca4f69975f7994aff29775e99f":[
+    {
+      "name":"Lava-Skull-3",
+      "category":"1x1",
+      "dsg":"/channels/727426780381577291/769368436408188938/776261030211747891",
+      "sbp":"lava-skull",
+      "secrets":3
+    },
+    {
+      "name":"Mini-Rail-Track-3",
+      "category":"1x1",
+      "dsg":"/channels/727426780381577291/761340120141791272/767639390896914442",
+      "sbp":"mini-rail-track",
+      "secrets":3,
+      "floorhash":"f41d7b58343254a9f2ac6e93722a980c"
+    },
+    {
+      "name":"Trinity-4",
+      "category":"1x1",
+      "dsg":"/channels/727426780381577291/761340075111088149/771204594017370122",
+      "sbp":"trinity",
+      "secrets":4,
+      "floorhash":"4733e2d7fc2d0a0ea1159595be0c2826"
     }
   ],
   "025599b4cec4f40d9ca2dfe903e96712":[
@@ -1050,7 +1131,6 @@
     {
       "name":"F4",
       "category":"Boss Room",
-      "notes":"Tell _risk if this ever shows up",
       "dsg":"null",
       "secrets":0
     }

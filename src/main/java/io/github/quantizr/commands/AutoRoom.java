@@ -91,30 +91,35 @@ public class AutoRoom {
         String floorFrequencies = Utils.floorFrequency(x, top, z);
         String floorHash = Utils.getMD5(floorFrequencies);
         String text = "Dungeon Rooms: You are in " + EnumChatFormatting.GREEN;
-        if (MD5.equals(lastRoomHash)) {
-            newRoom = false;
-            return null;
-        } else {
-            newRoom = true;
-            lastRoomHash = MD5;
+
+        if (MD5.equals("16370f79b2cad049096f881d5294aee6") && !floorHash.equals("94fb12c91c4b46bd0c254edadaa49a3d")) {
+            floorHash = "e617eff1d7b77faf0f8dd53ec93a220f"; //exception for box room because floorhash changes when you walk on it
         }
 
+        if (MD5.equals(lastRoomHash) && lastRoomJson != null && floorHash != null) {
+            if (lastRoomJson.get("floorhash") != null) {
+                if (floorHash.equals(lastRoomJson.get("floorhash").getAsString())) {
+                    newRoom = false;
+                    return null;
+                }
+            } else {
+                newRoom = false;
+                return null;
+            }
+        }
+
+        newRoom = true;
+        lastRoomHash = MD5;
+
         if (DungeonRooms.roomsJson.get(MD5) == null && Utils.getSize(x,top,z).equals("1x1")) {
-            output.add(EnumChatFormatting.LIGHT_PURPLE + "Dungeon Rooms: If you see this message in game, screenshot this and send");
-            output.add(EnumChatFormatting.LIGHT_PURPLE + "either directly to _risk#2091 or in the #bug-report channel in the Discord");
-            output.add(EnumChatFormatting.LIGHT_PURPLE + "You'll get a special role in the Discord and we'll all love you forever");
+            output.add(EnumChatFormatting.LIGHT_PURPLE + "Dungeon Rooms: If you see this message in game, screenshot this and send, along with");
+            output.add(EnumChatFormatting.LIGHT_PURPLE + "room name, either directly to _risk#2091 or in the #bug-report channel in the Discord");
+            output.add(EnumChatFormatting.LIGHT_PURPLE + "You might get a special role in the Discord and we'll all love you forever");
             output.add(EnumChatFormatting.AQUA + MD5);
             output.add(EnumChatFormatting.AQUA + floorHash);
             output.add("Dungeon Rooms: You are probably in one of the following: ");
             output.add(EnumChatFormatting.GREEN + "1x1 - Hanging-Vines-1");
-            output.add(EnumChatFormatting.GREEN + "1x1 - Pillars-1");
-            output.add(EnumChatFormatting.GREEN + "1x1 - Sanctuary-1");
-            output.add(EnumChatFormatting.GREEN + "1x1 - Tombstone-2");
-            output.add(EnumChatFormatting.GREEN + "1x1 - Lava-Pool-3");
-            output.add(EnumChatFormatting.GREEN + "1x1 - Lava-Skull-3");
-            output.add(EnumChatFormatting.GREEN + "1x1 - Mini-Rail-Track-3");
             output.add(EnumChatFormatting.GREEN + "1x1 - Stone-Window-2");
-            output.add(EnumChatFormatting.GREEN + "1x1 - Trinity-4");
             return output;
         } else if (DungeonRooms.roomsJson.get(MD5) == null) {
             return output;
@@ -135,7 +140,7 @@ public class AutoRoom {
                         String category = DungeonRooms.roomsJson.get(MD5).getAsJsonArray().get(i).getAsJsonObject().get("category").getAsString();
                         String fairysoul = "";
                         if (DungeonRooms.roomsJson.get(MD5).getAsJsonArray().get(i).getAsJsonObject().get("fairysoul") != null) {
-                            fairysoul = " - " + EnumChatFormatting.LIGHT_PURPLE + "Fairy Soul";
+                            fairysoul = EnumChatFormatting.WHITE + " - " + EnumChatFormatting.LIGHT_PURPLE + "Fairy Soul";
                         }
                         output.add(text + category + " - " + name + fairysoul);
                         JsonElement notes = DungeonRooms.roomsJson.get(MD5).getAsJsonArray().get(i).getAsJsonObject().get("notes");
@@ -150,7 +155,7 @@ public class AutoRoom {
                     String category = DungeonRooms.roomsJson.get(MD5).getAsJsonArray().get(i).getAsJsonObject().get("category").getAsString();
                     String fairysoul = "";
                     if (DungeonRooms.roomsJson.get(MD5).getAsJsonArray().get(i).getAsJsonObject().get("fairysoul") != null) {
-                        fairysoul = " - " + EnumChatFormatting.LIGHT_PURPLE + "Fairy Soul";
+                        fairysoul = EnumChatFormatting.WHITE + " - " + EnumChatFormatting.LIGHT_PURPLE + "Fairy Soul";
                     }
                     chatMessages.add(EnumChatFormatting.GREEN + category + " - " + name + fairysoul);
                     JsonElement notes = DungeonRooms.roomsJson.get(MD5).getAsJsonArray().get(i).getAsJsonObject().get("notes");
@@ -160,15 +165,13 @@ public class AutoRoom {
                 }
             }
             if (!floorHashFound) {
-                output.add("Dungeon Rooms: You are in one of the following: ");
+                output.add("Dungeon Rooms: You are probably in one of the following: ");
                 output.add(EnumChatFormatting.AQUA + "(check # of secrets to narrow down rooms)");
                 output.addAll(chatMessages);
-                if (chatMessages.size() == 0) {
-                    output.add(EnumChatFormatting.LIGHT_PURPLE + "Dungeon Rooms: If you see this message in game, screenshot this and send, along with");
-                    output.add(EnumChatFormatting.LIGHT_PURPLE + "the room name, to _risk#2091 or in the #bug-report channel in the Discord");
-                    output.add(EnumChatFormatting.AQUA + MD5);
-                    output.add(EnumChatFormatting.AQUA + floorHash);
-                }
+                output.add(EnumChatFormatting.LIGHT_PURPLE + "Dungeon Rooms: If you see this message in game, screenshot this and send, along with");
+                output.add(EnumChatFormatting.LIGHT_PURPLE + "the room name, to _risk#2091 or in the #bug-report channel in the Discord");
+                output.add(EnumChatFormatting.AQUA + MD5);
+                output.add(EnumChatFormatting.AQUA + floorHash);
                 lastRoomJson = null;
             }
         } else {
@@ -176,7 +179,7 @@ public class AutoRoom {
             String category = DungeonRooms.roomsJson.get(MD5).getAsJsonArray().get(0).getAsJsonObject().get("category").getAsString();
             String fairysoul = "";
             if (DungeonRooms.roomsJson.get(MD5).getAsJsonArray().get(0).getAsJsonObject().get("fairysoul") != null) {
-                fairysoul = " - " + EnumChatFormatting.LIGHT_PURPLE + "Fairy Soul";
+                fairysoul = EnumChatFormatting.WHITE + " - " + EnumChatFormatting.LIGHT_PURPLE + "Fairy Soul";
             }
             output.add(text + category + " - " + name + fairysoul);
             JsonElement notes = DungeonRooms.roomsJson.get(MD5).getAsJsonArray().get(0).getAsJsonObject().get("notes");
