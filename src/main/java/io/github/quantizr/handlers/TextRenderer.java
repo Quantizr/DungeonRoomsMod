@@ -13,10 +13,9 @@ import net.minecraft.util.StringUtils;
 import org.lwjgl.opengl.GL11;
 
 public class TextRenderer extends Gui {
-    public TextRenderer(Minecraft mc, String text, int x, int y, double scale, boolean outline) {
-        double scaleReset = Math.pow(scale, -1);
-
-        GL11.glScaled(scale, scale, scale);
+    public static void drawText(Minecraft mc, String text, int x, int y, double scale, boolean outline) {
+        GlStateManager.pushMatrix();
+        GlStateManager.scale(scale, scale, scale);
         y -= mc.fontRendererObj.FONT_HEIGHT;
         for (String line : text.split("\n")) {
             y += mc.fontRendererObj.FONT_HEIGHT * scale;
@@ -31,7 +30,7 @@ public class TextRenderer extends Gui {
                 mc.fontRendererObj.drawString(line, (int) Math.round(x / scale), (int) Math.round(y / scale), 0xFFFFFF, true);
             }
         }
-        GL11.glScaled(scaleReset, scaleReset, scaleReset);
+        GlStateManager.popMatrix();
         GlStateManager.color(1, 1, 1, 1);
     }
 }

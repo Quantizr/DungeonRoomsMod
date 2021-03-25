@@ -26,6 +26,8 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class AutoRoom {
     Minecraft mc = Minecraft.getMinecraft();
@@ -42,6 +44,8 @@ public class AutoRoom {
     public static int scaleX = 50;
     public static int scaleY = 5;
 
+    private final Executor executor = Executors.newFixedThreadPool(5);
+
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
         if (event.phase != TickEvent.Phase.START) return;
@@ -55,7 +59,7 @@ public class AutoRoom {
 
         // Checks every 1.5 seconds
         if (tickAmount % 30 == 0 && Utils.inDungeons && worldLoad == 60) {
-            new Thread(() -> {
+            executor.execute(() -> {
                 if (AutoRoom.chatToggled || AutoRoom.guiToggled){
                     List<String> autoText = autoText();
                     if (autoText != null) {
@@ -65,7 +69,7 @@ public class AutoRoom {
                 if (AutoRoom.chatToggled) {
                     toggledChat();
                 }
-            }).start();
+            });
             tickAmount = 0;
         }
     }
@@ -75,6 +79,11 @@ public class AutoRoom {
         Utils.inDungeons = false;
         autoTextOutput = null;
         worldLoad = 0;
+    }
+
+    @SubscribeEvent
+    public void onWorldUnload(WorldEvent.Unload event) {
+        Utils.inDungeons = false;
     }
 
     public static List<String> autoText() {
@@ -209,7 +218,7 @@ public class AutoRoom {
         int y = 0;
         for (String message:autoTextOutput) {
             int roomStringWidth = mc.fontRendererObj.getStringWidth(message);
-            new TextRenderer(mc, message, ((scaledResolution.getScaledWidth() * scaleX) / 100) - (roomStringWidth / 2),
+            TextRenderer.drawText(mc, message, ((scaledResolution.getScaledWidth() * scaleX) / 100) - (roomStringWidth / 2),
                     ((scaledResolution.getScaledHeight() * scaleY) / 100) + y, 1D, true);
             y += mc.fontRendererObj.FONT_HEIGHT;
         }

@@ -143,6 +143,7 @@ public class DungeonRooms
 
     @SubscribeEvent
     public void renderPlayerInfo(final RenderGameOverlayEvent.Post event) {
+        if (event.type != RenderGameOverlayEvent.ElementType.ALL) return;
         if (Utils.inDungeons && AutoRoom.guiToggled) {
             AutoRoom.renderText();
         }
