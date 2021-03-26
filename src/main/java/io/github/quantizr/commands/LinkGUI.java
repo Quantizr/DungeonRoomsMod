@@ -50,12 +50,12 @@ public class LinkGUI extends GuiScreen {
 
         String displayText = "Where would you like to view secrets for: " + EnumChatFormatting.GREEN + AutoRoom.lastRoomJson.get("name").getAsString();
         int displayWidth = mc.fontRendererObj.getStringWidth(displayText);
-        new TextRenderer(mc, displayText, width / 2 - displayWidth / 2, height / 6 + 56, 1D, false);
+        TextRenderer.drawText(mc, displayText, width / 2 - displayWidth / 2, height / 6 + 56, 1D, false);
 
         String noteText = EnumChatFormatting.GRAY + "If you wish to have the hotkey go directly to DSG or SBP instead of this GUI run "
                 + EnumChatFormatting.WHITE + "/room set <gui | dsg | sbp>";
         int noteWidth = mc.fontRendererObj.getStringWidth(noteText);
-        new TextRenderer(mc, noteText, width / 2 - noteWidth / 2, (int) (height*0.9), 1D, false);
+        TextRenderer.drawText(mc, noteText, width / 2 - noteWidth / 2, (int) (height*0.9), 1D, false);
 
         super.drawScreen(mouseX, mouseY, partialTicks);
     }
