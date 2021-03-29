@@ -36,5 +36,6 @@ You probably won't need to use any of these:
 
 ### Credits:
 Big thanks to Danker's Skyblock Mod (https://github.com/bowser0000/SkyblockMod) for the handlers code used in this mod.
+Thanks to DJtheRedstoner for various bug/performance fixes.
 
 Also, thanks to the Room Contributors in the Discord, especially Abd#5832 and Fawless#9843, for submitting rooms.

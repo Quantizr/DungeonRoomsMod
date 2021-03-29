@@ -186,9 +186,11 @@ public class DungeonRoomCommand extends CommandBase {
                                     + "Dungeon Rooms: Use this command in dungeons"));
                             return;
                         }
-                        if (DungeonRooms.roomsJson.get(MD5) == null) {
-                            player.addChatMessage(new ChatComponentText("null"));
-                        } else {
+                        if (DungeonRooms.roomsJson.get(MD5) != null) {
+                            if (MD5.equals("16370f79b2cad049096f881d5294aee6") && !floorHash.equals("94fb12c91c4b46bd0c254edadaa49a3d")) {
+                                floorHash = "e617eff1d7b77faf0f8dd53ec93a220f"; //exception for box room because floorhash changes when you walk on it
+                            }
+
                             int arraySize = DungeonRooms.roomsJson.get(MD5).getAsJsonArray().size();
                             if (arraySize >= 2) {
                                 boolean floorHashFound = false;

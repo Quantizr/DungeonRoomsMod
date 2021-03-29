@@ -16,6 +16,7 @@ import io.github.quantizr.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.ScaledResolution;
+import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
@@ -53,12 +54,12 @@ public class AutoRoom {
         EntityPlayerSP player = mc.thePlayer;
 
         tickAmount++;
-        if (worldLoad < 60) { //3 seconds
+        if (worldLoad < 180) { //9 seconds
             worldLoad++;
         }
 
         // Checks every 1.5 seconds
-        if (tickAmount % 30 == 0 && Utils.inDungeons && worldLoad == 60) {
+        if (tickAmount % 30 == 0 && Utils.inDungeons && worldLoad == 180) {
             executor.execute(() -> {
                 if (AutoRoom.chatToggled || AutoRoom.guiToggled){
                     List<String> autoText = autoText();
@@ -77,8 +78,13 @@ public class AutoRoom {
     @SubscribeEvent
     public void onWorldChange(WorldEvent.Load event) {
         Utils.inDungeons = false;
-        autoTextOutput = null;
         worldLoad = 0;
+        List<String> output = new ArrayList<>();
+        output.add("Dungeon Rooms: " + EnumChatFormatting.GREEN+ "Press the hotkey \"" + GameSettings.getKeyDisplayString(DungeonRooms.keyBindings[0].getKeyCode()) +"\" inside a room with secrets");
+        output.add(EnumChatFormatting.GREEN + "to view images of the secret locations.");
+        output.add(EnumChatFormatting.WHITE + "(You can change the keybind in Minecraft controls menu)");
+        autoTextOutput = output;
+
     }
 
     @SubscribeEvent
@@ -126,9 +132,8 @@ public class AutoRoom {
             output.add(EnumChatFormatting.LIGHT_PURPLE + "You might get a special role in the Discord and we'll all love you forever");
             output.add(EnumChatFormatting.AQUA + MD5);
             output.add(EnumChatFormatting.AQUA + floorHash);
-            output.add("Dungeon Rooms: You are probably in one of the following: ");
+            output.add("Dungeon Rooms: You are probably in: ");
             output.add(EnumChatFormatting.GREEN + "1x1 - Hanging-Vines-1");
-            output.add(EnumChatFormatting.GREEN + "1x1 - Stone-Window-2");
             return output;
         } else if (DungeonRooms.roomsJson.get(MD5) == null) {
             return output;

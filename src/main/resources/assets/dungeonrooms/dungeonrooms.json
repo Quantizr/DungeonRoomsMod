@@ -229,10 +229,11 @@
   ],
   "412f0946ac8f246c47a05a4ebc2b7c08":[
     {
-      "name":"Beams and Platforms",
-      "notes":"Not in DSG (?)",
+      "name":"Basement-1",
+      "notes":"Formerly known as Beams and Platforms",
       "category":"1x1",
-      "dsg":"null",
+      "dsg":"/channels/727426780381577291/769368906472488990/823744642846818314",
+      "sbp":"basement",
       "secrets":1
     }
   ],
@@ -650,7 +651,8 @@
       "category":"1x1",
       "dsg":"/channels/727426780381577291/769368436408188938/776261030211747891",
       "sbp":"lava-skull",
-      "secrets":3
+      "secrets":3,
+      "floorhash":"141da9ff36ce091447d2626d4b14212a"
     },
     {
       "name":"Mini-Rail-Track-3",
@@ -712,6 +714,16 @@
       "dsg":"/channels/727426780381577291/733868639572197459/733868731297431660",
       "sbp":"spikes",
       "secrets":3
+    }
+  ],
+  "f789700d95f7e31e02757c9f35c4a0c7":[
+    {
+      "name":"Stone-Window-2",
+      "category":"1x1",
+      "dsg":"/channels/727426780381577291/769368930724610070/802218309969903646",
+      "sbp":"stone-window",
+      "secrets":2,
+      "fairysoul":true
     }
   ],
   "51341a85232f3de41cf9d967c78886c0":[

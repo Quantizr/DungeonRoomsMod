@@ -50,14 +50,14 @@ import java.net.URLConnection;
 public class DungeonRooms
 {
     public static final String MODID = "dungeonrooms";
-    public static final String VERSION = "1.0.2";
+    public static final String VERSION = "1.0.3";
 
     Minecraft mc = Minecraft.getMinecraft();
 
     public static JsonObject roomsJson;
     static boolean updateChecked = false;
     public static boolean usingSBPSecrets = false;
-    static KeyBinding[] keyBindings = new KeyBinding[1];
+    public static KeyBinding[] keyBindings = new KeyBinding[1];
     public static String hotkeyOpen = "gui";
     static int tickAmount = 1;
 
@@ -181,7 +181,6 @@ public class DungeonRooms
                     OpenLink.checkForLink("gui");
                     break;
                 case "dsg":
-                    player.addChatMessage(new ChatComponentText("Dungeon Rooms: Opening DSG Discord..."));
                     OpenLink.checkForLink("dsg");
                     break;
                 case "sbp":

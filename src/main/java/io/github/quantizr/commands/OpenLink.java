@@ -1,15 +1,10 @@
 package io.github.quantizr.commands;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import io.github.quantizr.DungeonRooms;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
-import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.world.World;
 import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.fml.client.FMLClientHandler;
 
@@ -77,8 +72,10 @@ public class OpenLink {
         }
         try {
             if (type.equals("client")){
+                player.addChatMessage(new ChatComponentText("Dungeon Rooms: Opening DSG Discord in Client..."));
                 Desktop.getDesktop().browse(new URI("discord://" + AutoRoom.lastRoomJson.get("dsg").getAsString()));
             } else {
+                player.addChatMessage(new ChatComponentText("Dungeon Rooms: Opening DSG Discord in Browser..."));
                 Desktop.getDesktop().browse(new URI("https://discord.com" + AutoRoom.lastRoomJson.get("dsg").getAsString()));
             }
         } catch (IOException | URISyntaxException e) {
