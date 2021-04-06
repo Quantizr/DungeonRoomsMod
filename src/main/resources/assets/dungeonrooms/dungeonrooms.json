@@ -334,6 +334,16 @@
       "category":"1x1",
       "dsg":"/channels/727426780381577291/750985107640156210/769371253869248532",
       "sbp":"sanctuary",
+      "secrets":1,
+      "comment (not displayed)":"old room md5, may not be in use anymore"
+    }
+  ],
+  "263a269d5c93255c60eb721e128f2d20":[
+    {
+      "name":"Sanctuary-1",
+      "category":"1x1",
+      "dsg":"/channels/727426780381577291/750985107640156210/769371253869248532",
+      "sbp":"sanctuary",
       "secrets":1
     }
   ],
@@ -836,6 +846,16 @@
     }
   ],
   "03c30fd33553f37b22b9c4b8bed33e1d":[
+    {
+      "name":"Bridges-6",
+      "category":"1x2",
+      "dsg":"/channels/727426780381577291/739403470494498896/739406168253792306",
+      "sbp":"bridges",
+      "secrets":6,
+      "comment (not displayed)":"old room md5, may not be in use anymore"
+    }
+  ],
+  "c979e9eda7361555ce2d75d63f5305bb":[
     {
       "name":"Bridges-6",
       "category":"1x2",
