@@ -45,12 +45,14 @@ import org.lwjgl.input.Keyboard;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.List;
 
 @Mod(modid = DungeonRooms.MODID, version = DungeonRooms.VERSION)
 public class DungeonRooms
 {
     public static final String MODID = "dungeonrooms";
-    public static final String VERSION = "1.0.4";
+    public static final String VERSION = "1.0.5";
 
     Minecraft mc = Minecraft.getMinecraft();
 
@@ -60,6 +62,7 @@ public class DungeonRooms
     public static KeyBinding[] keyBindings = new KeyBinding[1];
     public static String hotkeyOpen = "gui";
     static int tickAmount = 1;
+    public static List<String> motd = null;
 
     @EventHandler
     public void preInit(final FMLPreInitializationEvent event) {
@@ -91,7 +94,7 @@ public class DungeonRooms
 
     @EventHandler
     public void postInit(final FMLPostInitializationEvent event) {
-        usingSBPSecrets = Loader.isModLoaded("dgnscrts");
+        usingSBPSecrets = Loader.isModLoaded("sbp");
         System.out.println("SBP Dungeon Secrets detection: " + usingSBPSecrets);
     }
 
@@ -133,6 +136,19 @@ public class DungeonRooms
                         }
                         player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "Dungeon Rooms Mod is outdated. Please update to " + latestTag + ".\n").appendSibling(update));
                     }
+                } catch (IOException e) {
+                    player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "An error has occured. See logs for more details."));
+                    e.printStackTrace();
+                }
+                try {
+                    URL url = new URL("https://gist.githubusercontent.com/Quantizr/0af2afd91cd8b1aa22e42bc2d65cfa75/raw/");
+                    BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream(), "UTF-8"));
+                    String line;
+                    motd = new ArrayList<>();
+                    while ((line = in.readLine()) != null) {
+                        motd.add(line);
+                    }
+                    in.close();
                 } catch (IOException e) {
                     player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "An error has occured. See logs for more details."));
                     e.printStackTrace();

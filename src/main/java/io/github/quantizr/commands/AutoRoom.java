@@ -27,6 +27,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -79,12 +80,22 @@ public class AutoRoom {
     public void onWorldChange(WorldEvent.Load event) {
         Utils.inDungeons = false;
         worldLoad = 0;
+        Random random = new Random();
         List<String> output = new ArrayList<>();
-        output.add("Dungeon Rooms: " + EnumChatFormatting.GREEN+ "Press the hotkey \"" + GameSettings.getKeyDisplayString(DungeonRooms.keyBindings[0].getKeyCode()) +"\" inside a room with secrets");
-        output.add(EnumChatFormatting.GREEN + "to view images of the secret locations.");
-        output.add(EnumChatFormatting.WHITE + "(You can change the keybind in Minecraft controls menu)");
-        autoTextOutput = output;
 
+        if (random.nextBoolean()) {
+            if (DungeonRooms.motd != null) {
+                if (!DungeonRooms.motd.isEmpty()) {
+                    output.addAll(DungeonRooms.motd);
+                }
+            }
+        }
+        if (output.isEmpty()) {
+            output.add("Dungeon Rooms: " + EnumChatFormatting.GREEN+ "Press the hotkey \"" + GameSettings.getKeyDisplayString(DungeonRooms.keyBindings[0].getKeyCode()) +"\" inside a room with secrets");
+            output.add(EnumChatFormatting.GREEN + "to view images of the secret locations.");
+            output.add(EnumChatFormatting.WHITE + "(You can change the keybind in Minecraft controls menu)");
+        }
+        autoTextOutput = output;
     }
 
     @SubscribeEvent
@@ -133,9 +144,11 @@ public class AutoRoom {
             output.add(EnumChatFormatting.AQUA + MD5);
             output.add(EnumChatFormatting.AQUA + floorHash);
             output.add("Dungeon Rooms: You are probably in: ");
-            output.add(EnumChatFormatting.GREEN + "1x1 - Hanging-Vines-1");
+            output.add(EnumChatFormatting.GREEN + "Literally no idea, all the rooms should have been found");
+            lastRoomJson = null;
             return output;
         } else if (DungeonRooms.roomsJson.get(MD5) == null) {
+            lastRoomJson = null;
             return output;
         }
 

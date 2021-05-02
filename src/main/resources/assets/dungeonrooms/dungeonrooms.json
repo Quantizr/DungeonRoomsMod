@@ -42,7 +42,7 @@
   ],
   "02a3b3453421672be5d05aed0177680c":[
     {
-      "name":"3-Chests",
+      "name":"Three-Chests",
       "category":"Puzzle",
       "dsg":"/channels/727426780381577291/732032683890311260/734367658476044289",
       "secrets":0
@@ -58,7 +58,7 @@
   ],
   "a2489469af66cd4230c7480b2ce072bb":[
     {
-      "name":"Blaze-Room-1",
+      "name":"Blaze-Room-1-Low",
       "notes": "(Shoot lowest HP to highest)",
       "category":"Puzzle",
       "dsg":"/channels/727426780381577291/732386618056638576/732409365872508938",
@@ -68,7 +68,7 @@
   ],
   "4baefce7f79d7ac14821787032fcfaa1":[
     {
-      "name":"Blaze-Room-1",
+      "name":"Blaze-Room-1-High",
       "notes":"(Shoot highest HP to lowest)",
       "category":"Puzzle",
       "dsg":"/channels/727426780381577291/732386618056638576/732409365872508938",
@@ -279,7 +279,7 @@
       "category":"1x1",
       "dsg":"/channels/727426780381577291/750952925248880640/750955896707874846",
       "sbp":"golden-oasis",
-      "secrets":1
+      "secrets":3
     }
   ],
   "518625e41df39d4cea9db1f00c08baba":[
@@ -354,6 +354,14 @@
       "dsg":"/channels/727426780381577291/750985055026806865/759159016211087401",
       "sbp":"sand-dragon",
       "secrets":1
+    },
+    {
+      "name":"Hanging-Vines-1",
+      "category":"1x1",
+      "dsg":"/channels/727426780381577291/750985016443404339/756992222234280045",
+      "sbp":"hanging-vines",
+      "secrets":1,
+      "floorhash":"e582c14bd7b27c5e814d7438f9721dbd"
     }
   ],
   "e5dda6773216296c3802513ae632f466":[
@@ -385,14 +393,14 @@
   ],
   "fa8d506d2a83538a7c53ff2063e65844":[
     {
-      "name":"Hall",
+      "name":"Hall-0",
       "category":"1x1",
       "dsg":"/channels/727426780381577291/750985072399614012/760732650653614100",
       "secrets":0,
       "floorhash":"e00b8ffdf60f892859647323b7bf7751"
     },
     {
-      "name":"Tomioka",
+      "name":"Tomioka-0",
       "category":"1x1",
       "dsg":"/channels/727426780381577291/733858157008388157/733858193695834133",
       "secrets":0,
@@ -781,13 +789,23 @@
       "secrets":3
     }
   ],
-  "6d788f8bd2fb147f71d1afa6e010a7b8":[
+  "0d25288e91b3380442576b0c0b23fa31":[
     {
       "name":"Redstone-Warrior-3",
       "category":"1x2",
       "dsg":"/channels/727426780381577291/737886448740728965/737887558591053936",
       "sbp":"redstone-warrior",
       "secrets":3
+    }
+  ],
+  "6d788f8bd2fb147f71d1afa6e010a7b8":[
+    {
+      "name":"Redstone-Warrior-3",
+      "category":"1x2",
+      "dsg":"/channels/727426780381577291/737886448740728965/737887558591053936",
+      "sbp":"redstone-warrior",
+      "secrets":3,
+      "comment (not displayed)":"old room md5, may not be in use anymore"
     }
   ],
   "39f77f46031907cf82dda6d3dbbbd2e2":[

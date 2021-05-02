@@ -18,6 +18,10 @@ import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.*;
 
+import java.awt.*;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -178,6 +182,15 @@ public class DungeonRoomCommand extends CommandBase {
                         AutoRoom.chatToggled = !AutoRoom.chatToggled;
                         ConfigHandler.writeBooleanConfig("toggles", "chatToggled", AutoRoom.chatToggled);
                         player.addChatMessage(new ChatComponentText("Display room names in Chat has been set to: " + AutoRoom.chatToggled));
+                        break;
+
+                    case "discord":
+                        try {
+                            player.addChatMessage(new ChatComponentText("Dungeon Rooms: Opening Dungeon Rooms Discord invite in browser..."));
+                            Desktop.getDesktop().browse(new URI("https://discord.gg/7B5RbsArYK"));
+                        } catch (IOException | URISyntaxException e) {
+                            e.printStackTrace();
+                        }
                         break;
 
                     case "json":

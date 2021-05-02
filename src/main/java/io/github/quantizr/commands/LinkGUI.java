@@ -12,7 +12,6 @@ import net.minecraft.util.EnumChatFormatting;
 
 
 public class LinkGUI extends GuiScreen {
-    private boolean addSession = false;
 
     private GuiButton discordClient;
     private GuiButton discordBrowser;
@@ -74,7 +73,7 @@ public class LinkGUI extends GuiScreen {
                 OpenLink.openSBPSecrets();
             } else {
                player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED
-                        + "Dungeon Rooms: You do not have the SBP Secrets Mod installed, get it from https://discord.gg/QXA3y5EbNA"));
+                        + "Dungeon Rooms: You do not have the Skyblock Personalized (SBP) Mod installed, get it from https://discord.gg/2UjaFqfPwJ"));
             }
            player.closeScreen();
         } else if (button == close) {
