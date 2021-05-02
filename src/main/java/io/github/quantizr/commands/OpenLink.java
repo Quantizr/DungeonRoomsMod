@@ -3,6 +3,7 @@ package io.github.quantizr.commands;
 import io.github.quantizr.DungeonRooms;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.event.ClickEvent;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraftforge.client.ClientCommandHandler;
@@ -54,8 +55,11 @@ public class OpenLink {
                 if (DungeonRooms.usingSBPSecrets) {
                     OpenLink.openSBPSecrets();
                 } else {
+                    String sbpURL = "https://discord.gg/2UjaFqfPwJ";
+                    ChatComponentText sbp = new ChatComponentText(EnumChatFormatting.YELLOW + "" + EnumChatFormatting.UNDERLINE + sbpURL);
+                    sbp.setChatStyle(sbp.getChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, sbpURL)));
                     player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED
-                            + "Dungeon Rooms: You do not have the Skyblock Personalized (SBP) Mod installed, get it from https://discord.gg/2UjaFqfPwJ"));
+                            + "Dungeon Rooms: You need the Skyblock Personalized (SBP) Mod for this feature, get it from ").appendSibling(sbp));
                 }
                 break;
         }
