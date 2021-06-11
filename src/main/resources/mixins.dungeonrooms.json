@@ -1,0 +1,9 @@
+{
+  "compatibilityLevel": "JAVA_8",
+  "package": "io.github.quantizr.mixins",
+  "refmap": "mixins.dungeonrooms.refmap.json",
+  "mixins": [
+    "MixinNetworkManager"
+  ],
+  "verbose": true
+}

@@ -7,7 +7,8 @@ Modified by Quantizr (_risk) in Feb. 2021.
 package io.github.quantizr.handlers;
 
 import io.github.quantizr.DungeonRooms;
-import io.github.quantizr.commands.AutoRoom;
+import io.github.quantizr.core.AutoRoom;
+import io.github.quantizr.core.Waypoints;
 import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
 
@@ -171,12 +172,38 @@ public class ConfigHandler {
     public static void reloadConfig() {
         if (!hasKey("toggles", "chatToggled")) writeBooleanConfig("toggles", "chatToggled", false);
         if (!hasKey("toggles", "guiToggled")) writeBooleanConfig("toggles", "guiToggled", true);
+        if (!hasKey("toggles", "coordToggled")) writeBooleanConfig("toggles", "coordToggled", false);
+        if (!hasKey("toggles", "waypointsToggled")) writeBooleanConfig("toggles", "waypointsToggled", true);
+
+        if (!hasKey("waypoint", "showEntrance")) writeBooleanConfig("waypoint", "showEntrance", true);
+        if (!hasKey("waypoint", "showSuperboom")) writeBooleanConfig("waypoint", "showSuperboom", true);
+        if (!hasKey("waypoint", "showSecrets")) writeBooleanConfig("waypoint", "showSecrets", true);
+        if (!hasKey("waypoint", "showFairySouls")) writeBooleanConfig("waypoint", "showFairySouls", true);
+        if (!hasKey("waypoint", "disableWhenAllFound")) writeBooleanConfig("waypoint", "disableWhenAllFound", true);
+
+        if (!hasKey("waypoint", "showWaypointText")) writeBooleanConfig("waypoint", "showWaypointText", true);
+        if (!hasKey("waypoint", "showBoundingBox")) writeBooleanConfig("waypoint", "showBoundingBox", true);
+        if (!hasKey("waypoint", "showBeacon")) writeBooleanConfig("waypoint", "showBeacon", true);
+
         if (!hasKey("gui", "scaleX")) writeIntConfig("gui", "scaleX", 50);
         if (!hasKey("gui", "scaleY")) writeIntConfig("gui", "scaleY", 5);
         if (!hasKey("gui", "hotkeyOpen")) writeStringConfig("gui", "hotkeyOpen", "gui");
 
         AutoRoom.chatToggled = getBoolean("toggles", "chatToggled");
         AutoRoom.guiToggled = getBoolean("toggles", "guiToggled");
+        AutoRoom.coordToggled = getBoolean("toggles", "coordToggled");
+        Waypoints.enabled =  getBoolean("toggles", "waypointsToggled");
+
+        Waypoints.showEntrance = getBoolean("waypoint", "showEntrance");
+        Waypoints.showSuperboom = getBoolean("waypoint", "showSuperboom");
+        Waypoints.showSecrets = getBoolean("waypoint", "showSecrets");
+        Waypoints.showFairySouls = getBoolean("waypoint", "showFairySouls");
+        Waypoints.disableWhenAllFound = getBoolean("waypoint", "disableWhenAllFound");
+
+        Waypoints.showWaypointText = getBoolean("waypoint", "showWaypointText");
+        Waypoints.showBoundingBox = getBoolean("waypoint", "showBoundingBox");
+        Waypoints.showBeacon = getBoolean("waypoint", "showBeacon");
+
         AutoRoom.scaleX = getInt("gui", "scaleX");
         AutoRoom.scaleY = getInt("gui", "scaleY");
         DungeonRooms.hotkeyOpen = getString("gui", "hotkeyOpen");

@@ -6,8 +6,9 @@ DRM is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
 You should have received a copy of the GNU General Public License along with DRM.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-package io.github.quantizr.commands;
+package io.github.quantizr.core;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.github.quantizr.DungeonRooms;
@@ -18,6 +19,7 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.ScaledResolution;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.BlockPos;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
@@ -25,9 +27,7 @@ import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -35,11 +35,13 @@ public class AutoRoom {
     Minecraft mc = Minecraft.getMinecraft();
 
     static int tickAmount = 1;
-    static List<String> autoTextOutput = null;
+    public static List<String> autoTextOutput = null;
     public static boolean chatToggled = false;
     public static boolean guiToggled = true;
+    public static boolean coordToggled = false;
     public static String lastRoomHash = null;
     public static JsonObject lastRoomJson;
+    public static String lastRoomName = null;
     private static boolean newRoom = false;
     public static int worldLoad = 0;
 
@@ -55,14 +57,14 @@ public class AutoRoom {
         EntityPlayerSP player = mc.thePlayer;
 
         tickAmount++;
-        if (worldLoad < 180) { //9 seconds
+        if (worldLoad < 200) { //10 seconds
             worldLoad++;
         }
 
         // Checks every 1.5 seconds
-        if (tickAmount % 30 == 0 && Utils.inDungeons && worldLoad == 180) {
+        if (tickAmount % 30 == 0 && Utils.inDungeons && worldLoad == 200) {
             executor.execute(() -> {
-                if (AutoRoom.chatToggled || AutoRoom.guiToggled){
+                if (AutoRoom.chatToggled || AutoRoom.guiToggled || Waypoints.enabled){
                     List<String> autoText = autoText();
                     if (autoText != null) {
                         autoTextOutput = autoText;
@@ -79,7 +81,11 @@ public class AutoRoom {
     @SubscribeEvent
     public void onWorldChange(WorldEvent.Load event) {
         Utils.inDungeons = false;
+        Utils.originBlock = null;
+        Utils.originCorner = null;
         worldLoad = 0;
+        Waypoints.allSecretsMap.clear();
+
         Random random = new Random();
         List<String> output = new ArrayList<>();
 
@@ -91,11 +97,12 @@ public class AutoRoom {
             }
         }
         if (output.isEmpty()) {
-            output.add("Dungeon Rooms: " + EnumChatFormatting.GREEN+ "Press the hotkey \"" + GameSettings.getKeyDisplayString(DungeonRooms.keyBindings[0].getKeyCode()) +"\" inside a room with secrets");
-            output.add(EnumChatFormatting.GREEN + "to view images of the secret locations.");
-            output.add(EnumChatFormatting.WHITE + "(You can change the keybind in Minecraft controls menu)");
+            output.add("Dungeon Rooms: " + EnumChatFormatting.GREEN+ "Press the hotkey \"" + GameSettings.getKeyDisplayString(DungeonRooms.keyBindings[1].getKeyCode()) +"\" to configure");
+            output.add(EnumChatFormatting.GREEN + "Secret Waypoints settings.");
+            output.add(EnumChatFormatting.WHITE + "(You can change the keybinds in Minecraft controls menu)");
         }
         autoTextOutput = output;
+
     }
 
     @SubscribeEvent
@@ -111,7 +118,7 @@ public class AutoRoom {
         int z = (int) Math.floor(player.posZ);
 
         int top = Utils.dungeonTop(x, y, z);
-        String blockFrequencies = Utils.blockFrequency(x, top, z);
+        String blockFrequencies = Utils.blockFrequency(x, top, z, true);
         if (blockFrequencies == null) return output; //if not in room (under hallway or render distance too low)
         String MD5 = Utils.getMD5(blockFrequencies);
         String floorFrequencies = Utils.floorFrequency(x, top, z);
@@ -136,11 +143,12 @@ public class AutoRoom {
 
         newRoom = true;
         lastRoomHash = MD5;
+        //Setting this to true may prevent waypoint flicker, but may cause waypoints to break if Hypixel bugs out
+        Waypoints.allFound = false;
 
         if (DungeonRooms.roomsJson.get(MD5) == null && Utils.getSize(x,top,z).equals("1x1")) {
-            output.add(EnumChatFormatting.LIGHT_PURPLE + "Dungeon Rooms: If you see this message in game, screenshot this and send, along with");
-            output.add(EnumChatFormatting.LIGHT_PURPLE + "room name, either directly to _risk#2091 or in the #bug-report channel in the Discord");
-            output.add(EnumChatFormatting.LIGHT_PURPLE + "You might get a special role in the Discord and we'll all love you forever");
+            output.add(EnumChatFormatting.LIGHT_PURPLE + "Dungeon Rooms: If you see this message in game (and did not create ghost blocks), send a");
+            output.add(EnumChatFormatting.LIGHT_PURPLE + "screenshot and the room name to #bug-report channel in the Discord");
             output.add(EnumChatFormatting.AQUA + MD5);
             output.add(EnumChatFormatting.AQUA + floorHash);
             output.add("Dungeon Rooms: You are probably in: ");
@@ -152,42 +160,51 @@ public class AutoRoom {
             return output;
         }
 
-
-        int arraySize = DungeonRooms.roomsJson.get(MD5).getAsJsonArray().size();
+        JsonArray MD5Array = DungeonRooms.roomsJson.get(MD5).getAsJsonArray();
+        int arraySize = MD5Array.size();
 
         if (arraySize >= 2) {
             boolean floorHashFound = false;
             List<String> chatMessages = new ArrayList<>();
 
             for(int i = 0; i < arraySize; i++){
-                JsonElement jsonFloorHash = DungeonRooms.roomsJson.get(MD5).getAsJsonArray().get(i).getAsJsonObject().get("floorhash");
+                JsonObject roomObject = MD5Array.get(i).getAsJsonObject();
+                JsonElement jsonFloorHash = roomObject.get("floorhash");
                 if (floorHash != null && jsonFloorHash != null){
                     if (floorHash.equals(jsonFloorHash.getAsString())){
-                        String name = DungeonRooms.roomsJson.get(MD5).getAsJsonArray().get(i).getAsJsonObject().get("name").getAsString();
-                        String category = DungeonRooms.roomsJson.get(MD5).getAsJsonArray().get(i).getAsJsonObject().get("category").getAsString();
+                        String name = roomObject.get("name").getAsString();
+                        String category = roomObject.get("category").getAsString();
+                        int secrets = roomObject.get("secrets").getAsInt();
                         String fairysoul = "";
-                        if (DungeonRooms.roomsJson.get(MD5).getAsJsonArray().get(i).getAsJsonObject().get("fairysoul") != null) {
+                        if (roomObject.get("fairysoul") != null) {
                             fairysoul = EnumChatFormatting.WHITE + " - " + EnumChatFormatting.LIGHT_PURPLE + "Fairy Soul";
                         }
                         output.add(text + category + " - " + name + fairysoul);
-                        JsonElement notes = DungeonRooms.roomsJson.get(MD5).getAsJsonArray().get(i).getAsJsonObject().get("notes");
+                        JsonElement notes = roomObject.get("notes");
                         if (notes != null) {
                             output.add(EnumChatFormatting.GREEN + notes.getAsString());
                         }
-                        lastRoomJson = DungeonRooms.roomsJson.get(MD5).getAsJsonArray().get(i).getAsJsonObject();
+                        if (DungeonRooms.waypointsJson.get(name) == null && secrets != 0 && Waypoints.enabled) {
+                            output.add(EnumChatFormatting.RED + "No waypoints available");
+                        }
+                        lastRoomJson = roomObject;
                         floorHashFound = true;
                     }
                 } else {
-                    String name = DungeonRooms.roomsJson.get(MD5).getAsJsonArray().get(i).getAsJsonObject().get("name").getAsString();
-                    String category = DungeonRooms.roomsJson.get(MD5).getAsJsonArray().get(i).getAsJsonObject().get("category").getAsString();
+                    String name = roomObject.get("name").getAsString();
+                    String category = roomObject.get("category").getAsString();
+                    int secrets = roomObject.get("secrets").getAsInt();
                     String fairysoul = "";
-                    if (DungeonRooms.roomsJson.get(MD5).getAsJsonArray().get(i).getAsJsonObject().get("fairysoul") != null) {
+                    if (roomObject.get("fairysoul") != null) {
                         fairysoul = EnumChatFormatting.WHITE + " - " + EnumChatFormatting.LIGHT_PURPLE + "Fairy Soul";
                     }
                     chatMessages.add(EnumChatFormatting.GREEN + category + " - " + name + fairysoul);
-                    JsonElement notes = DungeonRooms.roomsJson.get(MD5).getAsJsonArray().get(i).getAsJsonObject().get("notes");
+                    JsonElement notes = roomObject.get("notes");
                     if (notes != null) {
                         chatMessages.add(EnumChatFormatting.GREEN + notes.getAsString());
+                    }
+                    if (DungeonRooms.waypointsJson.get(name) == null && secrets != 0 && Waypoints.enabled) {
+                        output.add(EnumChatFormatting.RED + "No waypoints available");
                     }
                 }
             }
@@ -195,26 +212,41 @@ public class AutoRoom {
                 output.add("Dungeon Rooms: You are probably in one of the following: ");
                 output.add(EnumChatFormatting.AQUA + "(check # of secrets to narrow down rooms)");
                 output.addAll(chatMessages);
-                output.add(EnumChatFormatting.LIGHT_PURPLE + "Dungeon Rooms: If you see this message in game, screenshot this and send, along with");
-                output.add(EnumChatFormatting.LIGHT_PURPLE + "the room name, to _risk#2091 or in the #bug-report channel in the Discord");
+                output.add(EnumChatFormatting.LIGHT_PURPLE + "Dungeon Rooms: If you see this message in game (and did not create ghost blocks), send a");
+                output.add(EnumChatFormatting.LIGHT_PURPLE + "screenshot and the room name to #bug-report channel in the Discord");
                 output.add(EnumChatFormatting.AQUA + MD5);
                 output.add(EnumChatFormatting.AQUA + floorHash);
                 lastRoomJson = null;
             }
         } else {
-            String name = DungeonRooms.roomsJson.get(MD5).getAsJsonArray().get(0).getAsJsonObject().get("name").getAsString();
-            String category = DungeonRooms.roomsJson.get(MD5).getAsJsonArray().get(0).getAsJsonObject().get("category").getAsString();
+            JsonObject roomObject = MD5Array.get(0).getAsJsonObject();
+            String name = roomObject.get("name").getAsString();
+            String category = roomObject.get("category").getAsString();
+            int secrets = roomObject.get("secrets").getAsInt();
             String fairysoul = "";
-            if (DungeonRooms.roomsJson.get(MD5).getAsJsonArray().get(0).getAsJsonObject().get("fairysoul") != null) {
+            if (roomObject.get("fairysoul") != null) {
                 fairysoul = EnumChatFormatting.WHITE + " - " + EnumChatFormatting.LIGHT_PURPLE + "Fairy Soul";
             }
             output.add(text + category + " - " + name + fairysoul);
-            JsonElement notes = DungeonRooms.roomsJson.get(MD5).getAsJsonArray().get(0).getAsJsonObject().get("notes");
+            JsonElement notes = roomObject.get("notes");
             if (notes != null) {
                 output.add(EnumChatFormatting.GREEN + notes.getAsString());
             }
-            lastRoomJson = DungeonRooms.roomsJson.get(MD5).getAsJsonArray().get(0).getAsJsonObject();
+            if (DungeonRooms.waypointsJson.get(name) == null && secrets != 0 && Waypoints.enabled) {
+                output.add(EnumChatFormatting.RED + "No waypoints available");
+            }
+            lastRoomJson = roomObject;
         }
+
+        //Store/Retrieve which waypoints to enable
+        if (lastRoomJson != null && lastRoomJson.get("name") != null) {
+                lastRoomName = lastRoomJson.get("name").getAsString();
+                Waypoints.allSecretsMap.putIfAbsent(lastRoomName, new ArrayList<>(Collections.nCopies(9, true)));
+                Waypoints.secretsList = Waypoints.allSecretsMap.get(lastRoomName);
+        } else {
+            lastRoomName = null;
+        }
+
         return output;
     }
 
@@ -239,6 +271,27 @@ public class AutoRoom {
             TextRenderer.drawText(mc, message, ((scaledResolution.getScaledWidth() * scaleX) / 100) - (roomStringWidth / 2),
                     ((scaledResolution.getScaledHeight() * scaleY) / 100) + y, 1D, true);
             y += mc.fontRendererObj.FONT_HEIGHT;
+        }
+    }
+
+    public static void renderCoord() {
+        Minecraft mc = Minecraft.getMinecraft();
+        EntityPlayerSP player = mc.thePlayer;
+        ScaledResolution scaledResolution = new ScaledResolution(mc);
+
+        BlockPos relativeCoord = Utils.actualToRelative(new BlockPos(player.posX,player.posY,player.posZ));
+        if (relativeCoord == null) return;
+
+        List<String> coordDisplay = new ArrayList<>();
+        coordDisplay.add("Direction: " + Utils.originCorner);
+        coordDisplay.add("Origin: " + Utils.originBlock.getX() + "," + Utils.originBlock.getY() + "," + Utils.originBlock.getZ());
+        coordDisplay.add("Relative Pos.: "+ relativeCoord.getX() + "," + relativeCoord.getY() + "," + relativeCoord.getZ());
+        int yPos = 0;
+        for (String message:coordDisplay) {
+            int roomStringWidth = mc.fontRendererObj.getStringWidth(message);
+            TextRenderer.drawText(mc, message, ((scaledResolution.getScaledWidth() * 95) / 100) - (roomStringWidth),
+                    ((scaledResolution.getScaledHeight() * 5) / 100) + yPos, 1D, true);
+            yPos += mc.fontRendererObj.FONT_HEIGHT;
         }
     }
 }

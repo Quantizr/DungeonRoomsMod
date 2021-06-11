@@ -1,6 +1,16 @@
-package io.github.quantizr.commands;
+/*
+Copyright 2021 Quantizr(_risk)
+This file is used as part of Dungeon Rooms Mod (DRM). (Github: <https://github.com/Quantizr/DungeonRoomsMod>)
+DRM is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+DRM is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.
+You should have received a copy of the GNU General Public License along with DRM.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
+package io.github.quantizr.gui;
 
 import io.github.quantizr.DungeonRooms;
+import io.github.quantizr.core.AutoRoom;
+import io.github.quantizr.handlers.OpenLink;
 import io.github.quantizr.handlers.TextRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiButton;
@@ -48,7 +58,12 @@ public class LinkGUI extends GuiScreen {
         this.drawDefaultBackground();
         Minecraft mc = Minecraft.getMinecraft();
 
-        String displayText = "Where would you like to view secrets for: " + EnumChatFormatting.GREEN + AutoRoom.lastRoomJson.get("name").getAsString();
+        String displayText;
+        if (AutoRoom.lastRoomName == null) {
+            displayText = "Where would you like to view secrets for: " + EnumChatFormatting.RED + "null";
+        } else {
+            displayText = "Where would you like to view secrets for: " + EnumChatFormatting.GREEN + AutoRoom.lastRoomName;
+        }
         int displayWidth = mc.fontRendererObj.getStringWidth(displayText);
         TextRenderer.drawText(mc, displayText, width / 2 - displayWidth / 2, height / 6 + 56, 1D, false);
 
@@ -65,10 +80,10 @@ public class LinkGUI extends GuiScreen {
         EntityPlayer player = Minecraft.getMinecraft().thePlayer;
         if (button == discordClient) {
             OpenLink.openDiscord("client");
-           player.closeScreen();
+            player.closeScreen();
         } else if (button == discordBrowser) {
             OpenLink.openDiscord("browser");
-           player.closeScreen();
+            player.closeScreen();
         } else if (button == SBPSecrets) {
             if (DungeonRooms.usingSBPSecrets) {
                 OpenLink.openSBPSecrets();

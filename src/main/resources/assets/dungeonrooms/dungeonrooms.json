@@ -1,4 +1,6 @@
 {
+  "copyright":"Copyright 2021 Quantizr(_risk)",
+  "license":"GPL-3.0 License <https://www.gnu.org/licenses/>",
   "74e45b213b3372fe91b0dd6a7474a588":[
     {
       "name":"Entrance Room",
@@ -353,7 +355,8 @@
       "category":"1x1",
       "dsg":"/channels/727426780381577291/750985055026806865/759159016211087401",
       "sbp":"sand-dragon",
-      "secrets":1
+      "secrets":1,
+      "floorhash":"2df3ba0c81fa5c9f98cd3c3af74399ae"
     },
     {
       "name":"Hanging-Vines-1",

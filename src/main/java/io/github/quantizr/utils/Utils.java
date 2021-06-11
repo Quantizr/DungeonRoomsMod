@@ -8,10 +8,12 @@ You should have received a copy of the GNU General Public License along with DRM
 
 package io.github.quantizr.utils;
 
+import com.google.gson.JsonElement;
+import io.github.quantizr.DungeonRooms;
 import io.github.quantizr.handlers.ScoreboardHandler;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.EntityPlayerSP;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Blocks;
 import net.minecraft.scoreboard.ScoreObjective;
 import net.minecraft.util.BlockPos;
@@ -29,6 +31,10 @@ public class Utils {
     */
     public static boolean inSkyblock = false;
     public static boolean inDungeons = false;
+    public static boolean dungeonOverride = false;
+
+    public static BlockPos originBlock = null;
+    public static String originCorner = null;
 
     public static void checkForSkyblock() {
         Minecraft mc = Minecraft.getMinecraft();
@@ -46,6 +52,10 @@ public class Utils {
     }
 
     public static void checkForDungeons() {
+        if (dungeonOverride) {
+            inDungeons = true;
+            return;
+        }
         if (inSkyblock) {
             List<String> scoreboard = ScoreboardHandler.getSidebarLines();
             for (String s : scoreboard) {
@@ -62,32 +72,11 @@ public class Utils {
     public static int dungeonTop(double x, double y, double z) {
         Minecraft mc = Minecraft.getMinecraft();
         World world = mc.theWorld;
-        EntityPlayerSP player = mc.thePlayer;
 
-        for (int i = 255; i >= y+2; i--) { //start at height limit, go down to 2 blocks above player
+        for (int i = 255; i >= 78; i--) { //start at height limit, go down to 10 blocks above floor
             Block top = world.getBlockState(new BlockPos(x,i,z)).getBlock();
             if (top != Blocks.air){
-                int checkedNorth = 0;
-                int checkedSouth = 0;
-                int checkedEast = 0;
-                int checkedWest = 0;
-
-                for (int j = 1; j <= 8; j++){
-                    Block checkNorth = world.getBlockState(new BlockPos(x,i,z-j)).getBlock();
-                    if (checkNorth != Blocks.air) checkedNorth++;
-                    Block checkSouth = world.getBlockState(new BlockPos(x,i,z+j)).getBlock();
-                    if (checkSouth != Blocks.air) checkedSouth++;
-                    Block checkEast = world.getBlockState(new BlockPos(x+j,i,z)).getBlock();
-                    if (checkEast != Blocks.air) checkedEast++;
-                    Block checkWest = world.getBlockState(new BlockPos(x-j,i,z)).getBlock();
-                    if (checkWest != Blocks.air) checkedWest++;
-                }
-
-                if (checkedNorth==8 || checkedSouth == 8 || checkedEast == 8 || checkedWest == 8){
-                    return i;
-                } else {
-                    System.out.println("Player does not appear to be in a room.");
-                }
+                if (checkPlatform(x,i,z)) return i;
             }
         }
 
@@ -95,38 +84,78 @@ public class Utils {
         return -1;
     }
 
+    public static int dungeonBottom(double x, double y, double z) {
+        Minecraft mc = Minecraft.getMinecraft();
+        World world = mc.theWorld;
+
+        for (int i = 0; i <= 68; i++) { //start at height limit, go down to floor level
+            Block bottom = world.getBlockState(new BlockPos(x,i,z)).getBlock();
+            if (bottom == Blocks.bedrock || bottom == Blocks.stone){
+                return i;
+            }
+        }
+
+        //if top not found
+        return -1;
+    }
+
+    public static int dungeonHeight(double x, double z) {
+        return dungeonTop(x,68,z) - dungeonBottom(x,68,z);
+    }
+
+    public static boolean checkPlatform(double x, double y, double z) {
+        Minecraft mc = Minecraft.getMinecraft();
+        World world = mc.theWorld;
+        int checkedNorth = 0;
+        int checkedSouth = 0;
+        int checkedEast = 0;
+        int checkedWest = 0;
+
+        for (int j = 0; j < 10; j++){
+            Block checkNorth = world.getBlockState(new BlockPos(x,y,z-j)).getBlock();
+            if (checkNorth != Blocks.air) checkedNorth++;
+            Block checkSouth = world.getBlockState(new BlockPos(x,y,z+j)).getBlock();
+            if (checkSouth != Blocks.air) checkedSouth++;
+            Block checkEast = world.getBlockState(new BlockPos(x+j,y,z)).getBlock();
+            if (checkEast != Blocks.air) checkedEast++;
+            Block checkWest = world.getBlockState(new BlockPos(x-j,y,z)).getBlock();
+            if (checkWest != Blocks.air) checkedWest++;
+        }
+
+        return (checkedNorth == 10 || checkedSouth == 10 || checkedEast == 10 || checkedWest == 10);
+    }
+
     public static int endOfRoom(int x, int y, int z, String direction) {
         Minecraft mc = Minecraft.getMinecraft();
         World world = mc.theWorld;
-        EntityPlayerSP player = mc.thePlayer;
 
         switch (direction) {
             case "n":
                 for (int i = 1; i <= 200; i++){
                     Block northEnd = world.getBlockState(new BlockPos(x,y,z-i)).getBlock();
-                    Block northEndUpOne = world.getBlockState(new BlockPos(x,y+1,z-i)).getBlock(); //in case of rooms without air gap between *cough* *cough* F3 Entrance
-                    if (northEnd == Blocks.air || (northEndUpOne != Blocks.air && northEndUpOne != Blocks.wool && northEndUpOne != Blocks.gold_block && northEndUpOne != Blocks.redstone_block && northEndUpOne != Blocks.standing_sign)) return (z-i+1);
+                    if (northEnd == Blocks.air || checkPlatform(x,y+1,z-i)
+                            || Math.abs(dungeonHeight(x,z-i) - dungeonHeight(x,z-i+1)) > 3) return (z-i+1);
                 }
                 break;
             case "s":
                 for (int i = 1; i <= 200; i++){
                     Block southEnd = world.getBlockState(new BlockPos(x,y,z+i)).getBlock();
-                    Block southEndUpOne = world.getBlockState(new BlockPos(x,y+1,z+i)).getBlock();
-                    if (southEnd == Blocks.air || (southEndUpOne != Blocks.air && southEndUpOne != Blocks.wool && southEndUpOne != Blocks.gold_block && southEndUpOne != Blocks.redstone_block && southEndUpOne != Blocks.standing_sign)) return (z+i-1);
+                    if (southEnd == Blocks.air || checkPlatform(x,y+1,z+i)
+                            || Math.abs(dungeonHeight(x,z+i) - dungeonHeight(x,z+i-1)) > 3) return (z+i-1);
                 }
                 break;
             case "e":
                 for (int i = 1; i <= 200; i++){
                     Block eastEnd = world.getBlockState(new BlockPos(x+i,y,z)).getBlock();
-                    Block eastEndUpOne = world.getBlockState(new BlockPos(x+i,y+1,z)).getBlock();
-                    if (eastEnd == Blocks.air || (eastEndUpOne != Blocks.air && eastEndUpOne != Blocks.wool && eastEndUpOne != Blocks.gold_block && eastEndUpOne != Blocks.redstone_block && eastEndUpOne != Blocks.standing_sign)) return (x+i-1);
+                    if (eastEnd == Blocks.air || checkPlatform(x+i,y+1,z)
+                            || Math.abs(dungeonHeight(x+i,z) - dungeonHeight(x+i-1,z)) > 3) return (x+i-1);
                 }
                 break;
             case "w":
                 for (int i = 1; i <= 200; i++){
                     Block westEnd = world.getBlockState(new BlockPos(x-i,y,z)).getBlock();
-                    Block westEndUpOne = world.getBlockState(new BlockPos(x-i,y+1,z)).getBlock();
-                    if (westEnd == Blocks.air || (westEndUpOne != Blocks.air && westEndUpOne != Blocks.wool && westEndUpOne != Blocks.gold_block && westEndUpOne != Blocks.redstone_block && westEndUpOne != Blocks.standing_sign)) return (x-i+1);
+                    if (westEnd == Blocks.air || checkPlatform(x-i,y+1,z)
+                            || Math.abs(dungeonHeight(x-i,z) - dungeonHeight(x-i+1,z)) > 3) return (x-i+1);
                 }
                 break;
         }
@@ -180,7 +209,7 @@ public class Utils {
     }
 
 
-    public static String blockFrequency(int x, int y, int z){
+    public static String blockFrequency(int x, int y, int z, boolean isPlayerPos){
         if (y == -1) return null;
         Minecraft mc = Minecraft.getMinecraft();
         World world = mc.theWorld;
@@ -201,6 +230,7 @@ public class Utils {
 
                 Iterable<BlockPos> blocks = BlockPos.getAllInBox(northWestCorner, southEastCorner);
                 for (BlockPos blockPos : blocks) {
+                    if (isPlayerPos) checkCorner(blockPos);
                     blockList.add(world.getBlockState(blockPos).toString());
                 }
 
@@ -211,14 +241,16 @@ public class Utils {
                     int northEndZ = endOfRoom(eastEndX, y, z,"n");
                     for (int i = 0; i < 200; i++) {
                         Block nextColumn = world.getBlockState(new BlockPos(eastEndX,y,northEndZ+i)).getBlock();
-                        Block nextColumnUpOne = world.getBlockState(new BlockPos(eastEndX,y+1,northEndZ+i)).getBlock();
-                        if (nextColumn == Blocks.air || (nextColumnUpOne != Blocks.air && nextColumnUpOne != Blocks.wool && nextColumnUpOne != Blocks.gold_block  && nextColumnUpOne != Blocks.redstone_block && nextColumnUpOne != Blocks.standing_sign)) break;
+                        if (nextColumn == Blocks.air || checkPlatform(eastEndX,y+1,northEndZ+i)
+                                || (i>0 && Math.abs(dungeonHeight(eastEndX, northEndZ+i) - dungeonHeight(eastEndX, northEndZ+i-1)) > 3)) break;
 
                         for (int j = 0; j < 200; j++) {
-                            Block nextBlock = world.getBlockState(new BlockPos(eastEndX-j,y,northEndZ+i)).getBlock();
-                            Block nextBlockUpOne = world.getBlockState(new BlockPos(eastEndX-j,y+1,northEndZ+i)).getBlock();
-                            if (nextBlock == Blocks.air || (nextBlockUpOne != Blocks.air && nextBlockUpOne != Blocks.wool && nextBlockUpOne != Blocks.gold_block  && nextBlockUpOne != Blocks.redstone_block && nextBlockUpOne != Blocks.standing_sign)) break;
+                            BlockPos nextBlockPos = new BlockPos(eastEndX-j,y,northEndZ+i);
+                            Block nextBlock = world.getBlockState(nextBlockPos).getBlock();
+                            if (nextBlock == Blocks.air || checkPlatform(eastEndX-j,y+1,northEndZ+i)
+                                    || (j>0 && Math.abs(dungeonHeight(eastEndX-j, northEndZ+i) - dungeonHeight(eastEndX-j+1, northEndZ+i)) > 3)) break;
 
+                            if (isPlayerPos) checkCorner(nextBlockPos);
                             blockList.add(nextBlock.toString());
                         }
                     }
@@ -226,15 +258,17 @@ public class Utils {
                     int westEndX = endOfRoom(x, y, z, "w");
                     int northEndZ = endOfRoom(westEndX, y, z, "n");
                     for (int i = 0; i < 200; i++) {
-                        Block nextColumn = world.getBlockState(new BlockPos(westEndX, y, northEndZ + i)).getBlock();
-                        Block nextColumnUpOne = world.getBlockState(new BlockPos(westEndX, y + 1, northEndZ + i)).getBlock();
-                        if (nextColumn == Blocks.air || (nextColumnUpOne != Blocks.air && nextColumnUpOne != Blocks.wool && nextColumnUpOne != Blocks.gold_block  && nextColumnUpOne != Blocks.redstone_block && nextColumnUpOne != Blocks.standing_sign)) break;
+                        Block nextColumn = world.getBlockState(new BlockPos(westEndX,y,northEndZ+i)).getBlock();
+                        if (nextColumn == Blocks.air || checkPlatform(westEndX,y+1,northEndZ+i)
+                                || (i>0 && Math.abs(dungeonHeight(westEndX, northEndZ+i) - dungeonHeight(westEndX, northEndZ+i-1)) > 3)) break;
 
                         for (int j = 0; j < 200; j++) {
-                            Block nextBlock = world.getBlockState(new BlockPos(westEndX + j, y, northEndZ + i)).getBlock();
-                            Block nextBlockUpOne = world.getBlockState(new BlockPos(westEndX + j, y + 1, northEndZ + i)).getBlock();
-                            if (nextBlock == Blocks.air || (nextBlockUpOne != Blocks.air && nextBlockUpOne != Blocks.wool && nextBlockUpOne != Blocks.gold_block && nextBlockUpOne != Blocks.redstone_block && nextBlockUpOne != Blocks.standing_sign)) break;
+                            BlockPos nextBlockPos = new BlockPos(westEndX+j,y,northEndZ+i);
+                            Block nextBlock = world.getBlockState(nextBlockPos).getBlock();
+                            if (nextBlock == Blocks.air || checkPlatform(westEndX+j,y+1,northEndZ+i)
+                                    || (j>0 && Math.abs(dungeonHeight(westEndX+j, northEndZ+i) - dungeonHeight(westEndX+j-1, northEndZ+i)) > 3)) break;
 
+                            if (isPlayerPos) checkCorner(nextBlockPos);
                             blockList.add(nextBlock.toString());
                         }
                     }
@@ -247,14 +281,16 @@ public class Utils {
                 int westEndX = endOfRoom(x,y,northEndZ,"w");
                 for (int i = 0; i < 200; i++) {
                     Block nextColumn = world.getBlockState(new BlockPos(westEndX+i,y,northEndZ)).getBlock();
-                    Block nextColumnUpOne = world.getBlockState(new BlockPos(westEndX+i,y+1,northEndZ)).getBlock();
-                    if (nextColumn == Blocks.air || (nextColumnUpOne != Blocks.air && nextColumnUpOne != Blocks.wool && nextColumnUpOne != Blocks.gold_block  && nextColumnUpOne != Blocks.redstone_block && nextColumnUpOne != Blocks.standing_sign)) break;
+                    if (nextColumn == Blocks.air || checkPlatform(westEndX+i,y+1,northEndZ)
+                            || (i>0 && Math.abs(dungeonHeight(westEndX+i, northEndZ) - dungeonHeight(westEndX+i-1, northEndZ)) > 3)) break;
 
                     for (int j = 0; j < 200; j++) {
-                        Block nextBlock = world.getBlockState(new BlockPos(westEndX+i,y,northEndZ+j)).getBlock();
-                        Block nextBlockUpOne = world.getBlockState(new BlockPos(westEndX+i,y+1,northEndZ+j)).getBlock();
-                        if (nextBlock == Blocks.air || (nextBlockUpOne != Blocks.air && nextBlockUpOne != Blocks.wool && nextBlockUpOne != Blocks.gold_block && nextBlockUpOne != Blocks.redstone_block && nextBlockUpOne != Blocks.standing_sign)) break;
+                        BlockPos nextBlockPos = new BlockPos(westEndX+i,y,northEndZ+j);
+                        Block nextBlock = world.getBlockState(nextBlockPos).getBlock();
+                        if (nextBlock == Blocks.air || checkPlatform(westEndX+i,y+1,northEndZ+j)
+                                || (j>0 && Math.abs(dungeonHeight(westEndX+i, northEndZ+j) - dungeonHeight(westEndX+i, northEndZ+j-1)) > 3)) break;
 
+                        if (isPlayerPos) checkCorner(nextBlockPos);
                         blockList.add(nextBlock.toString());
                     }
                 }
@@ -263,14 +299,16 @@ public class Utils {
                 int westEndX = endOfRoom(x,y,southEndZ,"w");
                 for (int i = 0; i < 200; i++) {
                     Block nextColumn = world.getBlockState(new BlockPos(westEndX+i,y,southEndZ)).getBlock();
-                    Block nextColumnUpOne = world.getBlockState(new BlockPos(westEndX+i,y+1,southEndZ)).getBlock();
-                    if (nextColumn == Blocks.air || (nextColumnUpOne != Blocks.air && nextColumnUpOne != Blocks.wool && nextColumnUpOne != Blocks.gold_block  && nextColumnUpOne != Blocks.redstone_block && nextColumnUpOne != Blocks.standing_sign)) break;
+                    if (nextColumn == Blocks.air || checkPlatform(westEndX+i,y+1,southEndZ)
+                            || (i>0 && Math.abs(dungeonHeight(westEndX+i, southEndZ) - dungeonHeight(westEndX+i-1, southEndZ)) > 3)) break;
 
                     for (int j = 0; j < 200; j++) {
-                        Block nextBlock = world.getBlockState(new BlockPos(westEndX+i,y,southEndZ-j)).getBlock();
-                        Block nextBlockUpOne = world.getBlockState(new BlockPos(westEndX+i,y+1,southEndZ-j)).getBlock();
-                        if (nextBlock == Blocks.air || (nextBlockUpOne != Blocks.air && nextBlockUpOne != Blocks.wool && nextBlockUpOne != Blocks.gold_block && nextBlockUpOne != Blocks.redstone_block && nextBlockUpOne != Blocks.standing_sign)) break;
+                        BlockPos nextBlockPos = new BlockPos(westEndX+i,y,southEndZ-j);
+                        Block nextBlock = world.getBlockState(nextBlockPos).getBlock();
+                        if (nextBlock == Blocks.air || checkPlatform(westEndX+i,y+1,southEndZ-j)
+                                || (j>0 && Math.abs(dungeonHeight(westEndX+i, southEndZ-j) - dungeonHeight(westEndX+i, southEndZ-j+1)) > 3)) break;
 
+                        if (isPlayerPos) checkCorner(nextBlockPos);
                         blockList.add(nextBlock.toString());
                     }
                 }
@@ -284,6 +322,30 @@ public class Utils {
         }
         Collections.sort(frequencies);
         return String.join(",", frequencies);
+    }
+
+    public static void checkCorner(BlockPos blockPos) {
+        Minecraft mc = Minecraft.getMinecraft();
+        World world = mc.theWorld;
+        if (world.getBlockState(blockPos).getBlock() == Blocks.stained_hardened_clay) {
+            Block northBlock = world.getBlockState(new BlockPos(blockPos.getX(), blockPos.getY(), blockPos.getZ()-1)).getBlock();
+            Block southBlock = world.getBlockState(new BlockPos(blockPos.getX(), blockPos.getY(), blockPos.getZ()+1)).getBlock();
+            Block eastBlock = world.getBlockState(new BlockPos(blockPos.getX()+1, blockPos.getY(), blockPos.getZ())).getBlock();
+            Block westBlock = world.getBlockState(new BlockPos(blockPos.getX()-1, blockPos.getY(), blockPos.getZ())).getBlock();
+            if (northBlock == Blocks.air && southBlock != Blocks.air && eastBlock != Blocks.air && westBlock == Blocks.air) {
+                originCorner = "northwest";
+                originBlock = blockPos;
+            } else if (northBlock == Blocks.air && southBlock != Blocks.air && eastBlock == Blocks.air && westBlock != Blocks.air) {
+                originCorner = "northeast";
+                originBlock = blockPos;
+            } else if (northBlock != Blocks.air && southBlock == Blocks.air && eastBlock == Blocks.air && westBlock != Blocks.air) {
+                originCorner = "southeast";
+                originBlock = blockPos;
+            } else if (northBlock != Blocks.air && southBlock == Blocks.air && eastBlock != Blocks.air && westBlock == Blocks.air) {
+                originCorner = "southwest";
+                originBlock = blockPos;
+            }
+        }
     }
 
     public static String floorFrequency(int x, int y, int z) {
@@ -340,4 +402,110 @@ public class Utils {
             throw new RuntimeException(e);
         }
     }
+
+    public static BlockPos actualToRelative(BlockPos actual) {
+        if (Utils.originBlock == null || Utils.originCorner == null) return null;
+        double x = 0;
+        double z = 0;
+        switch (Utils.originCorner) {
+            case "northwest":
+                x = actual.getX() - Utils.originBlock.getX();
+                z = actual.getZ() - Utils.originBlock.getZ();
+                break;
+            case "northeast":
+                x = actual.getZ() - Utils.originBlock.getZ();
+                z = -(actual.getX() - Utils.originBlock.getX());
+                break;
+            case "southeast":
+                x = -(actual.getX() - Utils.originBlock.getX());
+                z = -(actual.getZ() - Utils.originBlock.getZ());
+                break;
+            case "southwest":
+                x = -(actual.getZ() - Utils.originBlock.getZ());
+                z = actual.getX() - Utils.originBlock.getX();
+                break;
+        }
+        return new BlockPos(x, actual.getY(), z);
+    }
+
+    public static BlockPos relativeToActual(BlockPos relative) {
+        if (Utils.originBlock == null || Utils.originCorner == null) return null;
+        double x = 0;
+        double z = 0;
+        switch (Utils.originCorner) {
+            case "northwest":
+                x = relative.getX() + Utils.originBlock.getX();
+                z = relative.getZ() + Utils.originBlock.getZ();
+                break;
+            case "northeast":
+                x = -(relative.getZ() - Utils.originBlock.getX());
+                z = relative.getX() + Utils.originBlock.getZ();
+                break;
+            case "southeast":
+                x = -(relative.getX() - Utils.originBlock.getX());
+                z = -(relative.getZ() - Utils.originBlock.getZ());
+                break;
+            case "southwest":
+                x = relative.getZ() + Utils.originBlock.getX();
+                z = -(relative.getX() - Utils.originBlock.getZ());
+                break;
+        }
+        return new BlockPos(x, relative.getY(), z);
+    }
+
+    public static List<String> roomList() {
+        EntityPlayer player = Minecraft.getMinecraft().thePlayer;
+        List<String> nameList = new ArrayList<>();
+        if (!inDungeons) return nameList;
+        for (int j = -8; j <= 8; j++) {
+            for (int k = -8; k <= 8; k++) {
+                int scanX = (int)player.posX + (32*j);
+                int scanZ = (int)player.posZ + (32*k);
+                int scanTop = Utils.dungeonTop(scanX,68,scanZ);
+                String scanBlockFrequencies = Utils.blockFrequency(scanX,scanTop,scanZ,false);
+                if (scanBlockFrequencies == null) continue;
+                String scanMD5 = Utils.getMD5(scanBlockFrequencies);
+                String scanFloorFrequencies = Utils.floorFrequency(scanX,scanTop,scanZ);
+                if (scanFloorFrequencies == null) continue;
+                String scanFloorHash = Utils.getMD5(scanFloorFrequencies);
+
+                if (DungeonRooms.roomsJson.get(scanMD5) != null) {
+                    if (scanMD5.equals("16370f79b2cad049096f881d5294aee6") && !scanFloorHash.equals("94fb12c91c4b46bd0c254edadaa49a3d")) {
+                        scanFloorHash = "e617eff1d7b77faf0f8dd53ec93a220f"; //exception for box room because floorhash changes when you walk on it
+                    }
+
+                    int arraySize = DungeonRooms.roomsJson.get(scanMD5).getAsJsonArray().size();
+                    if (arraySize >= 2) {
+                        boolean floorHashFound = false;
+                        List<String> chatMessages = new ArrayList<>();
+
+                        for(int i = 0; i < arraySize; i++){
+                            JsonElement jsonFloorHash = DungeonRooms.roomsJson.get(scanMD5).getAsJsonArray().get(i).getAsJsonObject().get("floorhash");
+                            if (scanFloorHash != null && jsonFloorHash != null){
+                                if (scanFloorHash.equals(jsonFloorHash.getAsString())){
+                                    String name = DungeonRooms.roomsJson.get(scanMD5).getAsJsonArray().get(i).getAsJsonObject().get("name").getAsString();
+                                    nameList.add(name);
+                                    floorHashFound = true;
+                                }
+                            } else {
+                                String name = DungeonRooms.roomsJson.get(scanMD5).getAsJsonArray().get(i).getAsJsonObject().get("name").getAsString();
+                                chatMessages.add(name);
+                            }
+                        }
+                        if (!floorHashFound) {
+                            nameList.addAll(chatMessages);
+                        }
+                    } else {
+                        String name = DungeonRooms.roomsJson.get(scanMD5).getAsJsonArray().get(0).getAsJsonObject().get("name").getAsString();
+                        nameList.add(name);
+                    }
+                }
+            }
+        }
+        Set<String> nameListSet = new HashSet<>(nameList);
+        nameList.clear();
+        nameList.addAll(nameListSet);
+        return nameList;
+    }
+
 }

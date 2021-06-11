@@ -10,20 +10,26 @@ package io.github.quantizr.commands;
 
 import com.google.gson.JsonElement;
 import io.github.quantizr.DungeonRooms;
+import io.github.quantizr.core.AutoRoom;
+import io.github.quantizr.core.Waypoints;
 import io.github.quantizr.handlers.ConfigHandler;
+import io.github.quantizr.handlers.OpenLink;
 import io.github.quantizr.utils.Utils;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.settings.GameSettings;
 import net.minecraft.command.CommandBase;
-import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.util.*;
+import net.minecraft.world.World;
 
 import java.awt.*;
+import java.awt.datatransfer.StringSelection;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
 import java.util.List;
 
 public class DungeonRoomCommand extends CommandBase {
@@ -58,7 +64,7 @@ public class DungeonRoomCommand extends CommandBase {
     }
 
     @Override
-    public void processCommand(ICommandSender arg0, String[] arg1) throws CommandException {
+    public void processCommand(ICommandSender arg0, String[] arg1) {
         new Thread(() -> {
             EntityPlayer player = (EntityPlayer) arg0;
 
@@ -69,11 +75,11 @@ public class DungeonRoomCommand extends CommandBase {
             if (arg1.length < 1) {
                 if (!Utils.inDungeons) {
                     player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED
-                            + "Dungeon Rooms: Use this command in dungeons"));
+                            + "Dungeon Rooms: Use this command in dungeons or run \"/room help\" for additional options"));
                     return;
                 }
                 int top = Utils.dungeonTop(x,y,z);
-                String blockFrequencies = Utils.blockFrequency(x,top,z);
+                String blockFrequencies = Utils.blockFrequency(x,top,z,true);
                 if (blockFrequencies == null) {
                     player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED
                             + "Dungeon Rooms: Make sure you aren't in a hallway between rooms and that your render distance is high enough."));
@@ -90,7 +96,7 @@ public class DungeonRoomCommand extends CommandBase {
                 }
             } else {
                 int top = Utils.dungeonTop(x,y,z);
-                String blockFrequencies = Utils.blockFrequency(x,top,z);
+                String blockFrequencies = Utils.blockFrequency(x,top,z, true);
                 String size = Utils.getSize(x,top,z);
                 String MD5 = Utils.getMD5(blockFrequencies);
                 String floorFrequencies = Utils.floorFrequency(x, top, z);
@@ -98,17 +104,27 @@ public class DungeonRoomCommand extends CommandBase {
 
                 switch (arg1[0].toLowerCase()) {
                     case "help":
-                        player.addChatMessage(new ChatComponentText("\n" + EnumChatFormatting.GOLD + " Dungeon Rooms Mod Version " + DungeonRooms.VERSION + "\n" +
-                                EnumChatFormatting.DARK_PURPLE + " /room" + EnumChatFormatting.AQUA + " - Tells you in chat what room you are standing in.\n" +
-                                EnumChatFormatting.DARK_PURPLE + " /room help" + EnumChatFormatting.AQUA + " - Displays this message.\n" +
-                                EnumChatFormatting.DARK_PURPLE + " /room open" + EnumChatFormatting.AQUA + " - Opens the gui for opening either DSG or SBP.\n" +
-                                EnumChatFormatting.DARK_PURPLE + " /room dsg" + EnumChatFormatting.AQUA + " - Directly opens DSG in the Discord client.\n" +
-                                EnumChatFormatting.DARK_PURPLE + " /room sbp" + EnumChatFormatting.AQUA + " - Directly opens the SBP secrets (if you have the mod installed).\n" +
-                                EnumChatFormatting.DARK_PURPLE + " /room set <gui | dsg | sbp>" + EnumChatFormatting.AQUA + " - Configure whether the hotkey opens the selector GUI or directly goes to DSG/SBP\n" +
-                                EnumChatFormatting.DARK_PURPLE + " /room move <x> <y>" + EnumChatFormatting.AQUA + " - Moves the GUI room name text to a coordinate. <x> and <y> are numbers between 0 and 100. Default is 50 for <x> and 5 for <y>.\n" +
-                                EnumChatFormatting.DARK_PURPLE + " /room togglegui" + EnumChatFormatting.AQUA + " - Toggles whether room name is automatically displayed in GUI. Default is on.\n" +
-                                EnumChatFormatting.DARK_PURPLE + " /room togglechat" + EnumChatFormatting.AQUA + " - Toggles whether room name is automatically displayed in Chat. Default is off.\n"));
+                        //GameSettings.getKeyDisplayString(DungeonRooms.keyBindings[1].getKeyCode())
+                        player.addChatMessage(new ChatComponentText(
+                                "\n" + EnumChatFormatting.GOLD + " Dungeon Rooms Mod Version " + DungeonRooms.VERSION + "\n" +
+                                EnumChatFormatting.DARK_PURPLE + "Hotkeys: (Configurable in Controls Menu)\n" +
+                                EnumChatFormatting.BLUE + GameSettings.getKeyDisplayString(DungeonRooms.keyBindings[1].getKeyCode()) + EnumChatFormatting.AQUA + " - Opens Secret Waypoints configuration GUI\n" +
+                                EnumChatFormatting.BLUE + GameSettings.getKeyDisplayString(DungeonRooms.keyBindings[0].getKeyCode()) + EnumChatFormatting.AQUA + " - (old) Opens images of secret locations\n" +
+                                EnumChatFormatting.DARK_PURPLE + "Commands:\n" +
+                                EnumChatFormatting.BLUE + " /room" + EnumChatFormatting.AQUA + " - Tells you in chat what room you are standing in.\n" +
+                                EnumChatFormatting.BLUE + " /room help" + EnumChatFormatting.AQUA + " - Displays this message.\n" +
+                                EnumChatFormatting.BLUE + " /room waypoints" + EnumChatFormatting.AQUA + " - Opens Secret Waypoints config GUI, alternatively can be opened with hotkey\n" +
+                                EnumChatFormatting.BLUE + " /room move <x> <y>" + EnumChatFormatting.AQUA + " - Moves the GUI room name text to a coordinate. <x> and <y> are numbers between 0 and 100. Default is 50 for <x> and 5 for <y>.\n" +
+                                EnumChatFormatting.BLUE + " /room toggle [argument]" + EnumChatFormatting.AQUA + " - Run \"/room toggle help\" for full list of toggles.\n" +
+                                EnumChatFormatting.BLUE + " /room set <gui | dsg | sbp>" + EnumChatFormatting.AQUA + " - Configure whether the hotkey opens the selector GUI or directly goes to DSG/SBP.\n" +
+                                EnumChatFormatting.BLUE + " /room discord" + EnumChatFormatting.AQUA + " - Opens the Discord invite for this mod in your browser.\n" /* +
+                                EnumChatFormatting.BLUE + " /room open" + EnumChatFormatting.AQUA + " - Opens the gui for opening either DSG or SBP.\n" +
+                                EnumChatFormatting.BLUE + " /room dsg" + EnumChatFormatting.AQUA + " - Directly opens DSG in the Discord client.\n" +
+                                EnumChatFormatting.BLUE + " /room sbp" + EnumChatFormatting.AQUA + " - Directly opens the SBP secrets (if you have the mod installed).\n" */
+                        ));
                         break;
+
+                    case "gui":
                     case "open":
                         if (!Utils.inDungeons) {
                             player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED
@@ -160,28 +176,83 @@ public class DungeonRoomCommand extends CommandBase {
                         }
                         break;
 
+                    case "wp":
+                    case "waypoint":
+                    case "waypoints":
+                        DungeonRooms.guiToOpen = "waypoints";
+                        break;
+
                     case "move":
                         AutoRoom.scaleX = Integer.parseInt(arg1[1]);
                         AutoRoom.scaleY  = Integer.parseInt(arg1[2]);
                         ConfigHandler.writeIntConfig("gui", "scaleX", AutoRoom.scaleX);
                         ConfigHandler.writeIntConfig("gui", "scaleY", AutoRoom.scaleY);
-                        player.addChatMessage(new ChatComponentText("Room GUI have been moved to " + arg1[1] + ", " + arg1[2]));
+                        player.addChatMessage(new ChatComponentText("Room GUI has been moved to " + arg1[1] + ", " + arg1[2]));
                         break;
 
                     case "toggle":
-                        player.addChatMessage(new ChatComponentText("Run either /room togglegui or /room togglechat"));
+                        switch (arg1[1].toLowerCase()) {
+                            case "help":
+                                player.addChatMessage(new ChatComponentText("\n" + EnumChatFormatting.GOLD + " Dungeon Rooms Mod Toggle Commands:" + "\n" +
+                                        EnumChatFormatting.BLUE + " /room toggle gui" + EnumChatFormatting.AQUA + " - Toggles displaying current room in gui.\n" +
+                                        EnumChatFormatting.BLUE + " /room toggle chat" + EnumChatFormatting.AQUA + " - Toggles writing current room name in chat.\n" +
+                                        EnumChatFormatting.BLUE + " /room toggle waypointtext" + EnumChatFormatting.AQUA + " - Toggles displaying waypoint names above waypoints.\n" +
+                                        EnumChatFormatting.BLUE + " /room toggle waypointboundingbox" + EnumChatFormatting.AQUA + " - Toggles displaying the bounding box on waypoints.\n" +
+                                        EnumChatFormatting.BLUE + " /room toggle waypointbeacon" + EnumChatFormatting.AQUA + " - Toggles displaying the beacon above waypoints.\n"));
+                                break;
+
+                            case "gui":
+                                AutoRoom.guiToggled = !AutoRoom.guiToggled;
+                                ConfigHandler.writeBooleanConfig("toggles", "guiToggled", AutoRoom.guiToggled);
+                                player.addChatMessage(new ChatComponentText("Display room names in GUI has been set to: " + AutoRoom.guiToggled));
+                                break;
+
+                            case "chat":
+                                AutoRoom.chatToggled = !AutoRoom.chatToggled;
+                                ConfigHandler.writeBooleanConfig("toggles", "chatToggled", AutoRoom.chatToggled);
+                                player.addChatMessage(new ChatComponentText("Display room names in Chat has been set to: " + AutoRoom.chatToggled));
+                                break;
+
+                            case "waypointtext":
+                                Waypoints.showWaypointText = !Waypoints.showWaypointText;
+                                ConfigHandler.writeBooleanConfig("waypoint", "showWaypointText", Waypoints.showWaypointText);
+                                player.addChatMessage(new ChatComponentText("Show Waypoint Text has been set to: " +  Waypoints.showWaypointText));
+                                break;
+
+                            case "waypointboundingbox":
+                                Waypoints.showBoundingBox = !Waypoints.showBoundingBox;
+                                ConfigHandler.writeBooleanConfig("waypoint", "showBoundingBox", Waypoints.showBoundingBox);
+                                player.addChatMessage(new ChatComponentText("Show Waypoint Bounding Box has been set to: " +  Waypoints.showBoundingBox));
+                                break;
+
+                            case "waypointbeacon":
+                                Waypoints.showBeacon = !Waypoints.showBeacon;
+                                ConfigHandler.writeBooleanConfig("waypoint", "showBeacon", Waypoints.showBeacon);
+                                player.addChatMessage(new ChatComponentText("Show Waypoint Beacon has been set to: " +  Waypoints.showBeacon));
+                                break;
+
+                            case "dev":
+                            case "coord":
+                                AutoRoom.coordToggled = !AutoRoom.coordToggled;
+                                ConfigHandler.writeBooleanConfig("toggles", "coordToggled", AutoRoom.coordToggled);
+                                player.addChatMessage(new ChatComponentText("Display dev coords has been set to: " + AutoRoom.coordToggled));
+                                break;
+
+                            case "override":
+                                Utils.dungeonOverride = !Utils.dungeonOverride;
+                                player.addChatMessage(new ChatComponentText("Force inDungeons has been set to: " + Utils.dungeonOverride));
+                                break;
+
+                            default:
+                                player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED
+                                        + "Dungeon Rooms: Valid options are <gui | chat | coord>"));
+                                break;
+                        }
                         break;
 
-                    case "togglegui":
-                        AutoRoom.guiToggled = !AutoRoom.guiToggled;
-                        ConfigHandler.writeBooleanConfig("toggles", "guiToggled", AutoRoom.guiToggled);
-                        player.addChatMessage(new ChatComponentText("Display room names in GUI has been set to: " + AutoRoom.guiToggled));
-                        break;
-
-                    case "togglechat":
-                        AutoRoom.chatToggled = !AutoRoom.chatToggled;
-                        ConfigHandler.writeBooleanConfig("toggles", "chatToggled", AutoRoom.chatToggled);
-                        player.addChatMessage(new ChatComponentText("Display room names in Chat has been set to: " + AutoRoom.chatToggled));
+                    case "reload":
+                        ConfigHandler.reloadConfig();
+                        player.addChatMessage(new ChatComponentText("Reloaded config file"));
                         break;
 
                     case "discord":
@@ -234,6 +305,11 @@ public class DungeonRoomCommand extends CommandBase {
                         }
                         break;
 
+                    case "scan":
+                        //For Skytils and/or other mod integration, this command does not return anything to the player
+                        Utils.roomList();
+                        break;
+
                     //For adding room info
                     case "copy":
                         if (!Utils.inDungeons) return;
@@ -241,14 +317,266 @@ public class DungeonRoomCommand extends CommandBase {
                         player.addChatMessage(new ChatComponentText(EnumChatFormatting.GREEN + size + " " + MD5));
                         break;
 
-                    case "copydupe":
+                    case "copyfloor":
                         if (!Utils.inDungeons) return;
-                        player.addChatMessage(new ChatComponentText( EnumChatFormatting.GREEN + "duplicate " + floorHash));
+                        player.addChatMessage(new ChatComponentText( EnumChatFormatting.GREEN + "floorhash " + floorHash));
                         break;
 
+                    case "dev":
+                        player.addChatMessage(new ChatComponentText("dev: size = " + size));
+                        player.addChatMessage(new ChatComponentText("dev: MD5 = " + MD5));
+                        player.addChatMessage(new ChatComponentText("dev: floorhash = " + floorHash));
+                        break;
+
+                    case "coord":
+                        if(Utils.originBlock == null) {
+                            DungeonRooms.logger.warn("DungeonRooms: originBlock is null");
+                            return;
+                        }
+                        BlockPos relativeCoord = Utils.actualToRelative(new BlockPos(player.posX,player.posY,player.posZ));
+                        if (relativeCoord == null) return;
+
+                        player.addChatMessage(new ChatComponentText("Origin: " + Utils.originBlock.getX() + "," + Utils.originBlock.getY() + "," + Utils.originBlock.getZ()));
+                        player.addChatMessage(new ChatComponentText("Relative Pos.: "+ relativeCoord.getX() + "," + relativeCoord.getY() + "," + relativeCoord.getZ()));
+                        break;
+
+                    case "add":
+                        Minecraft mc = Minecraft.getMinecraft();
+                        World world = mc.theWorld;
+                        switch (arg1[1].toLowerCase()) {
+                            case "chest":
+                                if (mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && mc.objectMouseOver.getBlockPos() != null) {
+                                    BlockPos viewingPos = Utils.actualToRelative(mc.objectMouseOver.getBlockPos());
+                                    if (viewingPos == null) return;
+                                    if (world.getBlockState(mc.objectMouseOver.getBlockPos()).getBlock() == Blocks.chest) {
+                                        player.addChatMessage(new ChatComponentText("{\n" +
+                                                "  \"secretName\":\"# - Chest\",\n" +
+                                                "  \"category\":\"chest\",\n" +
+                                                "  \"x\":" + viewingPos.getX() + ",\n" +
+                                                "  \"y\":" + viewingPos.getY() + ",\n" +
+                                                "  \"z\":" + viewingPos.getZ() + "\n" +
+                                                "}"));
+                                        Toolkit.getDefaultToolkit()
+                                                .getSystemClipboard()
+                                                .setContents(
+                                                        new StringSelection("{\n" +
+                                                                "  \"secretName\":\"# - Chest\",\n" +
+                                                                "  \"category\":\"chest\",\n" +
+                                                                "  \"x\":" + viewingPos.getX() + ",\n" +
+                                                                "  \"y\":" + viewingPos.getY() + ",\n" +
+                                                                "  \"z\":" + viewingPos.getZ() + "\n" +
+                                                                "}"),
+                                                        null
+                                                );
+                                    } else {
+                                        player.addChatMessage(new ChatComponentText("You are not looking at a Chest Secret"));
+                                    }
+                                } else {
+                                    player.addChatMessage(new ChatComponentText("You are not looking at anything"));
+                                }
+                                break;
+                            case "wither":
+                                if (mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && mc.objectMouseOver.getBlockPos() != null) {
+                                    BlockPos viewingPos = Utils.actualToRelative(mc.objectMouseOver.getBlockPos());
+                                    if (viewingPos == null) return;
+                                    if (world.getBlockState(mc.objectMouseOver.getBlockPos()).getBlock() == Blocks.skull) {
+                                        player.addChatMessage(new ChatComponentText("{\n" +
+                                                "  \"secretName\":\"# - Wither Essence\",\n" +
+                                                "  \"category\":\"wither\",\n" +
+                                                "  \"x\":" + viewingPos.getX() + ",\n" +
+                                                "  \"y\":" + viewingPos.getY() + ",\n" +
+                                                "  \"z\":" + viewingPos.getZ() + "\n" +
+                                                "}"));
+                                        Toolkit.getDefaultToolkit()
+                                                .getSystemClipboard()
+                                                .setContents(
+                                                        new StringSelection("{\n" +
+                                                                "  \"secretName\":\"# - Wither Essence\",\n" +
+                                                                "  \"category\":\"wither\",\n" +
+                                                                "  \"x\":" + viewingPos.getX() + ",\n" +
+                                                                "  \"y\":" + viewingPos.getY() + ",\n" +
+                                                                "  \"z\":" + viewingPos.getZ() + "\n" +
+                                                                "}"),
+                                                        null
+                                                );
+                                    } else {
+                                        player.addChatMessage(new ChatComponentText("You are not looking at a Wither Essence Secret"));
+                                    }
+                                } else {
+                                    player.addChatMessage(new ChatComponentText("You are not looking at anything"));
+                                }
+                                break;
+                            case "superboom":
+                                if (mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && mc.objectMouseOver.getBlockPos() != null) {
+                                    BlockPos viewingPos = Utils.actualToRelative(mc.objectMouseOver.getBlockPos());
+                                    if (viewingPos == null) return;
+                                    if (world.getBlockState(mc.objectMouseOver.getBlockPos()).getBlock() == Blocks.stonebrick) {
+                                        player.addChatMessage(new ChatComponentText("{\n" +
+                                                "  \"secretName\":\"# - Superboom\",\n" +
+                                                "  \"category\":\"superboom\",\n" +
+                                                "  \"x\":" + viewingPos.getX() + ",\n" +
+                                                "  \"y\":" + viewingPos.getY() + ",\n" +
+                                                "  \"z\":" + viewingPos.getZ() + "\n" +
+                                                "}"));
+                                        Toolkit.getDefaultToolkit()
+                                                .getSystemClipboard()
+                                                .setContents(
+                                                        new StringSelection("{\n" +
+                                                                "  \"secretName\":\"# - Superboom\",\n" +
+                                                                "  \"category\":\"superboom\",\n" +
+                                                                "  \"x\":" + viewingPos.getX() + ",\n" +
+                                                                "  \"y\":" + viewingPos.getY() + ",\n" +
+                                                                "  \"z\":" + viewingPos.getZ() + "\n" +
+                                                                "}"),
+                                                        null
+                                                );
+                                    } else {
+                                        player.addChatMessage(new ChatComponentText("You are not looking at a Superboom entrance"));
+                                    }
+                                } else {
+                                    player.addChatMessage(new ChatComponentText("You are not looking at anything"));
+                                }
+                                break;
+                            case "lever":
+                                if (mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && mc.objectMouseOver.getBlockPos() != null) {
+                                    BlockPos viewingPos = Utils.actualToRelative(mc.objectMouseOver.getBlockPos());
+                                    if (viewingPos == null) return;
+                                    if (world.getBlockState(mc.objectMouseOver.getBlockPos()).getBlock() == Blocks.lever) {
+                                        player.addChatMessage(new ChatComponentText("{\n" +
+                                                "  \"secretName\":\"# - Lever\",\n" +
+                                                "  \"category\":\"lever\",\n" +
+                                                "  \"x\":" + viewingPos.getX() + ",\n" +
+                                                "  \"y\":" + viewingPos.getY() + ",\n" +
+                                                "  \"z\":" + viewingPos.getZ() + "\n" +
+                                                "}"));
+                                        Toolkit.getDefaultToolkit()
+                                                .getSystemClipboard()
+                                                .setContents(
+                                                        new StringSelection("{\n" +
+                                                                "  \"secretName\":\"# - Lever\",\n" +
+                                                                "  \"category\":\"lever\",\n" +
+                                                                "  \"x\":" + viewingPos.getX() + ",\n" +
+                                                                "  \"y\":" + viewingPos.getY() + ",\n" +
+                                                                "  \"z\":" + viewingPos.getZ() + "\n" +
+                                                                "}"),
+                                                        null
+                                                );
+                                    } else {
+                                        player.addChatMessage(new ChatComponentText("You are not looking at a Lever"));
+                                    }
+                                } else {
+                                    player.addChatMessage(new ChatComponentText("You are not looking at anything"));
+                                }
+                                break;
+                            case "fairysoul":
+                                if (mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && mc.objectMouseOver.getBlockPos() != null) {
+                                    BlockPos viewingPos = Utils.actualToRelative(mc.objectMouseOver.getBlockPos().up(1));
+                                    if (viewingPos == null) return;
+                                    if (world.getBlockState(mc.objectMouseOver.getBlockPos().up(1)).getBlock() == Blocks.air) {
+                                        player.addChatMessage(new ChatComponentText("{\n" +
+                                                "  \"secretName\":\"Fairy Soul\",\n" +
+                                                "  \"category\":\"fairysoul\",\n" +
+                                                "  \"x\":" + viewingPos.getX() + ",\n" +
+                                                "  \"y\":" + viewingPos.getY() + ",\n" +
+                                                "  \"z\":" + viewingPos.getZ() + "\n" +
+                                                "}"));
+                                        Toolkit.getDefaultToolkit()
+                                                .getSystemClipboard()
+                                                .setContents(
+                                                        new StringSelection("{\n" +
+                                                                "  \"secretName\":\"Fairy Soul\",\n" +
+                                                                "  \"category\":\"fairysoul\",\n" +
+                                                                "  \"x\":" + viewingPos.getX() + ",\n" +
+                                                                "  \"y\":" + viewingPos.getY() + ",\n" +
+                                                                "  \"z\":" + viewingPos.getZ() + "\n" +
+                                                                "}"),
+                                                        null
+                                                );
+                                    } else {
+                                        player.addChatMessage(new ChatComponentText("You are not looking at the block below a Fairy Soul"));
+                                    }
+                                } else {
+                                    player.addChatMessage(new ChatComponentText("You are not looking at anything"));
+                                }
+                                break;
+                            case "item":
+                                BlockPos playerPos = Utils.actualToRelative(new BlockPos(player.posX,player.posY,player.posZ));
+                                if (playerPos == null) return;
+                                player.addChatMessage(new ChatComponentText("{\n" +
+                                        "  \"secretName\":\"# - Item\",\n" +
+                                        "  \"category\":\"item\",\n" +
+                                        "  \"x\":" + playerPos.getX() + ",\n" +
+                                        "  \"y\":" + playerPos.getY() + ",\n" +
+                                        "  \"z\":" + playerPos.getZ() + "\n" +
+                                        "}"));
+                                Toolkit.getDefaultToolkit()
+                                        .getSystemClipboard()
+                                        .setContents(
+                                                new StringSelection("{\n" +
+                                                        "  \"secretName\":\"# - Item\",\n" +
+                                                        "  \"category\":\"item\",\n" +
+                                                        "  \"x\":" + playerPos.getX() + ",\n" +
+                                                        "  \"y\":" + playerPos.getY() + ",\n" +
+                                                        "  \"z\":" + playerPos.getZ() + "\n" +
+                                                        "}"),
+                                                null
+                                        );
+                                break;
+                            case "entrance":
+                                BlockPos entrancePos = Utils.actualToRelative(new BlockPos(player.posX,player.posY+1,player.posZ));
+                                if (entrancePos == null) return;
+                                player.addChatMessage(new ChatComponentText("{\n" +
+                                        "  \"secretName\":\"# - Entrance\",\n" +
+                                        "  \"category\":\"entrance\",\n" +
+                                        "  \"x\":" + entrancePos.getX() + ",\n" +
+                                        "  \"y\":" + entrancePos.getY() + ",\n" +
+                                        "  \"z\":" + entrancePos.getZ() + "\n" +
+                                        "}"));
+                                Toolkit.getDefaultToolkit()
+                                        .getSystemClipboard()
+                                        .setContents(
+                                                new StringSelection("{\n" +
+                                                        "  \"secretName\":\"# - Entrance\",\n" +
+                                                        "  \"category\":\"entrance\",\n" +
+                                                        "  \"x\":" + entrancePos.getX() + ",\n" +
+                                                        "  \"y\":" + entrancePos.getY() + ",\n" +
+                                                        "  \"z\":" + entrancePos.getZ() + "\n" +
+                                                        "}"),
+                                                null
+                                        );
+                                break;
+                            case "bat":
+                                BlockPos batPos = Utils.actualToRelative(new BlockPos(player.posX,player.posY+1,player.posZ));
+                                if (batPos == null) return;
+                                player.addChatMessage(new ChatComponentText("{\n" +
+                                        "  \"secretName\":\"# - Bat\",\n" +
+                                        "  \"category\":\"bat\",\n" +
+                                        "  \"x\":" + batPos.getX() + ",\n" +
+                                        "  \"y\":" + batPos.getY() + ",\n" +
+                                        "  \"z\":" + batPos.getZ() + "\n" +
+                                        "}"));
+                                Toolkit.getDefaultToolkit()
+                                        .getSystemClipboard()
+                                        .setContents(
+                                                new StringSelection("{\n" +
+                                                        "  \"secretName\":\"# - Bat\",\n" +
+                                                        "  \"category\":\"bat\",\n" +
+                                                        "  \"x\":" + batPos.getX() + ",\n" +
+                                                        "  \"y\":" + batPos.getY() + ",\n" +
+                                                        "  \"z\":" + batPos.getZ() + "\n" +
+                                                        "}"),
+                                                null
+                                        );
+                                break;
+                            default:
+                                player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED
+                                        + "Dungeon Rooms: Valid options are <chest | wither | superboom | lever | fairysoul | item | entrance | bat>"));
+                                break;
+                        }
+                        break;
                     default:
                         player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED
-                                + "Run \"/room\" by itself to see the room name or run \"/room help\" for additional options"));
+                                + "Dungeon Rooms: Run \"/room\" by itself to see the room name or run \"/room help\" for additional options"));
                 }
             }
         }).start();

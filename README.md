@@ -1,41 +1,45 @@
 # Dungeon Rooms Mod
 ### What it does:
-This mod gives a hotkey to directly launch either the Dungeon Secrets Guide(DSG) Discord channel or the Skyblock
-Personalized (SBP) Dungeon Secrets Mod for the room you are currently in. This makes finding the secrets in a dungeon
-room much faster than before. When you enter a room inside of a dungeon, it will also display the name of the room at
-the top of your screen and tell you if there's a fairy soul in the room.
+With v2.0 of this mod, there are now Secret Waypoints for Dungeons, making finding secrets easier than ever before!
 
-![Example Picture](https://hypixel.net/attachments/2347266/)
+You can still use the legacy features of opening images of secret locations in the DSG Discord or SkyblockPersonalized with the hotkey "O".
+
+![Example Picture](https://hypixel.net/attachments/2481105/)
 
 ### Why is this useful?
-For those who haven't memorized secrets, scrolling through each channel of the Dungeon Secrets Guide Discord in order to
-find the correct channel takes forever. This mod saves you time letting you hit a single key which will open the correct
-channel for you in Discord.
+For those who haven't memorized secrets, trying to find secrets takes forever, especially when you have to spend a ton of time searching through DSG channels for the right room. This mod makes it easy as you can immediately see where a secret is.
+
+### Is this bannable?
+Short answer: This mod follows the general interpretation of Hypixel's rules, does not modify packets in any way, and is most likely **not bannable**, but as with all mods, it is use at your own risk.
+
+Long Answer: https://quantizr.github.io/posts/is-it-bannable/
+
 
 ### Discord:
+_(Downloads are also in the Discord)_
+
 https://discord.gg/7B5RbsArYK
 
-### Main Hotkey:
- - By default, the hotkey is set to "O"
- - You can change the hotkey in the normal Minecraft controls menu
- - The hotkey opens a GUI menu that allows you to select whether you want to open secret images in the Dungeon Secret
-  Guide (DSG) Discord or in the Skyblock Personalized (SBP) Dungeon Secrets Mod (separate mod, made by a different dev)
- - You can make the hotkey directly open either DSG or SBP and bypass the menu by running: /room set \<gui | dsg | sbp\>
+
+### Hotkeys:
+(Configurable in Controls Menu)
+ - P - Opens Secret Waypoints configuration GUI
+ - O - (old) Opens images of secret locations
  
 ### Commands:
-You probably won't need to use any of these:
- - /room - Tells you in chat what room you are standing in, in the chat.
+ - /room - Tells you in chat what room you are standing in.
  - /room help - Displays this message in chat.
+ - /room waypoints - Opens Secret Waypoints config GUI, alternatively can be opened with hotkey
+ - /room move \<x\> \<y\> - Moves the GUI room name text to a coordinate. <x> and <y> are numbers between 0 and 100. (Default is 50 for \<x\> and 5 for \<y\>)
+ - /room toggle \[argument\] - Run "/room toggle help" for full list of toggles.
+ - /room set \<gui | dsg | sbp\> - Configure whether the hotkey opens the selector GUI or directly goes to DSG/SBP.
+ - /room discord - Opens the Discord invite for this mod in your browser.
  - /room open - Opens the gui for opening either DSG or SBP.
  - /room dsg - Directly opens DSG in the Discord client.
- - room sbp - Directly opens the SBP secrets (if you have the mod installed).
- - /room set \<gui | dsg | sbp\> - Configure whether the hotkey opens the selector GUI or directly goes to DSG/SBP      
- - /room move \<x\> \<y\> - Moves the GUI room name display to a coordinate. \<x\> and \<y\> are numbers between 0 and 100. Default is 50 for \<x\> and 5 for \<y\>
- - /room togglegui - Toggles whether room name is automatically displayed in GUI. Default is on
- - /room togglechat - Toggles whether room name is automatically displayed in Chat. Default is off
-
+ - /room sbp - Directly opens the SBP secrets (if you have the mod installed).
+ 
 ### Credits:
-Big thanks to Danker's Skyblock Mod (https://github.com/bowser0000/SkyblockMod) for the handlers code used in this mod.
+Big thanks to the respective authors of Danker's Skyblock Mod, Skytils, and NEU for various pieces of code used in this mod.
 Thanks to DJtheRedstoner for various bug/performance fixes.
 
 Also, thanks to the Room Contributors in the Discord, especially Abd#5832 and Fawless#9843, for submitting rooms.

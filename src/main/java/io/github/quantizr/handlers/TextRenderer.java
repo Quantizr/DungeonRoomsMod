@@ -10,7 +10,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.util.StringUtils;
-import org.lwjgl.opengl.GL11;
 
 public class TextRenderer extends Gui {
     public static void drawText(Minecraft mc, String text, int x, int y, double scale, boolean outline) {

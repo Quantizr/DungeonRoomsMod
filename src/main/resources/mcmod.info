@@ -2,14 +2,14 @@
 {
   "modid": "dungeonrooms",
   "name": "Dungeon Rooms Mod",
-  "description": "Tells you the name of the room you are in for Hypixel Skyblock Dungeons",
+  "description": "Adds Secret Waypoints to Skyblock Dungeons, along with telling you the name of your current room.",
   "version": "${version}",
   "mcversion": "${mcversion}",
-  "url": "",
+  "url": "https://discord.gg/7B5RbsArYK",
   "updateUrl": "",
   "authorList": ["_risk (aka Quantizr)"],
   "credits": "",
-  "logoFile": "",
+  "logoFile": "assets/dungeonrooms/logo.png",
   "screenshots": [],
   "dependencies": []
 }
