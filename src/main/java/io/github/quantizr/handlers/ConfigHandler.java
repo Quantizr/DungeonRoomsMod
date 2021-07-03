@@ -179,6 +179,7 @@ public class ConfigHandler {
         if (!hasKey("waypoint", "showSuperboom")) writeBooleanConfig("waypoint", "showSuperboom", true);
         if (!hasKey("waypoint", "showSecrets")) writeBooleanConfig("waypoint", "showSecrets", true);
         if (!hasKey("waypoint", "showFairySouls")) writeBooleanConfig("waypoint", "showFairySouls", true);
+        if (!hasKey("waypoint", "sneakToDisable")) writeBooleanConfig("waypoint", "sneakToDisable", true);
         if (!hasKey("waypoint", "disableWhenAllFound")) writeBooleanConfig("waypoint", "disableWhenAllFound", true);
 
         if (!hasKey("waypoint", "showWaypointText")) writeBooleanConfig("waypoint", "showWaypointText", true);
@@ -198,6 +199,7 @@ public class ConfigHandler {
         Waypoints.showSuperboom = getBoolean("waypoint", "showSuperboom");
         Waypoints.showSecrets = getBoolean("waypoint", "showSecrets");
         Waypoints.showFairySouls = getBoolean("waypoint", "showFairySouls");
+        Waypoints.sneakToDisable = getBoolean("waypoint", "sneakToDisable");
         Waypoints.disableWhenAllFound = getBoolean("waypoint", "disableWhenAllFound");
 
         Waypoints.showWaypointText = getBoolean("waypoint", "showWaypointText");

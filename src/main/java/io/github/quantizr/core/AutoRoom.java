@@ -186,6 +186,7 @@ public class AutoRoom {
                         }
                         if (DungeonRooms.waypointsJson.get(name) == null && secrets != 0 && Waypoints.enabled) {
                             output.add(EnumChatFormatting.RED + "No waypoints available");
+                            output.add(EnumChatFormatting.RED +  "Press \"" + GameSettings.getKeyDisplayString(DungeonRooms.keyBindings[0].getKeyCode()) +"\" to view images");
                         }
                         lastRoomJson = roomObject;
                         floorHashFound = true;
@@ -205,6 +206,7 @@ public class AutoRoom {
                     }
                     if (DungeonRooms.waypointsJson.get(name) == null && secrets != 0 && Waypoints.enabled) {
                         output.add(EnumChatFormatting.RED + "No waypoints available");
+                        output.add(EnumChatFormatting.RED +  "Press \"" + GameSettings.getKeyDisplayString(DungeonRooms.keyBindings[0].getKeyCode()) +"\" to view images");
                     }
                 }
             }
@@ -234,6 +236,7 @@ public class AutoRoom {
             }
             if (DungeonRooms.waypointsJson.get(name) == null && secrets != 0 && Waypoints.enabled) {
                 output.add(EnumChatFormatting.RED + "No waypoints available");
+                output.add(EnumChatFormatting.RED +  "Press \"" + GameSettings.getKeyDisplayString(DungeonRooms.keyBindings[0].getKeyCode()) +"\" to view images");
             }
             lastRoomJson = roomObject;
         }

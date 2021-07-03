@@ -16,6 +16,7 @@ import io.github.quantizr.utils.Utils;
 import io.github.quantizr.utils.WaypointUtils;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
@@ -27,8 +28,10 @@ import net.minecraft.util.StringUtils;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.client.event.RenderWorldLastEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.InputEvent;
 
 import java.awt.*;
 import java.util.*;
@@ -41,6 +44,8 @@ public class Waypoints {
     public static boolean showSuperboom = true;
     public static boolean showSecrets = true;
     public static boolean showFairySouls = true;
+
+    public static boolean sneakToDisable = true;
 
     public static boolean disableWhenAllFound = true;
     public static boolean allFound = false;
@@ -55,12 +60,14 @@ public class Waypoints {
     public static Map<String, List<Boolean>> allSecretsMap = new HashMap<>();
     public static List<Boolean> secretsList = new ArrayList<>(Arrays.asList(new Boolean[9]));
 
+    static long lastSneakTime = 0;
+
 
     @SubscribeEvent
     public void onWorldRender(RenderWorldLastEvent event) {
         if (!enabled) return;
         String roomName = AutoRoom.lastRoomName;
-        if (AutoRoom.lastRoomJson != null && roomName != null) {
+        if (AutoRoom.lastRoomJson != null && roomName != null && secretsList != null) {
             secretNum = AutoRoom.lastRoomJson.get("secrets").getAsInt();
             if (DungeonRooms.waypointsJson.get(roomName) != null) {
                 JsonArray secretsArray = DungeonRooms.waypointsJson.get(roomName).getAsJsonArray();
@@ -252,6 +259,45 @@ public class Waypoints {
                     }
                 }
             }
+        }
+    }
+
+
+    //Disable waypoint within 4 blocks away on sneak
+    @SubscribeEvent
+    public void onKey(InputEvent.KeyInputEvent event) {
+        if (!Utils.inDungeons || !enabled || !sneakToDisable) return;
+        EntityPlayerSP player = Minecraft.getMinecraft().thePlayer;
+        if (FMLClientHandler.instance().getClient().gameSettings.keyBindSneak.isPressed()) {
+            if (System.currentTimeMillis() - lastSneakTime < 1000) { //check for two taps in under a second
+                if (AutoRoom.lastRoomJson != null && AutoRoom.lastRoomName != null) {
+                    secretNum = AutoRoom.lastRoomJson.get("secrets").getAsInt();
+                    if (DungeonRooms.waypointsJson.get(AutoRoom.lastRoomName) != null) {
+                        JsonArray secretsArray = DungeonRooms.waypointsJson.get(AutoRoom.lastRoomName).getAsJsonArray();
+                        int arraySize = secretsArray.size();
+                        for(int i = 0; i < arraySize; i++) {
+                            JsonObject secretsObject = secretsArray.get(i).getAsJsonObject();
+                            if (secretsObject.get("category").getAsString().equals("chest") || secretsObject.get("category").getAsString().equals("wither")
+                                    || secretsObject.get("category").getAsString().equals("item") || secretsObject.get("category").getAsString().equals("bat")) {
+                                BlockPos pos = Utils.relativeToActual(new BlockPos(secretsObject.get("x").getAsInt(), secretsObject.get("y").getAsInt(), secretsObject.get("z").getAsInt()));
+                                if (pos == null) return;
+                                if (player.getDistanceSq(pos) <= 16D) {
+                                    for(int j = 1; j <= secretNum; j++) {
+                                        if (secretsObject.get("secretName").getAsString().contains(String.valueOf(j))) {
+                                            if (!Waypoints.secretsList.get(j-1)) continue;
+                                            Waypoints.secretsList.set(j-1, false);
+                                            Waypoints.allSecretsMap.replace(AutoRoom.lastRoomName, Waypoints.secretsList);
+                                            DungeonRooms.logger.info("DungeonRooms: Player sneaked near " + secretsObject.get("category").getAsString() + " secret, turning off waypoint for secret #" + j);
+                                            return;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            lastSneakTime = System.currentTimeMillis();
         }
     }
 }

@@ -58,7 +58,14 @@ public class DungeonRoomCommand extends CommandBase {
     @Override
     public List<String> addTabCompletionOptions(ICommandSender sender, String[] args, BlockPos pos) {
         if (args.length == 1) {
-            return getListOfStringsMatchingLastWord(args, "togglechat", "togglegui", "move");
+            return getListOfStringsMatchingLastWord(args, "help", "waypoints", "move", "toggle", "set", "discord");
+        }
+        if (args.length > 1) {
+            if (args[0].equalsIgnoreCase("toggle")) {
+                return getListOfStringsMatchingLastWord(args, "help", "gui", "chat", "waypointtext", "waypointboundingbox", "waypointbeacon");
+            } else if (args[0].equalsIgnoreCase("set")) {
+                return getListOfStringsMatchingLastWord(args, "gui", "dsg", "sbp");
+            }
         }
         return null;
     }
@@ -104,23 +111,22 @@ public class DungeonRoomCommand extends CommandBase {
 
                 switch (arg1[0].toLowerCase()) {
                     case "help":
-                        //GameSettings.getKeyDisplayString(DungeonRooms.keyBindings[1].getKeyCode())
                         player.addChatMessage(new ChatComponentText(
-                                "\n" + EnumChatFormatting.GOLD + " Dungeon Rooms Mod Version " + DungeonRooms.VERSION + "\n" +
+                                "\n" + EnumChatFormatting.GOLD + "Dungeon Rooms Mod Version " + DungeonRooms.VERSION + "\n" +
                                 EnumChatFormatting.DARK_PURPLE + "Hotkeys: (Configurable in Controls Menu)\n" +
-                                EnumChatFormatting.BLUE + GameSettings.getKeyDisplayString(DungeonRooms.keyBindings[1].getKeyCode()) + EnumChatFormatting.AQUA + " - Opens Secret Waypoints configuration GUI\n" +
-                                EnumChatFormatting.BLUE + GameSettings.getKeyDisplayString(DungeonRooms.keyBindings[0].getKeyCode()) + EnumChatFormatting.AQUA + " - (old) Opens images of secret locations\n" +
+                                EnumChatFormatting.AQUA + " " + GameSettings.getKeyDisplayString(DungeonRooms.keyBindings[1].getKeyCode()) + EnumChatFormatting.WHITE + " - Opens Secret Waypoints configuration GUI\n" +
+                                EnumChatFormatting.AQUA + " " + GameSettings.getKeyDisplayString(DungeonRooms.keyBindings[0].getKeyCode()) + EnumChatFormatting.WHITE + " - (old) Opens images of secret locations\n" +
                                 EnumChatFormatting.DARK_PURPLE + "Commands:\n" +
-                                EnumChatFormatting.BLUE + " /room" + EnumChatFormatting.AQUA + " - Tells you in chat what room you are standing in.\n" +
-                                EnumChatFormatting.BLUE + " /room help" + EnumChatFormatting.AQUA + " - Displays this message.\n" +
-                                EnumChatFormatting.BLUE + " /room waypoints" + EnumChatFormatting.AQUA + " - Opens Secret Waypoints config GUI, alternatively can be opened with hotkey\n" +
-                                EnumChatFormatting.BLUE + " /room move <x> <y>" + EnumChatFormatting.AQUA + " - Moves the GUI room name text to a coordinate. <x> and <y> are numbers between 0 and 100. Default is 50 for <x> and 5 for <y>.\n" +
-                                EnumChatFormatting.BLUE + " /room toggle [argument]" + EnumChatFormatting.AQUA + " - Run \"/room toggle help\" for full list of toggles.\n" +
-                                EnumChatFormatting.BLUE + " /room set <gui | dsg | sbp>" + EnumChatFormatting.AQUA + " - Configure whether the hotkey opens the selector GUI or directly goes to DSG/SBP.\n" +
-                                EnumChatFormatting.BLUE + " /room discord" + EnumChatFormatting.AQUA + " - Opens the Discord invite for this mod in your browser.\n" /* +
-                                EnumChatFormatting.BLUE + " /room open" + EnumChatFormatting.AQUA + " - Opens the gui for opening either DSG or SBP.\n" +
-                                EnumChatFormatting.BLUE + " /room dsg" + EnumChatFormatting.AQUA + " - Directly opens DSG in the Discord client.\n" +
-                                EnumChatFormatting.BLUE + " /room sbp" + EnumChatFormatting.AQUA + " - Directly opens the SBP secrets (if you have the mod installed).\n" */
+                                EnumChatFormatting.AQUA + " /room" + EnumChatFormatting.WHITE + " - Tells you in chat what room you are standing in.\n" +
+                                EnumChatFormatting.AQUA + " /room help" + EnumChatFormatting.WHITE + " - Displays this message.\n" +
+                                EnumChatFormatting.AQUA + " /room waypoints" + EnumChatFormatting.WHITE + " - Opens Secret Waypoints config GUI, alternatively can be opened with hotkey\n" +
+                                EnumChatFormatting.AQUA + " /room move <x> <y>" + EnumChatFormatting.WHITE + " - Moves the GUI room name text to a coordinate. <x> and <y> are numbers between 0 and 100. Default is 50 for <x> and 5 for <y>.\n" +
+                                EnumChatFormatting.AQUA + " /room toggle [argument]" + EnumChatFormatting.WHITE + " - Run \"/room toggle help\" for full list of toggles.\n" +
+                                EnumChatFormatting.AQUA + " /room set <gui | dsg | sbp>" + EnumChatFormatting.WHITE + " - Configure whether the hotkey opens the selector GUI or directly goes to DSG/SBP.\n" +
+                                EnumChatFormatting.AQUA + " /room discord" + EnumChatFormatting.WHITE + " - Opens the Discord invite for this mod in your browser.\n" /* +
+                                EnumChatFormatting.AQUA + " /room open" + EnumChatFormatting.WHITE + " - Opens the gui for opening either DSG or SBP.\n" +
+                                EnumChatFormatting.AQUA + " /room dsg" + EnumChatFormatting.WHITE + " - Directly opens DSG in the Discord client.\n" +
+                                EnumChatFormatting.AQUA + " /room sbp" + EnumChatFormatting.WHITE + " - Directly opens the SBP secrets (if you have the mod installed).\n" */
                         ));
                         break;
 
@@ -191,62 +197,70 @@ public class DungeonRoomCommand extends CommandBase {
                         break;
 
                     case "toggle":
-                        switch (arg1[1].toLowerCase()) {
-                            case "help":
-                                player.addChatMessage(new ChatComponentText("\n" + EnumChatFormatting.GOLD + " Dungeon Rooms Mod Toggle Commands:" + "\n" +
-                                        EnumChatFormatting.BLUE + " /room toggle gui" + EnumChatFormatting.AQUA + " - Toggles displaying current room in gui.\n" +
-                                        EnumChatFormatting.BLUE + " /room toggle chat" + EnumChatFormatting.AQUA + " - Toggles writing current room name in chat.\n" +
-                                        EnumChatFormatting.BLUE + " /room toggle waypointtext" + EnumChatFormatting.AQUA + " - Toggles displaying waypoint names above waypoints.\n" +
-                                        EnumChatFormatting.BLUE + " /room toggle waypointboundingbox" + EnumChatFormatting.AQUA + " - Toggles displaying the bounding box on waypoints.\n" +
-                                        EnumChatFormatting.BLUE + " /room toggle waypointbeacon" + EnumChatFormatting.AQUA + " - Toggles displaying the beacon above waypoints.\n"));
-                                break;
+                        String toggleHelp = "\n" + EnumChatFormatting.GOLD + " Dungeon Rooms Mod Toggle Commands:" + "\n" +
+                                EnumChatFormatting.AQUA + " /room toggle gui" + EnumChatFormatting.WHITE + " - Toggles displaying current room in gui.\n" +
+                                EnumChatFormatting.AQUA + " /room toggle chat" + EnumChatFormatting.WHITE + " - Toggles writing current room name in chat.\n" +
+                                EnumChatFormatting.AQUA + " /room toggle waypointtext" + EnumChatFormatting.WHITE + " - Toggles displaying waypoint names above waypoints.\n" +
+                                EnumChatFormatting.AQUA + " /room toggle waypointboundingbox" + EnumChatFormatting.WHITE + " - Toggles displaying the bounding box on waypoints.\n" +
+                                EnumChatFormatting.AQUA + " /room toggle waypointbeacon" + EnumChatFormatting.WHITE + " - Toggles displaying the beacon above waypoints.\n";
+                        if (arg1.length == 1) {
+                            player.addChatMessage(new ChatComponentText(toggleHelp));
+                            break;
+                        } else {
+                            switch (arg1[1].toLowerCase()) {
+                                case "help":
+                                    player.addChatMessage(new ChatComponentText(toggleHelp));
+                                    break;
 
-                            case "gui":
-                                AutoRoom.guiToggled = !AutoRoom.guiToggled;
-                                ConfigHandler.writeBooleanConfig("toggles", "guiToggled", AutoRoom.guiToggled);
-                                player.addChatMessage(new ChatComponentText("Display room names in GUI has been set to: " + AutoRoom.guiToggled));
-                                break;
+                                case "gui":
+                                    AutoRoom.guiToggled = !AutoRoom.guiToggled;
+                                    ConfigHandler.writeBooleanConfig("toggles", "guiToggled", AutoRoom.guiToggled);
+                                    player.addChatMessage(new ChatComponentText("Display room names in GUI has been set to: " + AutoRoom.guiToggled));
+                                    break;
 
-                            case "chat":
-                                AutoRoom.chatToggled = !AutoRoom.chatToggled;
-                                ConfigHandler.writeBooleanConfig("toggles", "chatToggled", AutoRoom.chatToggled);
-                                player.addChatMessage(new ChatComponentText("Display room names in Chat has been set to: " + AutoRoom.chatToggled));
-                                break;
+                                case "chat":
+                                    AutoRoom.chatToggled = !AutoRoom.chatToggled;
+                                    ConfigHandler.writeBooleanConfig("toggles", "chatToggled", AutoRoom.chatToggled);
+                                    player.addChatMessage(new ChatComponentText("Display room names in Chat has been set to: " + AutoRoom.chatToggled));
+                                    break;
 
-                            case "waypointtext":
-                                Waypoints.showWaypointText = !Waypoints.showWaypointText;
-                                ConfigHandler.writeBooleanConfig("waypoint", "showWaypointText", Waypoints.showWaypointText);
-                                player.addChatMessage(new ChatComponentText("Show Waypoint Text has been set to: " +  Waypoints.showWaypointText));
-                                break;
+                                case "text":
+                                case "waypointtext":
+                                    Waypoints.showWaypointText = !Waypoints.showWaypointText;
+                                    ConfigHandler.writeBooleanConfig("waypoint", "showWaypointText", Waypoints.showWaypointText);
+                                    player.addChatMessage(new ChatComponentText("Show Waypoint Text has been set to: " + Waypoints.showWaypointText));
+                                    break;
 
-                            case "waypointboundingbox":
-                                Waypoints.showBoundingBox = !Waypoints.showBoundingBox;
-                                ConfigHandler.writeBooleanConfig("waypoint", "showBoundingBox", Waypoints.showBoundingBox);
-                                player.addChatMessage(new ChatComponentText("Show Waypoint Bounding Box has been set to: " +  Waypoints.showBoundingBox));
-                                break;
+                                case "boundingbox":
+                                case "waypointboundingbox":
+                                    Waypoints.showBoundingBox = !Waypoints.showBoundingBox;
+                                    ConfigHandler.writeBooleanConfig("waypoint", "showBoundingBox", Waypoints.showBoundingBox);
+                                    player.addChatMessage(new ChatComponentText("Show Waypoint Bounding Box has been set to: " + Waypoints.showBoundingBox));
+                                    break;
 
-                            case "waypointbeacon":
-                                Waypoints.showBeacon = !Waypoints.showBeacon;
-                                ConfigHandler.writeBooleanConfig("waypoint", "showBeacon", Waypoints.showBeacon);
-                                player.addChatMessage(new ChatComponentText("Show Waypoint Beacon has been set to: " +  Waypoints.showBeacon));
-                                break;
+                                case "beacon":
+                                case "waypointbeacon":
+                                    Waypoints.showBeacon = !Waypoints.showBeacon;
+                                    ConfigHandler.writeBooleanConfig("waypoint", "showBeacon", Waypoints.showBeacon);
+                                    player.addChatMessage(new ChatComponentText("Show Waypoint Beacon has been set to: " + Waypoints.showBeacon));
+                                    break;
 
-                            case "dev":
-                            case "coord":
-                                AutoRoom.coordToggled = !AutoRoom.coordToggled;
-                                ConfigHandler.writeBooleanConfig("toggles", "coordToggled", AutoRoom.coordToggled);
-                                player.addChatMessage(new ChatComponentText("Display dev coords has been set to: " + AutoRoom.coordToggled));
-                                break;
+                                case "dev":
+                                case "coord":
+                                    AutoRoom.coordToggled = !AutoRoom.coordToggled;
+                                    ConfigHandler.writeBooleanConfig("toggles", "coordToggled", AutoRoom.coordToggled);
+                                    player.addChatMessage(new ChatComponentText("Display dev coords has been set to: " + AutoRoom.coordToggled));
+                                    break;
 
-                            case "override":
-                                Utils.dungeonOverride = !Utils.dungeonOverride;
-                                player.addChatMessage(new ChatComponentText("Force inDungeons has been set to: " + Utils.dungeonOverride));
-                                break;
+                                case "override":
+                                    Utils.dungeonOverride = !Utils.dungeonOverride;
+                                    player.addChatMessage(new ChatComponentText("Force inDungeons has been set to: " + Utils.dungeonOverride));
+                                    break;
 
-                            default:
-                                player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED
-                                        + "Dungeon Rooms: Valid options are <gui | chat | coord>"));
-                                break;
+                                default:
+                                    player.addChatMessage(new ChatComponentText(toggleHelp));
+                                    break;
+                            }
                         }
                         break;
 
@@ -303,11 +317,6 @@ public class DungeonRoomCommand extends CommandBase {
                                 player.addChatMessage(new ChatComponentText(json));
                             }
                         }
-                        break;
-
-                    case "scan":
-                        //For Skytils and/or other mod integration, this command does not return anything to the player
-                        Utils.roomList();
                         break;
 
                     //For adding room info

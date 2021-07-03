@@ -57,7 +57,7 @@ import java.util.List;
 public class DungeonRooms
 {
     public static final String MODID = "dungeonrooms";
-    public static final String VERSION = "2.0.0";
+    public static final String VERSION = "2.1.0";
 
     Minecraft mc = Minecraft.getMinecraft();
     public static Logger logger;
