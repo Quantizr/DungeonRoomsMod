@@ -505,7 +505,7 @@ public class DungeonRoomsInstallerFrame extends JFrame implements ActionListener
                             } catch (Exception ex) {
                                 ex.printStackTrace();
                                 showErrorMessage("Was not able to delete the other Dungeon Rooms Mod files found in your mods folder!" + System.lineSeparator() +
-                                        "Please make sure that your minecraft is currently closed and try again, or feel" + System.lineSeparator() +
+                                        "Please make sure that Minecraft is currently closed and try again, or feel" + System.lineSeparator() +
                                         "free to open your mods folder and delete those files manually.");
                                 return true;
                             }

@@ -74,7 +74,7 @@ import java.util.concurrent.*;
 public class DungeonRooms
 {
     public static final String MODID = "dungeonrooms";
-    public static final String VERSION = "3.0.0";
+    public static final String VERSION = "3.0.1";
 
     Minecraft mc = Minecraft.getMinecraft();
     public static Logger logger;

@@ -95,6 +95,24 @@ public class RoomDetection {
                             + "Dungeon Rooms: Entrance room not found, hotbar map is possibly bugged, turning mod off for this run..."));
                     gameStage = 4;
                     DungeonRooms.logger.info("DungeonRooms: gameStage set to " + gameStage);
+                } else if (entrancePhysicalNWCorner == null) {
+                    DungeonRooms.logger.warn("DungeonRooms: Entrance Room coordinates not found");
+                    //for when people dc and reconnect, or if initial check doesn't work
+                    Point playerMarkerPos = MapUtils.playerMarkerPos();
+                    if (playerMarkerPos != null) {
+                        Point closestNWMapCorner = MapUtils.getClosestNWMapCorner(playerMarkerPos, entranceMapCorners[0], entranceMapCorners[1]);
+                        if (MapUtils.getMapColor(playerMarkerPos, map).equals("green") && MapUtils.getMapColor(closestNWMapCorner, map).equals("green")) {
+                            if (!player.getPositionVector().equals(new Vec3(0.0D, 0.0D, 0.0D))) {
+                                entrancePhysicalNWCorner = MapUtils.getClosestNWPhysicalCorner(player.getPositionVector());
+                                DungeonRooms.logger.info("DungeonRooms: entrancePhysicalNWCorner has been set");
+                            }
+                        } else {
+                            DungeonRooms.textToDisplay = new ArrayList<>(Arrays.asList(
+                                    "Dungeon Rooms: " + EnumChatFormatting.RED + "Entrance Room coordinates not found",
+                                    EnumChatFormatting.RED + "Please go back into the middle of the Green Entrance Room."
+                            ));
+                        }
+                    }
                 } else {
                     Point currentPhysicalCorner = MapUtils.getClosestNWPhysicalCorner(player.getPositionVector());
                     if (currentPhysicalSegments != null && !currentPhysicalSegments.contains(currentPhysicalCorner)) {
@@ -173,8 +191,8 @@ public class RoomDetection {
                                 "Dungeon Rooms: " + EnumChatFormatting.RED + "No Matching Rooms Detected",
                                 EnumChatFormatting.RED + "This mod might not have data for this room.",
                                 EnumChatFormatting.WHITE + "Retrying every 10 seconds..."
-                        ));
-                        redoScan = System.currentTimeMillis() + 10000;
+                       ));
+                       redoScan = System.currentTimeMillis() + 10000;
 
                     } else if (possibleRoomsSet.size() == 1) { //room found
                         roomName =  possibleRoomsSet.first();
@@ -201,7 +219,6 @@ public class RoomDetection {
                 }
             }
         }
-
     }
 
 

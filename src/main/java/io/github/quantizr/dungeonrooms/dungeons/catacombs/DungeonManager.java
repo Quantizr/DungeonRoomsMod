@@ -26,6 +26,7 @@ import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.settings.GameSettings;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.Vec3;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -58,10 +59,8 @@ public class DungeonManager {
     public void onChat(ClientChatReceivedEvent event) {
         String message = event.message.getFormattedText();
 
-        if (message.startsWith("§e[NPC] §bMort§f: §rTalk to me to change your class and ready up.§r")) {
-            gameStage = 1;
-            DungeonRooms.logger.info("DungeonRooms: gameStage set to " + gameStage);
-        } else if (message.startsWith("§e[NPC] §bMort§f: §rHere, I found this map when I first entered the dungeon.§r") && entrancePhysicalNWCorner != null) {
+        //gameStage set from 0 to 1 in the onTick function later
+        if (message.startsWith("§e[NPC] §bMort§f: §rHere, I found this map when I first entered the dungeon.§r")) {
             gameStage = 2;
             DungeonRooms.logger.info("DungeonRooms: gameStage set to " + gameStage);
         } else if (message.startsWith("§r§c[BOSS] The Watcher§r§f: You have proven yourself. You may pass.§r")) {
@@ -93,33 +92,44 @@ public class DungeonManager {
         if (!Utils.inCatacombs) return; //From this point forward, everything assumes that Utils.inCatacombs == true
         tickAmount++;
 
-        if (tickAmount % 30 == 0 && gameStage < 2) {
+        if ((gameStage == 0 || gameStage == 1) && tickAmount == 20) {
+
+            if (DungeonRooms.firstLogin) {
+                DungeonRooms.firstLogin = false;
+                if (!Waypoints.enabled) {
+                    mc.thePlayer.addChatMessage(new ChatComponentText("§d§l--- Dungeon Rooms Mod ---\n"
+                            + "§e This appears to be your first time using DRM v" + DungeonRooms.VERSION + ".\n"
+                            + "§e If you would like to turn on secret waypoints, press \"" + GameSettings.getKeyDisplayString(DungeonRooms.keyBindings[1].getKeyCode()) +"\", "
+                            + "followed by the \"Waypoints\" button to toggle the setting. If you do not wish to use waypoints, you can instead press \""
+                            + GameSettings.getKeyDisplayString(DungeonRooms.keyBindings[0].getKeyCode()) +"\" while inside a dungeon room to view images of the secrets for that room.\n"
+                            + "§r (If you need help, join the Discord! Run \"/room discord\" to open the Discord invite.)\n"
+                            + "§d§l-------------------------"
+                    ));
+                }
+            }
 
             Integer[][] map = MapUtils.updatedMap();
             if (map != null) {
                 DungeonRooms.logger.warn("DungeonRooms: Run started but gameStage is not on 2");
-                Point playerMarkerPos = MapUtils.playerMarkerPos();
-                if (playerMarkerPos != null && MapUtils.getMapColor(playerMarkerPos, map).equals("green")) { //for when people dc and reconnect, or if Mort text doesn't show up
+                gameStage = 2;
+                DungeonRooms.logger.info("DungeonRooms: gameStage set to " + gameStage);
+                return;
+            }
+
+            if (gameStage == 0) {
+                gameStage = 1;
+                DungeonRooms.logger.info("DungeonRooms: gameStage set to " + gameStage);
+            }
+
+            if (gameStage == 1 && entrancePhysicalNWCorner == null) {
+                if (!player.getPositionVector().equals(new Vec3(0.0D,0.0D,0.0D))) {
+                    //this point is calculated using math, not scanning, which may cause issues when reconnecting to a run
                     entrancePhysicalNWCorner = MapUtils.getClosestNWPhysicalCorner(player.getPositionVector());
-                    gameStage = 2;
-                    DungeonRooms.logger.info("DungeonRooms: gameStage set to " + gameStage);
+                    DungeonRooms.logger.info("DungeonRooms: entrancePhysicalNWCorner has been set");
                 }
             }
 
-
-            if (DungeonRooms.firstLogin && !Waypoints.enabled) {
-                DungeonRooms.firstLogin = false;
-                mc.thePlayer.addChatMessage(new ChatComponentText("§d§l--- Dungeon Rooms Mod ---\n"
-                        + "§e This appears to be your first time using DRM v" + DungeonRooms.VERSION + ".\n"
-                        + "§e If you would like to turn on secret waypoints, press \"" + GameSettings.getKeyDisplayString(DungeonRooms.keyBindings[1].getKeyCode()) +"\", "
-                        + "followed by the \"Waypoints\" button to toggle the setting. If you do not wish to use waypoints, you can instead press \""
-                        + GameSettings.getKeyDisplayString(DungeonRooms.keyBindings[0].getKeyCode()) +"\" while inside a dungeon room to view images of the secrets for that room.\n"
-                        + "§r (If you need help, join the Discord! Run \"/room discord\" to open the Discord invite.)\n"
-                        + "§d§l-------------------------"
-                ));
-            }
-
-            if (DungeonRooms.textToDisplay == null && (gameStage == 0 || gameStage == 1)) {
+            if (DungeonRooms.textToDisplay == null) {
                 DungeonRooms.logger.info("DungeonRooms: Updating MOTD on screen");
                 if (oddRun || !guiToggled) { //load MOTD on odd runs
                     if (DungeonRooms.motd != null) {
@@ -140,14 +150,6 @@ public class DungeonManager {
             }
 
             tickAmount = 0;
-        }
-
-
-        if (gameStage == 1) {
-            if (entrancePhysicalNWCorner == null) {
-                //this point is calculated using math, not scanning, which may cause issues when reconnecting to a run
-                entrancePhysicalNWCorner = MapUtils.getClosestNWPhysicalCorner(player.getPositionVector());
-            }
         }
     }
 

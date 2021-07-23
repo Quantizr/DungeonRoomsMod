@@ -209,8 +209,10 @@ public class ConfigHandler {
             writeBooleanConfig("toggles", "waypointsToggled", false);
         } else if (!getString("drm", "version").equals(DungeonRooms.VERSION)) {
             writeStringConfig("drm", "version", DungeonRooms.VERSION);
+            /* //uncomment if major update in future requires firstLogin prompt to be displayed again
             DungeonRooms.firstLogin = true;
             writeBooleanConfig("toggles", "waypointsToggled", false);
+            */
         }
 
         //AutoRoom.chatToggled = getBoolean("toggles", "chatToggled");

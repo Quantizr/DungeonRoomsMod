@@ -186,7 +186,7 @@ public class RoomCommand extends CommandBase {
                 case "wp":
                 case "waypoint":
                 case "waypoints":
-                    mc.addScheduledTask(() -> mc.displayGuiScreen(new WaypointsGUI()));
+                    new Thread(() -> { mc.addScheduledTask(() -> mc.displayGuiScreen(new WaypointsGUI())); }).start();
                     break;
 
                 case "move":
