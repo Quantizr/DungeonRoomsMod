@@ -117,6 +117,7 @@ public class RoomCommand extends CommandBase {
                             + EnumChatFormatting.DARK_PURPLE + "Hotkeys: (Configurable in Controls Menu)\n"
                             + EnumChatFormatting.AQUA + " " + GameSettings.getKeyDisplayString(DungeonRooms.keyBindings[1].getKeyCode()) + EnumChatFormatting.WHITE + " - Opens Secret Waypoints configuration GUI\n"
                             + EnumChatFormatting.AQUA + " " + GameSettings.getKeyDisplayString(DungeonRooms.keyBindings[0].getKeyCode()) + EnumChatFormatting.WHITE + " - (old) Opens images of secret locations\n"
+                            + EnumChatFormatting.AQUA + " " + GameSettings.getKeyDisplayString(DungeonRooms.keyBindings[2].getKeyCode()) + EnumChatFormatting.WHITE + " - View waypoints in Practice Mode (\"/room toggle practice\")\n"
                             + EnumChatFormatting.DARK_PURPLE + "Commands:\n"
                             + EnumChatFormatting.AQUA + " /room" + EnumChatFormatting.WHITE + " - Tells you in chat what room you are standing in.\n"
                             + EnumChatFormatting.AQUA + " /room help" + EnumChatFormatting.WHITE + " - Displays this message.\n"
@@ -201,6 +202,8 @@ public class RoomCommand extends CommandBase {
                     String toggleHelp = "\n"
                             + EnumChatFormatting.GOLD + " Dungeon Rooms Mod Toggle Commands:" + "\n"
                             + EnumChatFormatting.AQUA + " /room toggle gui" + EnumChatFormatting.WHITE + " - Toggles displaying current room in gui.\n"
+                            + EnumChatFormatting.AQUA + " /room toggle practice" + EnumChatFormatting.WHITE + " - Toggles Practice Mode, where waypoints are only displayed when holding down " + GameSettings.getKeyDisplayString(DungeonRooms.keyBindings[2].getKeyCode()) +"\".\n"
+                            + EnumChatFormatting.AQUA + " /room toggle waypoints" + EnumChatFormatting.WHITE + " - Toggles Waypoints, does the same thing as pressing \"" + GameSettings.getKeyDisplayString(DungeonRooms.keyBindings[1].getKeyCode()) +"\" then clicking \"Waypoints\".\n"
                             + EnumChatFormatting.AQUA + " /room toggle waypointtext" + EnumChatFormatting.WHITE + " - Toggles displaying waypoint names above waypoints.\n"
                             + EnumChatFormatting.AQUA + " /room toggle waypointboundingbox" + EnumChatFormatting.WHITE + " - Toggles displaying the bounding box on waypoints.\n"
                             + EnumChatFormatting.AQUA + " /room toggle waypointbeacon" + EnumChatFormatting.WHITE + " - Toggles displaying the beacon above waypoints.\n";
@@ -214,6 +217,36 @@ public class RoomCommand extends CommandBase {
                                 DungeonManager.guiToggled = !DungeonManager.guiToggled;
                                 ConfigHandler.writeBooleanConfig("toggles", "guiToggled", DungeonManager.guiToggled);
                                 player.addChatMessage(new ChatComponentText("Dungeon Rooms: Display room names in GUI has been set to: " + DungeonManager.guiToggled));
+                                break;
+
+                            case "practice":
+                            case "practicemode":
+                                Waypoints.practiceModeOn = !Waypoints.practiceModeOn;
+                                ConfigHandler.writeBooleanConfig("waypoint", "practiceModeOn", Waypoints.practiceModeOn);
+                                if (Waypoints.practiceModeOn) {
+                                    player.addChatMessage(new ChatComponentText("§eDungeon Rooms: Practice Mode has been enabled.\n"
+                                            + "§e Waypoints will only show up while you are pressing \"" + GameSettings.getKeyDisplayString(DungeonRooms.keyBindings[2].getKeyCode()) + "\".\n"
+                                            + "§r (Hotkey is configurable in Minecraft Controls menu)"
+                                    ));
+                                } else {
+                                    player.addChatMessage(new ChatComponentText("§eDungeon Rooms: Practice Mode has been disabled."));
+                                }
+                                break;
+
+                            case "waypoint":
+                            case "waypoints":
+                                Waypoints.enabled = !Waypoints.enabled;
+                                ConfigHandler.writeBooleanConfig("waypoint", "waypointsToggled", Waypoints.enabled);
+                                if (Waypoints.enabled) {
+                                    player.addChatMessage(new ChatComponentText("§eDungeon Rooms: Waypoints will now automatically show up when you enter a new dungeon room.\n"
+                                            + "§c§l WARNING:§r§c While waypoints are not detectable and most likely §lNOT bannable§r§c, some players view them as an unfair advantage.\n"
+                                            + "§c Please understand, especially if you are recording or streaming, that, while you most likely are fine, this feature is §lUse At Your Own Risk§r§c. "
+                                            + "If this is a concern for you, please disable waypoints and view secret images instead with the hotkey \""
+                                            + GameSettings.getKeyDisplayString(DungeonRooms.keyBindings[1].getKeyCode()) + "\"."
+                                    ));
+                                } else {
+                                    player.addChatMessage(new ChatComponentText("§eDungeon Rooms: Waypoints have been disabled."));
+                                }
                                 break;
 
                             case "text":

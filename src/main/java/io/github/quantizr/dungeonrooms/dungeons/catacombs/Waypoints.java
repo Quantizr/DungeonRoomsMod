@@ -29,6 +29,7 @@ import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.Blocks;
@@ -49,7 +50,7 @@ import java.util.*;
 import java.util.List;
 
 public class Waypoints {
-    public static boolean enabled = true;
+    public static boolean enabled = false;
 
     public static boolean showEntrance = true;
     public static boolean showSuperboom = true;
@@ -65,6 +66,8 @@ public class Waypoints {
     public static boolean showBoundingBox = true;
     public static boolean showBeacon = true;
 
+    public static boolean practiceModeOn = false;
+
     public static int secretNum = 0;
     public static int completedSecrets = 0;
 
@@ -73,10 +76,12 @@ public class Waypoints {
 
     static long lastSneakTime = 0;
 
+    Frustum frustum = new Frustum();
 
     @SubscribeEvent
     public void onWorldRender(RenderWorldLastEvent event) {
         if (!enabled) return;
+        if (practiceModeOn && !DungeonRooms.keyBindings[2].isKeyDown()) return;
         String roomName = RoomDetection.roomName;
         if (roomName.equals("undefined") || DungeonRooms.roomsJson.get(roomName) == null || secretsList == null) return;
         if (DungeonRooms.waypointsJson.get(roomName) != null) {
@@ -97,6 +102,15 @@ public class Waypoints {
                 if (!display) continue;
 
                 if (disableWhenAllFound && allFound && !secretsObject.get("category").getAsString().equals("fairysoul")) continue;
+
+                BlockPos relative = new BlockPos(secretsObject.get("x").getAsInt(), secretsObject.get("y").getAsInt(), secretsObject.get("z").getAsInt());
+                BlockPos pos = MapUtils.relativeToActual(relative, RoomDetection.roomDirection, RoomDetection.roomCorner);
+                Entity viewer = Minecraft.getMinecraft().getRenderViewEntity();
+                frustum.setPosition(viewer.posX, viewer.posY, viewer.posZ);
+                if (!frustum.isBoxInFrustum(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1, 255, pos.getZ() + 1)){
+                    continue;
+                }
+
 
                 Color color;
                 switch (secretsObject.get("category").getAsString()) {
@@ -136,13 +150,9 @@ public class Waypoints {
                         color = new Color(190, 255, 252);
                 }
 
-                Entity viewer = Minecraft.getMinecraft().getRenderViewEntity();
                 double viewerX = viewer.lastTickPosX + (viewer.posX - viewer.lastTickPosX) * event.partialTicks;
                 double viewerY = viewer.lastTickPosY + (viewer.posY - viewer.lastTickPosY) * event.partialTicks;
                 double viewerZ = viewer.lastTickPosZ + (viewer.posZ - viewer.lastTickPosZ) * event.partialTicks;
-
-                BlockPos relative = new BlockPos(secretsObject.get("x").getAsInt(), secretsObject.get("y").getAsInt(), secretsObject.get("z").getAsInt());
-                BlockPos pos = MapUtils.relativeToActual(relative, RoomDetection.roomDirection, RoomDetection.roomCorner);
 
                 double x = pos.getX() - viewerX;
                 double y = pos.getY() - viewerY;
@@ -151,7 +161,9 @@ public class Waypoints {
 
                 GlStateManager.disableDepth();
                 GlStateManager.disableCull();
-                if (showBoundingBox) WaypointUtils.drawFilledBoundingBox(new AxisAlignedBB(x, y, z, x + 1, y + 1, z + 1), color, 0.4f);
+                if (showBoundingBox && frustum.isBoxInFrustum(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1, pos.getY() + 1, pos.getZ() + 1)) {
+                    WaypointUtils.drawFilledBoundingBox(new AxisAlignedBB(x, y, z, x + 1, y + 1, z + 1), color, 0.4f);
+                }
                 GlStateManager.disableTexture2D();
                 if (showBeacon && distSq > 5*5) WaypointUtils.renderBeaconBeam(x, y + 1, z, color.getRGB(), 0.25f, event.partialTicks);
                 if (showWaypointText) WaypointUtils.renderWaypointText(secretsObject.get("secretName").getAsString(), pos.up(2), event.partialTicks);

@@ -43,7 +43,7 @@ public class RoomDetection {
     Minecraft mc = Minecraft.getMinecraft();
     static int stage2Ticks = 0;
 
-    public static ExecutorService stage2Executor;
+    static ExecutorService stage2Executor;
 
     public static List<Point> currentMapSegments;
     public static List<Point> currentPhysicalSegments;
@@ -65,6 +65,8 @@ public class RoomDetection {
 
     static long incompleteScan = 0;
     static long redoScan = 0;
+
+    static int entranceMapNullCount = 0;
 
 
     @SubscribeEvent
@@ -91,10 +93,17 @@ public class RoomDetection {
                     DungeonRooms.logger.info("DungeonRooms: Getting entrance map corners from hotbar map...");
                 } else if (entranceMapCorners[0] == null || entranceMapCorners[1] == null) { //prevent crashes if hotbar map bugged
                     DungeonRooms.logger.warn("DungeonRooms: Entrance room not found, hotbar map possibly bugged");
-                    player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED
-                            + "Dungeon Rooms: Entrance room not found, hotbar map is possibly bugged, turning mod off for this run..."));
-                    gameStage = 4;
-                    DungeonRooms.logger.info("DungeonRooms: gameStage set to " + gameStage);
+                    entranceMapNullCount++;
+                    entranceMapCorners = null; //retry getting corners again next loop
+                    if (entranceMapNullCount >= 8) {
+                        player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED
+                                + "Dungeon Rooms: Error with hotbar map, turning mod off for this run..."));
+                        DungeonRooms.textToDisplay = new ArrayList<>(Collections.singletonList(
+                                "Dungeon Rooms: " + EnumChatFormatting.RED + "Hotbar map may be bugged, mod disabled for this run"
+                        ));
+                        gameStage = 4;
+                        DungeonRooms.logger.info("DungeonRooms: gameStage set to " + gameStage);
+                    }
                 } else if (entrancePhysicalNWCorner == null) {
                     DungeonRooms.logger.warn("DungeonRooms: Entrance Room coordinates not found");
                     //for when people dc and reconnect, or if initial check doesn't work

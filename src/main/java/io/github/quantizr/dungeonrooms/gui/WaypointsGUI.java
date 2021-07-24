@@ -41,6 +41,7 @@ import java.util.List;
 public class WaypointsGUI extends GuiScreen {
 
     private GuiButton waypointsEnabled;
+    private GuiButton practiceModeEnabled;
     private GuiButton showEntrance;
     private GuiButton showSuperboom;
     private GuiButton showSecrets;
@@ -64,19 +65,21 @@ public class WaypointsGUI extends GuiScreen {
         waypointGuiOpened = true;
 
         ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
-        int height = sr.getScaledHeight();
-        int width = sr.getScaledWidth();
+        int height = (int) (sr.getScaledHeight());
+        int width = (int) (sr.getScaledWidth());
 
-        waypointsEnabled = new GuiButton(0, width / 2 - 100, height / 6 + 5, 200, 20, waypointBtnText());
-        showEntrance = new GuiButton(1, (width / 2 - 100) - 110, height / 6 + 35, 200, 20, "Show Entrance Waypoints: " + getOnOff(Waypoints.showEntrance));
-        showSuperboom = new GuiButton(2, (width / 2 - 100) + 110, height / 6 + 35, 200, 20, "Show Superboom Waypoints: " + getOnOff(Waypoints.showSuperboom));
-        showSecrets = new GuiButton(3, (width / 2 - 100) - 110, height / 6 + 65, 200, 20, "Show Secret Waypoints: " + getOnOff(Waypoints.showSecrets));
-        showFairySouls = new GuiButton(4, (width / 2 - 100) + 110, height / 6 + 65, 200, 20, "Show Fairy Soul Waypoints: " + getOnOff(Waypoints.showFairySouls));
-        sneakToDisable = new GuiButton(5, (width / 2 - 100) - 110, height / 6 + 95, 200, 20, "Double-Tap Sneak to Hide Nearby: " + getOnOff(Waypoints.sneakToDisable));
-        disableWhenAllFound = new GuiButton(6, (width / 2 - 100) + 110, height / 6 + 95, 200, 20, "Disable when all secrets found: " + getOnOff(Waypoints.disableWhenAllFound));
-        close = new GuiButton(7, width / 2 - 100, (height / 6) * 5, 200, 20, "Close");
+        waypointsEnabled = new GuiButton(0, (width / 2 - 100) - 110, height / 6 + 5, 200, 20, waypointBtnText());
+        practiceModeEnabled = new GuiButton(1, (width / 2 - 100) + 110, height / 6 + 5, 200, 20, "Practice Mode: " + getOnOff(Waypoints.practiceModeOn));
+        showEntrance = new GuiButton(2, (width / 2 - 100) - 110, height / 6 + 35, 200, 20, "Show Entrance Waypoints: " + getOnOff(Waypoints.showEntrance));
+        showSuperboom = new GuiButton(3, (width / 2 - 100) + 110, height / 6 + 35, 200, 20, "Show Superboom Waypoints: " + getOnOff(Waypoints.showSuperboom));
+        showSecrets = new GuiButton(4, (width / 2 - 100) - 110, height / 6 + 65, 200, 20, "Show Secret Waypoints: " + getOnOff(Waypoints.showSecrets));
+        showFairySouls = new GuiButton(5, (width / 2 - 100) + 110, height / 6 + 65, 200, 20, "Show Fairy Soul Waypoints: " + getOnOff(Waypoints.showFairySouls));
+        sneakToDisable = new GuiButton(6, (width / 2 - 100) - 110, height / 6 + 95, 200, 20, "Double-Tap Sneak to Hide Nearby: " + getOnOff(Waypoints.sneakToDisable));
+        disableWhenAllFound = new GuiButton(7, (width / 2 - 100) + 110, height / 6 + 95, 200, 20, "Disable when all secrets found: " + getOnOff(Waypoints.disableWhenAllFound));
+        close = new GuiButton(8, width / 2 - 100, (height / 6) * 5, 200, 20, "Close");
 
         this.buttonList.add(waypointsEnabled);
+        this.buttonList.add(practiceModeEnabled);
         this.buttonList.add(showEntrance);
         this.buttonList.add(showSuperboom);
         this.buttonList.add(showSecrets);
@@ -114,7 +117,7 @@ public class WaypointsGUI extends GuiScreen {
         this.drawDefaultBackground();
         Minecraft mc = Minecraft.getMinecraft();
 
-        String text1 = "Dungeon Room Waypoints:";
+        String text1 = "§lDungeon Room Waypoints:";
         int text1Width = mc.fontRendererObj.getStringWidth(text1);
         TextRenderer.drawText(mc, text1, width / 2 - text1Width / 2, height / 6 - 25, 1D, false);
 
@@ -159,7 +162,16 @@ public class WaypointsGUI extends GuiScreen {
                         + GameSettings.getKeyDisplayString(DungeonRooms.keyBindings[0].getKeyCode()) + "\"."
                 ));
             }
-
+        } else if (button == practiceModeEnabled) {
+            Waypoints.practiceModeOn = !Waypoints.practiceModeOn;
+            ConfigHandler.writeBooleanConfig("waypoint", "practiceModeOn", Waypoints.practiceModeOn);
+            practiceModeEnabled.displayString = "Practice Mode: " + getOnOff(Waypoints.practiceModeOn);
+            if (Waypoints.practiceModeOn) {
+                player.addChatMessage(new ChatComponentText("§eDungeon Rooms: Practice Mode has been enabled.\n"
+                        + "§e Waypoints will only show up while you are pressing \"" + GameSettings.getKeyDisplayString(DungeonRooms.keyBindings[2].getKeyCode()) + "\".\n"
+                        + "§r (Hotkey is configurable in Minecraft Controls menu)"
+                ));
+            }
         } else if (button == showEntrance) {
             Waypoints.showEntrance = !Waypoints.showEntrance;
             ConfigHandler.writeBooleanConfig("waypoint", "showEntrance", Waypoints.showEntrance);
@@ -233,9 +245,9 @@ public class WaypointsGUI extends GuiScreen {
 
     private static String waypointBtnText() {
         if (Waypoints.enabled){
-            return EnumChatFormatting.GREEN + "Waypoints Enabled";
+            return EnumChatFormatting.GREEN + "§lWaypoints Enabled";
         } else {
-            return EnumChatFormatting.RED + "Waypoints Disabled";
+            return EnumChatFormatting.RED + "§lWaypoints Disabled";
         }
     }
 

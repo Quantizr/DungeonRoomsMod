@@ -57,6 +57,7 @@ public class DungeonManager {
 
     @SubscribeEvent(priority = EventPriority.HIGHEST, receiveCanceled = true)
     public void onChat(ClientChatReceivedEvent event) {
+        if (!Utils.inCatacombs) return;
         String message = event.message.getFormattedText();
 
         //gameStage set from 0 to 1 in the onTick function later
@@ -161,6 +162,7 @@ public class DungeonManager {
         map = null;
         entranceMapCorners = null;
         entrancePhysicalNWCorner = null;
+        RoomDetection.entranceMapNullCount = 0;
 
         bloodDone = false;
 

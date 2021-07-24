@@ -74,7 +74,7 @@ import java.util.concurrent.*;
 public class DungeonRooms
 {
     public static final String MODID = "dungeonrooms";
-    public static final String VERSION = "3.0.1";
+    public static final String VERSION = "3.1.0";
 
     Minecraft mc = Minecraft.getMinecraft();
     public static Logger logger;
@@ -84,7 +84,7 @@ public class DungeonRooms
     public static HashMap<String,HashMap<String,long[]>> ROOM_DATA = new HashMap<>();
 
     public static boolean usingSBPSecrets = false;
-    public static KeyBinding[] keyBindings = new KeyBinding[2];
+    public static KeyBinding[] keyBindings = new KeyBinding[3];
     public static String imageHotkeyOpen = "gui";
     static int tickAmount = 1;
 
@@ -134,6 +134,7 @@ public class DungeonRooms
         //register keybindings
         keyBindings[0] = new KeyBinding("Open Room Images in DSG/SBP", Keyboard.KEY_O, "Dungeon Rooms Mod");
         keyBindings[1] = new KeyBinding("Open Waypoint Menu", Keyboard.KEY_P, "Dungeon Rooms Mod");
+        keyBindings[2] = new KeyBinding("Show Waypoints in Practice Mode", Keyboard.KEY_I, "Dungeon Rooms Mod");
         for (KeyBinding keyBinding : keyBindings) {
             ClientRegistry.registerKeyBinding(keyBinding);
         }
@@ -299,6 +300,15 @@ public class DungeonRooms
         }
         if (keyBindings[1].isPressed()) {
             mc.addScheduledTask(() -> mc.displayGuiScreen(new WaypointsGUI()));
+        }
+        if (keyBindings[2].isPressed()) {
+            if (Waypoints.enabled && !Waypoints.practiceModeOn) {
+                player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED
+                        + "Dungeon Rooms: Run \"/room toggle practice\" to enable Practice Mode."));
+            } else if (!Waypoints.enabled && Waypoints.practiceModeOn) {
+                player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED
+                        + "Dungeon Rooms: Waypoints must be enabled for Practice Mode to work."));
+            }
         }
     }
 

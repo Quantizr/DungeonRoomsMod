@@ -185,7 +185,7 @@ public class ConfigHandler {
         //if (!hasKey("toggles", "chatToggled")) writeBooleanConfig("toggles", "chatToggled", false);
         if (!hasKey("toggles", "guiToggled")) writeBooleanConfig("toggles", "guiToggled", true);
         //if (!hasKey("toggles", "coordToggled")) writeBooleanConfig("toggles", "coordToggled", false);
-        if (!hasKey("toggles", "waypointsToggled")) writeBooleanConfig("toggles", "waypointsToggled", true);
+        if (!hasKey("toggles", "waypointsToggled")) writeBooleanConfig("toggles", "waypointsToggled", false);
 
         if (!hasKey("waypoint", "showEntrance")) writeBooleanConfig("waypoint", "showEntrance", true);
         if (!hasKey("waypoint", "showSuperboom")) writeBooleanConfig("waypoint", "showSuperboom", true);
@@ -198,6 +198,8 @@ public class ConfigHandler {
         if (!hasKey("waypoint", "showBoundingBox")) writeBooleanConfig("waypoint", "showBoundingBox", true);
         if (!hasKey("waypoint", "showBeacon")) writeBooleanConfig("waypoint", "showBeacon", true);
 
+        if (!hasKey("waypoint", "practiceModeOn")) writeBooleanConfig("waypoint", "practiceModeOn", false);
+
         if (!hasKey("gui", "scaleX")) writeIntConfig("gui", "scaleX", 50);
         if (!hasKey("gui", "scaleY")) writeIntConfig("gui", "scaleY", 5);
         if (!hasKey("gui", "hotkeyOpen")) writeStringConfig("gui", "hotkeyOpen", "gui");
@@ -206,7 +208,7 @@ public class ConfigHandler {
         if (!hasKey("drm", "version")) {
             writeStringConfig("drm", "version", DungeonRooms.VERSION);
             DungeonRooms.firstLogin = true;
-            writeBooleanConfig("toggles", "waypointsToggled", false);
+            //writeBooleanConfig("toggles", "waypointsToggled", false);
         } else if (!getString("drm", "version").equals(DungeonRooms.VERSION)) {
             writeStringConfig("drm", "version", DungeonRooms.VERSION);
             /* //uncomment if major update in future requires firstLogin prompt to be displayed again
@@ -230,6 +232,8 @@ public class ConfigHandler {
         Waypoints.showWaypointText = getBoolean("waypoint", "showWaypointText");
         Waypoints.showBoundingBox = getBoolean("waypoint", "showBoundingBox");
         Waypoints.showBeacon = getBoolean("waypoint", "showBeacon");
+
+        Waypoints.practiceModeOn = getBoolean("waypoint", "practiceModeOn");
 
         DungeonRooms.textLocX = getInt("gui", "scaleX");
         DungeonRooms.textLocY = getInt("gui", "scaleY");
