@@ -182,9 +182,8 @@ public class ConfigHandler {
     }
 
     public static void reloadConfig() {
-        //if (!hasKey("toggles", "chatToggled")) writeBooleanConfig("toggles", "chatToggled", false);
         if (!hasKey("toggles", "guiToggled")) writeBooleanConfig("toggles", "guiToggled", true);
-        //if (!hasKey("toggles", "coordToggled")) writeBooleanConfig("toggles", "coordToggled", false);
+        if (!hasKey("toggles", "motdToggled")) writeBooleanConfig("toggles", "motdToggled", true);
         if (!hasKey("toggles", "waypointsToggled")) writeBooleanConfig("toggles", "waypointsToggled", false);
 
         if (!hasKey("waypoint", "showEntrance")) writeBooleanConfig("waypoint", "showEntrance", true);
@@ -219,6 +218,7 @@ public class ConfigHandler {
 
         //AutoRoom.chatToggled = getBoolean("toggles", "chatToggled");
         DungeonManager.guiToggled = getBoolean("toggles", "guiToggled");
+        DungeonManager.motdToggled = getBoolean("toggles", "motdToggled");
         //AutoRoom.coordToggled = getBoolean("toggles", "coordToggled");
         Waypoints.enabled =  getBoolean("toggles", "waypointsToggled");
 

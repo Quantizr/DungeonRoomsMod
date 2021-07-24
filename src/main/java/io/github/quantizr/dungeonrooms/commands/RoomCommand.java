@@ -202,6 +202,7 @@ public class RoomCommand extends CommandBase {
                     String toggleHelp = "\n"
                             + EnumChatFormatting.GOLD + " Dungeon Rooms Mod Toggle Commands:" + "\n"
                             + EnumChatFormatting.AQUA + " /room toggle gui" + EnumChatFormatting.WHITE + " - Toggles displaying current room in gui.\n"
+                            + EnumChatFormatting.AQUA + " /room toggle motd" + EnumChatFormatting.WHITE + " - Toggles displaying the Welcome/MOTD message at the start of a dungeon run.\n"
                             + EnumChatFormatting.AQUA + " /room toggle practice" + EnumChatFormatting.WHITE + " - Toggles Practice Mode, where waypoints are only displayed when holding down " + GameSettings.getKeyDisplayString(DungeonRooms.keyBindings[2].getKeyCode()) +"\".\n"
                             + EnumChatFormatting.AQUA + " /room toggle waypoints" + EnumChatFormatting.WHITE + " - Toggles Waypoints, does the same thing as pressing \"" + GameSettings.getKeyDisplayString(DungeonRooms.keyBindings[1].getKeyCode()) +"\" then clicking \"Waypoints\".\n"
                             + EnumChatFormatting.AQUA + " /room toggle waypointtext" + EnumChatFormatting.WHITE + " - Toggles displaying waypoint names above waypoints.\n"
@@ -217,6 +218,13 @@ public class RoomCommand extends CommandBase {
                                 DungeonManager.guiToggled = !DungeonManager.guiToggled;
                                 ConfigHandler.writeBooleanConfig("toggles", "guiToggled", DungeonManager.guiToggled);
                                 player.addChatMessage(new ChatComponentText("Dungeon Rooms: Display room names in GUI has been set to: " + DungeonManager.guiToggled));
+                                break;
+
+                            case "welcome":
+                            case "motd":
+                                DungeonManager.motdToggled = !DungeonManager.motdToggled;
+                                ConfigHandler.writeBooleanConfig("toggles", "motdToggled", DungeonManager.motdToggled);
+                                player.addChatMessage(new ChatComponentText("Dungeon Rooms: Display Welcome/MOTD has been set to: " + DungeonManager.motdToggled));
                                 break;
 
                             case "practice":

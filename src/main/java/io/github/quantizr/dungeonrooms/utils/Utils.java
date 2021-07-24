@@ -21,7 +21,10 @@ package io.github.quantizr.dungeonrooms.utils;
 import io.github.quantizr.dungeonrooms.DungeonRooms;
 import io.github.quantizr.dungeonrooms.handlers.ScoreboardHandler;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.settings.GameSettings;
+import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.scoreboard.ScoreObjective;
+import net.minecraft.util.ChatComponentText;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -91,6 +94,25 @@ public class Utils {
             }
         }
         inCatacombs = false;
+    }
+
+
+    public static void checkForConflictingHotkeys() {
+        Minecraft mc = Minecraft.getMinecraft();
+        for (KeyBinding drmKeybind : DungeonRooms.keyBindings) {
+            for (KeyBinding keybinding : mc.gameSettings.keyBindings) {
+                if (drmKeybind.getKeyCode() != 0 && drmKeybind != keybinding && drmKeybind.getKeyCode() == keybinding.getKeyCode()) {
+                    mc.thePlayer.addChatMessage(new ChatComponentText("§d§l--- Dungeon Rooms Mod ---\n"
+                            + " §r§cThe hotkey \"" + GameSettings.getKeyDisplayString(drmKeybind.getKeyCode())
+                            + "\", which is used to " + drmKeybind.getKeyDescription() + ", has a conflict with a "
+                            + "keybinding from \"" + keybinding.getKeyCategory() + "\".\n §c§lPlease go into the "
+                            + "Minecraft Controls menu and change one of the keybindings.\n"
+                            + "§d§l------------------------"
+                    ));
+                }
+            }
+        }
+
     }
 
     /**

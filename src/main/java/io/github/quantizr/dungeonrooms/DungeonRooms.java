@@ -74,7 +74,7 @@ import java.util.concurrent.*;
 public class DungeonRooms
 {
     public static final String MODID = "dungeonrooms";
-    public static final String VERSION = "3.1.0";
+    public static final String VERSION = "3.1.1";
 
     Minecraft mc = Minecraft.getMinecraft();
     public static Logger logger;
@@ -133,7 +133,7 @@ public class DungeonRooms
 
         //register keybindings
         keyBindings[0] = new KeyBinding("Open Room Images in DSG/SBP", Keyboard.KEY_O, "Dungeon Rooms Mod");
-        keyBindings[1] = new KeyBinding("Open Waypoint Menu", Keyboard.KEY_P, "Dungeon Rooms Mod");
+        keyBindings[1] = new KeyBinding("Open Waypoint Config Menu", Keyboard.KEY_P, "Dungeon Rooms Mod");
         keyBindings[2] = new KeyBinding("Show Waypoints in Practice Mode", Keyboard.KEY_I, "Dungeon Rooms Mod");
         for (KeyBinding keyBinding : keyBindings) {
             ClientRegistry.registerKeyBinding(keyBinding);
@@ -207,19 +207,10 @@ public class DungeonRooms
                         Thread.sleep(100);
                     }
                     Thread.sleep(3000);
-                    if (firstLogin && !Waypoints.enabled) {
-                        mc.thePlayer.addChatMessage(new ChatComponentText("§d§l--- Dungeon Rooms Mod ---\n"
-                                + "§e This appears to be your first time using DRM v" + VERSION + ".\n"
-                                + "§e If you would like to turn on secret waypoints, press \"" + GameSettings.getKeyDisplayString(keyBindings[1].getKeyCode()) +"\", "
-                                + "followed by the \"Waypoints\" button to toggle the setting. If you do not wish to use waypoints, you can instead press \""
-                                + GameSettings.getKeyDisplayString(keyBindings[0].getKeyCode()) +"\" while inside a dungeon room to view images of the secrets for that room.\n"
-                                + "§r (If you need help, join the Discord! Run \"/room discord\" to open the Discord invite.)\n"
-                                + "§d§l-------------------------"
-                        ));
-                        Thread.sleep(1000);
-                    }
-                    logger.info("DungeonRooms: Checking for updates...");
+                    logger.info("DungeonRooms: Checking for conflicting keybindings...");
+                    Utils.checkForConflictingHotkeys();
 
+                    logger.info("DungeonRooms: Checking for updates...");
                     URL url = new URL("https://api.github.com/repos/Quantizr/DungeonRoomsMod/releases/latest");
                     URLConnection request = url.openConnection();
                     request.connect();
@@ -240,7 +231,7 @@ public class DungeonRooms
                     }
 
                     logger.info("DungeonRooms: Getting MOTD...");
-                    url = new URL("https://gist.githubusercontent.com/Quantizr/9003798a054248af7e8ca832d6f98648/raw/");
+                    url = new URL("https://gist.githubusercontent.com/Quantizr/93854978061c921a4c63fc41fd6cf263/raw/");
                     BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream(), StandardCharsets.UTF_8));
                     String line;
                     motd = new ArrayList<>();

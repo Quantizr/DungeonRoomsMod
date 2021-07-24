@@ -41,9 +41,8 @@ public class DungeonManager {
     Minecraft mc = Minecraft.getMinecraft();
     public static int gameStage = 0; //0: Not in Dungeon, 1: Entrance/Not Started, 2: Room Clear, 3: Boss, 4: Done
 
-    //public static boolean chatToggled = false;
     public static boolean guiToggled = true;
-    //public static boolean coordToggled = false;
+    public static boolean motdToggled = true;
 
     public static Integer[][] map;
     public static Point[] entranceMapCorners;
@@ -93,7 +92,7 @@ public class DungeonManager {
         if (!Utils.inCatacombs) return; //From this point forward, everything assumes that Utils.inCatacombs == true
         tickAmount++;
 
-        if ((gameStage == 0 || gameStage == 1) && tickAmount == 20) {
+        if ((gameStage == 0 || gameStage == 1) && tickAmount % 20 == 0) {
 
             if (DungeonRooms.firstLogin) {
                 DungeonRooms.firstLogin = false;
@@ -104,9 +103,15 @@ public class DungeonManager {
                             + "followed by the \"Waypoints\" button to toggle the setting. If you do not wish to use waypoints, you can instead press \""
                             + GameSettings.getKeyDisplayString(DungeonRooms.keyBindings[0].getKeyCode()) +"\" while inside a dungeon room to view images of the secrets for that room.\n"
                             + "§r (If you need help, join the Discord! Run \"/room discord\" to open the Discord invite.)\n"
-                            + "§d§l-------------------------"
+                            + "§d§l------------------------"
                     ));
                 }
+            }
+
+            if (gameStage == 0) {
+                Utils.checkForConflictingHotkeys();
+                gameStage = 1;
+                DungeonRooms.logger.info("DungeonRooms: gameStage set to " + gameStage);
             }
 
             Integer[][] map = MapUtils.updatedMap();
@@ -117,11 +122,6 @@ public class DungeonManager {
                 return;
             }
 
-            if (gameStage == 0) {
-                gameStage = 1;
-                DungeonRooms.logger.info("DungeonRooms: gameStage set to " + gameStage);
-            }
-
             if (gameStage == 1 && entrancePhysicalNWCorner == null) {
                 if (!player.getPositionVector().equals(new Vec3(0.0D,0.0D,0.0D))) {
                     //this point is calculated using math, not scanning, which may cause issues when reconnecting to a run
@@ -130,7 +130,7 @@ public class DungeonManager {
                 }
             }
 
-            if (DungeonRooms.textToDisplay == null) {
+            if (DungeonRooms.textToDisplay == null && motdToggled) {
                 DungeonRooms.logger.info("DungeonRooms: Updating MOTD on screen");
                 if (oddRun || !guiToggled) { //load MOTD on odd runs
                     if (DungeonRooms.motd != null) {
@@ -157,6 +157,7 @@ public class DungeonManager {
     @SubscribeEvent
     public void onWorldUnload(WorldEvent.Unload event) {
         Utils.inCatacombs = false;
+        tickAmount = 0;
         gameStage = 0;
 
         map = null;
