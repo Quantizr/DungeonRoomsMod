@@ -341,6 +341,13 @@
     "dsg": "/channels/727426780381577291/733854519934451732/733854644564131902",
     "sbp": "big-red-flag"
   },
+  "Cages-2": {
+    "category": "1x1",
+    "secrets": 2,
+    "fairysoul": false,
+    "dsg": "/channels/727426780381577291/879793359709933618/879804036449194014",
+    "sbp": "cages"
+  },
   "Chains-2": {
     "category": "1x1",
     "secrets": 2,
@@ -369,12 +376,26 @@
     "dsg": "/channels/727426780381577291/733828110432206899/733829191270793216",
     "sbp": "drop"
   },
+  "End-2": {
+    "category": "1x1",
+    "secrets": 2,
+    "fairysoul": false,
+    "dsg": "/channels/727426780381577291/879929045641465857/879929282141491292",
+    "sbp": "end"
+  },
   "Granite-2": {
     "category": "1x1",
     "secrets": 2,
     "fairysoul": false,
     "dsg": "/channels/727426780381577291/733907465011200001/733907705361858582",
     "sbp": "granite"
+  },
+  "Overgrown-Chains-2": {
+    "category": "1x1",
+    "secrets": 2,
+    "fairysoul": false,
+    "dsg": "/channels/727426780381577291/879792534841344082/879962065371021322",
+    "sbp": "overgrown-chains"
   },
   "Painting-2": {
     "category": "1x1",
@@ -410,6 +431,13 @@
     "fairysoul": false,
     "dsg": "/channels/727426780381577291/769368894225121280/793146978712289290",
     "sbp": "tombstone"
+  },
+  "Double-Diamond-3": {
+    "category": "1x1",
+    "secrets": 3,
+    "fairysoul": false,
+    "dsg": "/channels/727426780381577291/879825848746790942/879826007824162856",
+    "sbp": "double-diamond"
   },
   "Water-2": {
     "category": "1x1",
@@ -502,6 +530,13 @@
     "dsg": "/channels/727426780381577291/769368622778286111/779264739544662016",
     "sbp": "overgrown"
   },
+  "Red-Green-3": {
+    "category": "1x1",
+    "secrets": 3,
+    "fairysoul": false,
+    "dsg": "/channels/727426780381577291/879828980935577610/879921473542828082",
+    "sbp": "red-green"
+  },
   "Redstone-Key-3": {
     "category": "1x1",
     "secrets": 3,
@@ -565,6 +600,13 @@
     "dsg": "/channels/727426780381577291/733909034654236742/733909154254815305",
     "sbp": "archway"
   },
+  "Grass-Ruin-3": {
+    "category": "1x2",
+    "secrets": 3,
+    "fairysoul": false,
+    "dsg": "/channels/727426780381577291/879932963939307551/879933264696082432",
+    "sbp": "grass-ruin"
+  },
   "Redstone-Warrior-3": {
     "category": "1x2",
     "secrets": 3,
@@ -578,6 +620,13 @@
     "fairysoul": false,
     "dsg": "/channels/727426780381577291/733845349164122146/733845463152984114",
     "sbp": "balcony"
+  },
+  "Grand-Library-4": {
+    "category": "1x2",
+    "secrets": 4,
+    "fairysoul": false,
+    "dsg": "/channels/727426780381577291/879896240836456458/879900771699794013",
+    "sbp": "grand-library"
   },
   "Mage-4": {
     "category": "1x2",
@@ -698,6 +747,13 @@
     "dsg": "/channels/727426780381577291/732199310690746368/733869839680012370",
     "sbp": "quartz-knight"
   },
+  "Waterfall-8": {
+    "category": "1x4",
+    "secrets": 8,
+    "fairysoul": false,
+    "dsg": "/channels/727426780381577291/879791869821849620/879904013309591612",
+    "sbp": "waterfall"
+  },
   "Stairs-4": {
     "category": "2x2",
     "secrets": 4,
@@ -739,6 +795,13 @@
     "fairysoul": false,
     "dsg": "/channels/727426780381577291/733046323556777988/733827872740999189",
     "sbp": "flags"
+  },
+  "Mithril-Caves-7": {
+    "category": "2x2",
+    "secrets": 7,
+    "fairysoul": false,
+    "dsg": "/channels/727426780381577291/879793274766913616/879813440057798697",
+    "sbp": "mithril-caves"
   },
   "Cathedral-8": {
     "category": "2x2",
@@ -802,6 +865,13 @@
     "fairysoul": false,
     "dsg": "/channels/727426780381577291/732809439371067466/733912767811027046",
     "sbp": "well"
+  },
+  "Layers-8": {
+    "category": "L-shape",
+    "secrets": 8,
+    "fairysoul": false,
+    "dsg": "/channels/727426780381577291/879905397031440394/879905775072460800",
+    "sbp": "layers"
   },
   "Spider-9": {
     "category": "L-shape",
