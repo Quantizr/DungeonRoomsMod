@@ -246,12 +246,7 @@ public class RoomCommand extends CommandBase {
                                 Waypoints.enabled = !Waypoints.enabled;
                                 ConfigHandler.writeBooleanConfig("waypoint", "waypointsToggled", Waypoints.enabled);
                                 if (Waypoints.enabled) {
-                                    player.addChatMessage(new ChatComponentText("§eDungeon Rooms: Waypoints will now automatically show up when you enter a new dungeon room.\n"
-                                            + "§c§l WARNING:§r§c While waypoints are not detectable and most likely §lNOT bannable§r§c, some players view them as an unfair advantage.\n"
-                                            + "§c Please understand, especially if you are recording or streaming, that, while you most likely are fine, this feature is §lUse At Your Own Risk§r§c. "
-                                            + "If this is a concern for you, please disable waypoints and view secret images instead with the hotkey \""
-                                            + GameSettings.getKeyDisplayString(DungeonRooms.keyBindings[1].getKeyCode()) + "\"."
-                                    ));
+                                    player.addChatMessage(new ChatComponentText("§eDungeon Rooms: Waypoints will now automatically show up when you enter a new dungeon room."));
                                 } else {
                                     player.addChatMessage(new ChatComponentText("§eDungeon Rooms: Waypoints have been disabled."));
                                 }

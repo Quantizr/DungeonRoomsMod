@@ -129,13 +129,11 @@ public class RoomDetection {
                         resetCurrentRoom(); //only instance of resetting room other than leaving Dungeon
                     } else if (incompleteScan != 0 && System.currentTimeMillis() > incompleteScan) {
                         incompleteScan = 0;
-                        player.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW
-                                + "Dungeon Rooms: Rescanning room..."));
+                        DungeonRooms.logger.info("DungeonRooms: Rescanning room...");
                         raytraceBlocks();
                     } else if (redoScan != 0 && System.currentTimeMillis() > redoScan) {
                         redoScan = 0;
-                        player.addChatMessage(new ChatComponentText(EnumChatFormatting.YELLOW
-                                + "Dungeon Rooms: Clearing data and rescanning room..."));
+                        DungeonRooms.logger.info("DungeonRooms: Clearing data and rescanning room...");
                         possibleRooms = null;
                         raytraceBlocks();
                     }
@@ -199,15 +197,15 @@ public class RoomDetection {
                        DungeonRooms.textToDisplay = new ArrayList<>(Arrays.asList(
                                 "Dungeon Rooms: " + EnumChatFormatting.RED + "No Matching Rooms Detected",
                                 EnumChatFormatting.RED + "This mod might not have data for this room.",
-                                EnumChatFormatting.WHITE + "Retrying every 10 seconds..."
+                                EnumChatFormatting.WHITE + "Retrying every 5 seconds..."
                        ));
-                       redoScan = System.currentTimeMillis() + 10000;
+                       redoScan = System.currentTimeMillis() + 5000;
 
                     } else if (possibleRoomsSet.size() == 1) { //room found
                         roomName =  possibleRoomsSet.first();
                         roomDirection = tempDirection;
                         roomCorner = MapUtils.getPhysicalCornerPos(roomDirection, currentPhysicalSegments);
-                        DungeonRooms.logger.info("DungeonRooms: 1024 raytrace vectors sent, returning "
+                        DungeonRooms.logger.info("DungeonRooms: 576 raytrace vectors sent, returning "
                                 + currentScannedBlocks.size() + " unique line-of-sight blocks, filtered down to "
                                 + totalBlocksAvailableToCheck + " blocks, out of which " + blocksUsed.size()
                                 + " blocks were used to uniquely identify " + roomName + ".");
@@ -217,11 +215,11 @@ public class RoomDetection {
                         DungeonRooms.textToDisplay = new ArrayList<>(Arrays.asList(
                                 "Dungeon Rooms: " + EnumChatFormatting.RED + "Unable to Determine Room Name",
                                 EnumChatFormatting.RED + "Not enough valid blocks were scanned, look at a more open area.",
-                                EnumChatFormatting.WHITE + "Retrying every 2 seconds..."
+                                EnumChatFormatting.WHITE + "Retrying every second..."
                         ));
 
                         DungeonRooms.logger.debug("DungeonRooms: Possible rooms list = " + new ArrayList<>(possibleRoomsSet));
-                        incompleteScan = System.currentTimeMillis() + 2000;
+                        incompleteScan = System.currentTimeMillis() + 1000;
                     }
                 } catch (ExecutionException | InterruptedException e) {
                     e.printStackTrace();
@@ -316,7 +314,7 @@ public class RoomDetection {
 
         EntityPlayerSP player = mc.thePlayer;
 
-        List<Vec3> vecList = RoomDetectionUtils.vectorsToRaytrace(32); //actually creates 32^2 = 1024 raytrace vectors
+        List<Vec3> vecList = RoomDetectionUtils.vectorsToRaytrace(24); //actually creates 24^2 = 576 raytrace vectors
 
         Vec3 eyes = new Vec3(player.posX, player.posY + (double)player.getEyeHeight(), player.posZ);
 

@@ -74,7 +74,7 @@ import java.util.concurrent.*;
 public class DungeonRooms
 {
     public static final String MODID = "dungeonrooms";
-    public static final String VERSION = "3.2.0";
+    public static final String VERSION = "3.2.1";
 
     Minecraft mc = Minecraft.getMinecraft();
     public static Logger logger;
@@ -231,7 +231,7 @@ public class DungeonRooms
                     }
 
                     logger.info("DungeonRooms: Getting MOTD...");
-                    url = new URL("https://gist.githubusercontent.com/Quantizr/93854978061c921a4c63fc41fd6cf263/raw/");
+                    url = new URL("https://gist.githubusercontent.com/Quantizr/50ed64a7a0f3b28dc742d5268d7a3217/raw/");
                     BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream(), StandardCharsets.UTF_8));
                     String line;
                     motd = new ArrayList<>();

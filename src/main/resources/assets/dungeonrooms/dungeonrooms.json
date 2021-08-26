@@ -436,7 +436,7 @@
     "category": "1x1",
     "secrets": 3,
     "fairysoul": false,
-    "dsg": "/channels/727426780381577291/879825848746790942/879826007824162856",
+    "dsg": "/channels/727426780381577291/880155380058046474/880155606240100402",
     "sbp": "double-diamond"
   },
   "Water-2": {
@@ -501,6 +501,13 @@
     "fairysoul": false,
     "dsg": "/channels/727426780381577291/769368436408188938/776261030211747891",
     "sbp": "lava-skull"
+  },
+  "Long-Hall-3": {
+    "category": "1x1",
+    "secrets": 3,
+    "fairysoul": false,
+    "dsg": "/channels/727426780381577291/879896823026831401/879897603091869697",
+    "sbp": "long-hall"
   },
   "Mini-Rail-Track-3": {
     "category": "1x1",
@@ -796,12 +803,12 @@
     "dsg": "/channels/727426780381577291/733046323556777988/733827872740999189",
     "sbp": "flags"
   },
-  "Mithril-Caves-7": {
+  "Mithril-Cave-7": {
     "category": "2x2",
     "secrets": 7,
     "fairysoul": false,
     "dsg": "/channels/727426780381577291/879793274766913616/879813440057798697",
-    "sbp": "mithril-caves"
+    "sbp": "mithril-cave"
   },
   "Cathedral-8": {
     "category": "2x2",
