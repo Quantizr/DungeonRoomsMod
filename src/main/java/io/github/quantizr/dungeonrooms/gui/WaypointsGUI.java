@@ -155,11 +155,7 @@ public class WaypointsGUI extends GuiScreen {
             ConfigHandler.writeBooleanConfig("toggles", "waypointsToggled", Waypoints.enabled);
             waypointsEnabled.displayString = waypointBtnText();
             if (Waypoints.enabled) {
-                player.addChatMessage(new ChatComponentText("§eDungeon Rooms: Waypoints will now automatically show up when you enter a new dungeon room.\n"
-                        + "§c§l WARNING:§r§c While waypoints are not detectable and most likely §lNOT bannable§r§c, this feature is §lUse At Your Own Risk§r§c.\n"
-                        + "No one has ever been banned, but if this is a concern for you, please disable waypoints and view secret images instead with the hotkey \""
-                        + GameSettings.getKeyDisplayString(DungeonRooms.keyBindings[0].getKeyCode()) + "\"."
-                ));
+                player.addChatMessage(new ChatComponentText("§eDungeon Rooms: Waypoints will now automatically show up when you enter a new dungeon room."));
             }
         } else if (button == practiceModeEnabled) {
             Waypoints.practiceModeOn = !Waypoints.practiceModeOn;
@@ -167,7 +163,7 @@ public class WaypointsGUI extends GuiScreen {
             practiceModeEnabled.displayString = "Practice Mode: " + getOnOff(Waypoints.practiceModeOn);
             if (Waypoints.practiceModeOn) {
                 player.addChatMessage(new ChatComponentText("§eDungeon Rooms: Practice Mode has been enabled.\n"
-                        + "§e Waypoints will only show up while you are pressing \"" + GameSettings.getKeyDisplayString(DungeonRooms.keyBindings[2].getKeyCode()) + "\".\n"
+                        + "§e Waypoints will ONLY show up while you are pressing \"" + GameSettings.getKeyDisplayString(DungeonRooms.keyBindings[2].getKeyCode()) + "\".\n"
                         + "§r (Hotkey is configurable in Minecraft Controls menu)"
                 ));
             }

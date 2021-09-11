@@ -184,7 +184,7 @@ public class ConfigHandler {
     public static void reloadConfig() {
         if (!hasKey("toggles", "guiToggled")) writeBooleanConfig("toggles", "guiToggled", true);
         if (!hasKey("toggles", "motdToggled")) writeBooleanConfig("toggles", "motdToggled", true);
-        if (!hasKey("toggles", "waypointsToggled")) writeBooleanConfig("toggles", "waypointsToggled", false);
+        if (!hasKey("toggles", "waypointsToggled")) writeBooleanConfig("toggles", "waypointsToggled", true);
 
         if (!hasKey("waypoint", "showEntrance")) writeBooleanConfig("waypoint", "showEntrance", true);
         if (!hasKey("waypoint", "showSuperboom")) writeBooleanConfig("waypoint", "showSuperboom", true);

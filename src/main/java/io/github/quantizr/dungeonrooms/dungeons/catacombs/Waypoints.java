@@ -50,7 +50,7 @@ import java.util.*;
 import java.util.List;
 
 public class Waypoints {
-    public static boolean enabled = false;
+    public static boolean enabled = true;
 
     public static boolean showEntrance = true;
     public static boolean showSuperboom = true;

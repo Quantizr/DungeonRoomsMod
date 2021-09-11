@@ -96,16 +96,15 @@ public class DungeonManager {
 
             if (DungeonRooms.firstLogin) {
                 DungeonRooms.firstLogin = false;
-                if (!Waypoints.enabled) {
-                    mc.thePlayer.addChatMessage(new ChatComponentText("§d§l--- Dungeon Rooms Mod ---\n"
-                            + "§e This appears to be your first time using DRM v" + DungeonRooms.VERSION + ".\n"
-                            + "§e If you would like to turn on secret waypoints, press \"" + GameSettings.getKeyDisplayString(DungeonRooms.keyBindings[1].getKeyCode()) +"\", "
-                            + "followed by the \"Waypoints\" button to toggle the setting. If you do not wish to use waypoints, you can instead press \""
-                            + GameSettings.getKeyDisplayString(DungeonRooms.keyBindings[0].getKeyCode()) +"\" while inside a dungeon room to view images of the secrets for that room.\n"
-                            + "§r (If you need help, join the Discord! Run \"/room discord\" to open the Discord invite.)\n"
-                            + "§d§l------------------------"
-                    ));
-                }
+                mc.thePlayer.addChatMessage(new ChatComponentText("§d§l--- Dungeon Rooms Mod ---\n"
+                        + "§e This appears to be your first time using DRM v" + DungeonRooms.VERSION + ".\n"
+                        + "§e Press \"" + GameSettings.getKeyDisplayString(DungeonRooms.keyBindings[1].getKeyCode())
+                        +"\" to configure Secret Waypoint settings, If you do not wish to use Waypoints, you can instead press \""
+                        + GameSettings.getKeyDisplayString(DungeonRooms.keyBindings[0].getKeyCode())
+                        +"\" while inside a dungeon room to view images of the secrets for that room.\n"
+                        + "§r (If you need help, join the Discord! Run \"/room discord\" to open the Discord invite.)\n"
+                        + "§d§l------------------------"
+                ));
             }
 
             if (gameStage == 0) {
