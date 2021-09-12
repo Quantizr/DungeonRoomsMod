@@ -276,13 +276,14 @@ public class RoomDetection {
     public static void newRoom() {
         if (!roomName.equals("undefined") && !roomCategory.equals("undefined")) {
             //update Waypoints info
-            Waypoints.allSecretsMap.putIfAbsent(roomName, new ArrayList<>(Collections.nCopies(9, true)));
-            Waypoints.secretsList = Waypoints.allSecretsMap.get(roomName);
             if (DungeonRooms.roomsJson.get(roomName) != null) {
                 Waypoints.secretNum = DungeonRooms.roomsJson.get(roomName).getAsJsonObject().get("secrets").getAsInt();
+                Waypoints.allSecretsMap.putIfAbsent(roomName, new ArrayList<>(Collections.nCopies(Waypoints.secretNum, true)));
             } else {
                 Waypoints.secretNum = 0;
+                Waypoints.allSecretsMap.putIfAbsent(roomName, new ArrayList<>(Collections.nCopies(0, true)));
             }
+            Waypoints.secretsList = Waypoints.allSecretsMap.get(roomName);
 
             //update GUI text
             if (guiToggled) {

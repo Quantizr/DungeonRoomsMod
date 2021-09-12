@@ -72,7 +72,7 @@ public class Waypoints {
     public static int completedSecrets = 0;
 
     public static Map<String, List<Boolean>> allSecretsMap = new HashMap<>();
-    public static List<Boolean> secretsList = new ArrayList<>(Arrays.asList(new Boolean[9]));
+    public static List<Boolean> secretsList = new ArrayList<>(Arrays.asList(new Boolean[10]));
 
     static long lastSneakTime = 0;
 
@@ -93,7 +93,7 @@ public class Waypoints {
                 boolean display = true;
                 for(int j = 1; j <= secretNum; j++) {
                     if (!secretsList.get(j-1)) {
-                        if (secretsObject.get("secretName").getAsString().contains(String.valueOf(j))) {
+                        if (secretsObject.get("secretName").getAsString().substring(0,2).replaceAll("[\\D]", "").equals(String.valueOf(j))) {
                             display = false;
                             break;
                         }
@@ -219,7 +219,7 @@ public class Waypoints {
 
                         if (pos.equals(event.pos)) {
                             for(int j = 1; j <= secretNum; j++) {
-                                if (secretsObject.get("secretName").getAsString().contains(String.valueOf(j))) {
+                                if (secretsObject.get("secretName").getAsString().substring(0,2).replaceAll("[\\D]", "").equals(String.valueOf(j))) {
                                     Waypoints.secretsList.set(j-1, false);
                                     Waypoints.allSecretsMap.replace(roomName, Waypoints.secretsList);
                                     DungeonRooms.logger.info("DungeonRooms: Detected " + secretsObject.get("category").getAsString() + " click, turning off waypoint for secret #" + j);
@@ -267,7 +267,7 @@ public class Waypoints {
 
                                 if (entity.getDistanceSq(pos) <= 36D) {
                                     for(int j = 1; j <= secretNum; j++) {
-                                        if (secretsObject.get("secretName").getAsString().contains(String.valueOf(j))) {
+                                        if (secretsObject.get("secretName").getAsString().substring(0,2).replaceAll("[\\D]", "").equals(String.valueOf(j))) {
                                             if (!Waypoints.secretsList.get(j-1)) continue;
                                             Waypoints.secretsList.set(j-1, false);
                                             Waypoints.allSecretsMap.replace(roomName, Waypoints.secretsList);
@@ -306,7 +306,7 @@ public class Waypoints {
 
                             if (player.getDistanceSq(pos) <= 16D) {
                                 for(int j = 1; j <= secretNum; j++) {
-                                    if (secretsObject.get("secretName").getAsString().contains(String.valueOf(j))) {
+                                    if (secretsObject.get("secretName").getAsString().substring(0,2).replaceAll("[\\D]", "").equals(String.valueOf(j))) {
                                         if (!Waypoints.secretsList.get(j-1)) continue;
                                         Waypoints.secretsList.set(j-1, false);
                                         Waypoints.allSecretsMap.replace(roomName, Waypoints.secretsList);

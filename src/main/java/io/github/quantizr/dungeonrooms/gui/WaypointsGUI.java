@@ -50,7 +50,7 @@ public class WaypointsGUI extends GuiScreen {
     private GuiButton sneakToDisable;
     private GuiButton close;
 
-    public static List<GuiButton> secretButtonList = new ArrayList<>(Arrays.asList(new GuiButton[9]));
+    public static List<GuiButton> secretButtonList = new ArrayList<>(Arrays.asList(new GuiButton[10]));
 
     private static boolean waypointGuiOpened = false;
 
@@ -65,8 +65,8 @@ public class WaypointsGUI extends GuiScreen {
         waypointGuiOpened = true;
 
         ScaledResolution sr = new ScaledResolution(Minecraft.getMinecraft());
-        int height = (int) (sr.getScaledHeight());
-        int width = (int) (sr.getScaledWidth());
+        int height = sr.getScaledHeight();
+        int width = sr.getScaledWidth();
 
         waypointsEnabled = new GuiButton(0, (width / 2 - 100) - 110, height / 6 + 5, 200, 20, waypointBtnText());
         practiceModeEnabled = new GuiButton(1, (width / 2 - 100) + 110, height / 6 + 5, 200, 20, "Practice Mode: " + getOnOff(Waypoints.practiceModeOn));
@@ -225,7 +225,7 @@ public class WaypointsGUI extends GuiScreen {
         if (waypointGuiOpened && Utils.inCatacombs) {
             if (Waypoints.secretNum > 0) {
                 for (int i = 1; i <= Waypoints.secretNum; i++) {
-                    if ((char) keyCode == i+1) {
+                    if (keyCode-1 == i) {
                         Waypoints.secretsList.set(i - 1, !Waypoints.secretsList.get(i - 1));
                         if (!RoomDetection.roomName.equals("undefined")) {
                             Waypoints.allSecretsMap.replace(RoomDetection.roomName, Waypoints.secretsList);
