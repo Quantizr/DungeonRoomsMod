@@ -69,15 +69,15 @@ public class WaypointsGUI extends GuiScreen {
         int height = sr.getScaledHeight();
         int width = sr.getScaledWidth();
 
-        waypointsEnabled = new GuiButton(0, (width / 2 - 100) + 0, height / 6 - 25, 200, 20, waypointBtnText());
-        practiceModeEnabled = new GuiButton(1, (width / 2 - 100) - 110, height / 6 + 5, 200, 20, "Practice Mode: " + getOnOff(Waypoints.practiceModeOn));
-        showEntrance = new GuiButton(2, (width / 2 - 100) + 110, height / 6 + 5, 200, 20, "Show Entrance Waypoints: " + getOnOff(Waypoints.showEntrance));
-        showSuperboom = new GuiButton(3, (width / 2 - 100) - 110, height / 6 + 35, 200, 20, "Show Superboom Waypoints: " + getOnOff(Waypoints.showSuperboom));
-        showSecrets = new GuiButton(4, (width / 2 - 100) + 110, height / 6 + 35, 200, 20, "Show Secret Waypoints: " + getOnOff(Waypoints.showSecrets));
-        showFairySouls = new GuiButton(5, (width / 2 - 100) - 110, height / 6 + 65, 200, 20, "Show Fairy Soul Waypoints: " + getOnOff(Waypoints.showFairySouls));
-        showStonk = new GuiButton(6, (width / 2 - 100) + 110, height / 6 + 65, 200, 20, "Show Stonk Waypoints: " + getOnOff(Waypoints.showStonk));
-        sneakToDisable = new GuiButton(7, (width / 2 - 100) - 110, height / 6 + 95, 200, 20, "Double-Tap Sneak to Hide Nearby: " + getOnOff(Waypoints.sneakToDisable));
-        disableWhenAllFound = new GuiButton(8, (width / 2 - 100) + 110, height / 6 + 95, 200, 20, "Disable when all secrets found: " + getOnOff(Waypoints.disableWhenAllFound));
+        waypointsEnabled = new GuiButton(0, (width / 2 - 100) + 0, height / 6 - 5, 200, 20, waypointBtnText());
+        practiceModeEnabled = new GuiButton(1, (width / 2 - 100) - 110, height / 6 + 25, 200, 20, "Practice Mode: " + getOnOff(Waypoints.practiceModeOn));
+        showEntrance = new GuiButton(2, (width / 2 - 100) + 110, height / 6 + 25, 200, 20, "Show Entrance Waypoints: " + getOnOff(Waypoints.showEntrance));
+        showSuperboom = new GuiButton(3, (width / 2 - 100) - 110, height / 6 + 55, 200, 20, "Show Superboom Waypoints: " + getOnOff(Waypoints.showSuperboom));
+        showSecrets = new GuiButton(4, (width / 2 - 100) + 110, height / 6 + 55, 200, 20, "Show Secret Waypoints: " + getOnOff(Waypoints.showSecrets));
+        showFairySouls = new GuiButton(5, (width / 2 - 100) - 110, height / 6 + 85, 200, 20, "Show Fairy Soul Waypoints: " + getOnOff(Waypoints.showFairySouls));
+        showStonk = new GuiButton(6, (width / 2 - 100) + 110, height / 6 + 85, 200, 20, "Show Stonk Waypoints: " + getOnOff(Waypoints.showStonk));
+        sneakToDisable = new GuiButton(7, (width / 2 - 100) - 110, height / 6 + 115, 200, 20, "Double-Tap Sneak to Hide Nearby: " + getOnOff(Waypoints.sneakToDisable));
+        disableWhenAllFound = new GuiButton(8, (width / 2 - 100) + 110, height / 6 + 115, 200, 20, "Disable when all secrets found: " + getOnOff(Waypoints.disableWhenAllFound));
         close = new GuiButton(9, width / 2 - 100, (height / 6) * 5, 200, 20, "Close");
 
         this.buttonList.add(waypointsEnabled);

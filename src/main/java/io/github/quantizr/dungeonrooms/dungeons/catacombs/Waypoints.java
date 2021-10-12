@@ -56,7 +56,7 @@ public class Waypoints {
     public static boolean showSuperboom = true;
     public static boolean showSecrets = true;
     public static boolean showFairySouls = true;
-
+    public static boolean showStonk = true;
     public static boolean sneakToDisable = true;
 
     public static boolean disableWhenAllFound = true;
@@ -140,11 +140,15 @@ public class Waypoints {
                         break;
                     case "lever":
                         if (!showSecrets) continue;
-                        color = new Color(250, 217, 2);
+                        color = new Color(235, 127, 77);
                         break;
                     case "fairysoul":
                         if (!showFairySouls) continue;
                         color = new Color(255, 85, 255);
+                        break;
+                    case "stonk":
+                        if (!showStonk) continue;
+                        color = new Color(219, 182, 33);
                         break;
                     default:
                         color = new Color(190, 255, 252);
