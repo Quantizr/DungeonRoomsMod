@@ -140,7 +140,7 @@ public class Waypoints {
                         break;
                     case "lever":
                         if (!showSecrets) continue;
-                        color = new Color(235, 127, 77);
+                        color = new Color(146, 52, 235);
                         break;
                     case "fairysoul":
                         if (!showFairySouls) continue;
