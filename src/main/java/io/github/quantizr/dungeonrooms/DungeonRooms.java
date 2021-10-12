@@ -202,7 +202,7 @@ public class DungeonRooms
             new Thread(() -> {
                 try {
                     while (mc.thePlayer == null) {
-                        //Yes, I'm too lazy to code something proper so I'm busy-waiting, shut up. no :)
+                        //Yes, I'm too lazy to code something proper so I'm busy-waiting, shut up. no :) -carmel
                         //It usually waits for less than half a second
                         Thread.sleep(100);
                     }
