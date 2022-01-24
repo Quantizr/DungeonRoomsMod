@@ -600,7 +600,7 @@ public class RoomCommand extends CommandBase {
                             break;
                         default:
                             player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED
-                                    + "Dungeon Rooms: Valid options are <chest | wither | superboom | lever | fairysoul | item | entrance | bat>"));
+                                    + "Dungeon Rooms: Valid options are <chest | wither | superboom | lever | fairysoul | item | entrance | bat | stonk>"));
                             break;
                     }
                     break;
