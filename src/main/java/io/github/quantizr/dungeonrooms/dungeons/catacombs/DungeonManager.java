@@ -50,7 +50,7 @@ public class DungeonManager {
 
     public static int tickAmount = 0;
 
-    boolean bloodDone = false;
+    long bloodTime = Long.MAX_VALUE;
 
     boolean oddRun = true; //if current run number is even or odd
 
@@ -64,9 +64,9 @@ public class DungeonManager {
             gameStage = 2;
             DungeonRooms.logger.info("DungeonRooms: gameStage set to " + gameStage);
         } else if (message.startsWith("§r§c[BOSS] The Watcher§r§f: You have proven yourself. You may pass.§r")) {
-            bloodDone = true;
+            bloodTime = System.currentTimeMillis() + 5000; //5 seconds because additional messages might come through
             DungeonRooms.logger.info("DungeonRooms: bloodDone has been set to True");
-        } else if (bloodDone && ((message.startsWith("§r§c[BOSS] ") && !message.contains(" The Watcher§r§f:")) || message.startsWith("§r§4[BOSS] "))) {
+        } else if (System.currentTimeMillis() > bloodTime && ((message.startsWith("§r§c[BOSS] ") && !message.contains(" The Watcher§r§f:")) || message.startsWith("§r§4[BOSS] "))) {
             if (gameStage != 3) {
                 gameStage = 3;
                 DungeonRooms.logger.info("DungeonRooms: gameStage set to " + gameStage);
@@ -164,7 +164,7 @@ public class DungeonManager {
         entrancePhysicalNWCorner = null;
         RoomDetection.entranceMapNullCount = 0;
 
-        bloodDone = false;
+        bloodTime = Long.MAX_VALUE;
 
         if (RoomDetection.stage2Executor != null) RoomDetection.stage2Executor.shutdown();
 
