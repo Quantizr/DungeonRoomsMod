@@ -74,7 +74,7 @@ import java.util.concurrent.*;
 public class DungeonRooms
 {
     public static final String MODID = "dungeonrooms";
-    public static final String VERSION = "3.2.4";
+    public static final String VERSION = "3.3.0";
 
     Minecraft mc = Minecraft.getMinecraft();
     public static Logger logger;
@@ -202,7 +202,7 @@ public class DungeonRooms
             new Thread(() -> {
                 try {
                     while (mc.thePlayer == null) {
-                        //Yes, I'm too lazy to code something proper so I'm busy-waiting, shut up.
+                        //Yes, I'm too lazy to code something proper so I'm busy-waiting, shut up. no :) -carmel
                         //It usually waits for less than half a second
                         Thread.sleep(100);
                     }
