@@ -140,7 +140,7 @@ public class Waypoints {
                         break;
                     case "lever":
                         if (!showSecrets) continue;
-                        color = new Color(146, 52, 235);
+                        color = new Color(250, 217, 2);
                         break;
                     case "fairysoul":
                         if (!showFairySouls) continue;
@@ -148,7 +148,7 @@ public class Waypoints {
                         break;
                     case "stonk":
                         if (!showStonk) continue;
-                        color = new Color(219, 182, 33);
+                        color = new Color(146, 52, 235);
                         break;
                     default:
                         color = new Color(190, 255, 252);
