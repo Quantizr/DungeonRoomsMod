@@ -145,8 +145,8 @@ public class RoomDetectionUtils {
         //will also return true for blocks in the middle of rooms where there would be a doorway if it were a 1x1
         if (blockToCheck.getY() < 66 || blockToCheck.getY() > 73) return false;
 
-        int relX = blockToCheck.getX() % 32;
-        int relZ = blockToCheck.getZ() % 32;
+        int relX = Math.floorMod((blockToCheck.getX() - 8), 32);
+        int relZ = Math.floorMod((blockToCheck.getZ() - 8), 32);
 
         if (relX >= 13 && relX <= 17) {
             if (relZ <= 2) return true;

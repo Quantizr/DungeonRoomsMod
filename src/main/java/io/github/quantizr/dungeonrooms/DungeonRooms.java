@@ -231,7 +231,7 @@ public class DungeonRooms
                     }
 
                     logger.info("DungeonRooms: Getting MOTD...");
-                    url = new URL("https://gist.githubusercontent.com/Quantizr/50ed64a7a0f3b28dc742d5268d7a3217/raw/");
+                    url = new URL("https://gist.githubusercontent.com/Quantizr/01aca53e61cef5dfd08989fec600b204/raw/");
                     BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream(), StandardCharsets.UTF_8));
                     String line;
                     motd = new ArrayList<>();

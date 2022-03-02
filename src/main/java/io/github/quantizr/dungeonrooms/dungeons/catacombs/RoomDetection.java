@@ -113,7 +113,7 @@ public class RoomDetection {
                         if (MapUtils.getMapColor(playerMarkerPos, map).equals("green") && MapUtils.getMapColor(closestNWMapCorner, map).equals("green")) {
                             if (!player.getPositionVector().equals(new Vec3(0.0D, 0.0D, 0.0D))) {
                                 entrancePhysicalNWCorner = MapUtils.getClosestNWPhysicalCorner(player.getPositionVector());
-                                DungeonRooms.logger.info("DungeonRooms: entrancePhysicalNWCorner has been set");
+                                DungeonRooms.logger.info("DungeonRooms: entrancePhysicalNWCorner has been set to " + entrancePhysicalNWCorner);
                             }
                         } else {
                             DungeonRooms.textToDisplay = new ArrayList<>(Arrays.asList(

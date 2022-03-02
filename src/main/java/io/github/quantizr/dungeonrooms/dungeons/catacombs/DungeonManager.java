@@ -125,7 +125,7 @@ public class DungeonManager {
                 if (!player.getPositionVector().equals(new Vec3(0.0D,0.0D,0.0D))) {
                     //this point is calculated using math, not scanning, which may cause issues when reconnecting to a run
                     entrancePhysicalNWCorner = MapUtils.getClosestNWPhysicalCorner(player.getPositionVector());
-                    DungeonRooms.logger.info("DungeonRooms: entrancePhysicalNWCorner has been set");
+                    DungeonRooms.logger.info("DungeonRooms: entrancePhysicalNWCorner has been set to " + entrancePhysicalNWCorner);
                 }
             }
 

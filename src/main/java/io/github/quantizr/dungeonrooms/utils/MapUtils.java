@@ -134,9 +134,11 @@ public class MapUtils {
      */
     public static Point getClosestNWPhysicalCorner (Vec3 vectorPos) {
         Vec3 shiftedPos = vectorPos.addVector(0.5, 0, 0.5); //shift by 0.5 so room borders are evenly split
-        int x = (int) (shiftedPos.xCoord - (shiftedPos.xCoord % 32)); //room length 31, +1 to account for gap between rooms
-        int z = (int) (shiftedPos.zCoord - (shiftedPos.zCoord % 32));
-        return new Point(x, z);
+        shiftedPos = shiftedPos.addVector(8, 0, 8); //because Hypixel randomly shifted rooms in Skyblock 0.12.3
+        int x = (int) (shiftedPos.xCoord - Math.floorMod((int) shiftedPos.xCoord, 32)); //room length 31, +1 to account for gap between rooms
+        int z = (int) (shiftedPos.zCoord - Math.floorMod((int) shiftedPos.zCoord, 32));
+
+        return new Point(x - 8 , z - 8); //-8 for same reason as above
     }
 
     public static Point getClosestNWPhysicalCorner (BlockPos blockPos) {
