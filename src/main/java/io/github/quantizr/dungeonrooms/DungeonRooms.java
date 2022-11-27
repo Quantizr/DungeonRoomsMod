@@ -74,7 +74,7 @@ import java.util.concurrent.*;
 public class DungeonRooms
 {
     public static final String MODID = "dungeonrooms";
-    public static final String VERSION = "3.3.1";
+    public static final String VERSION = "3.3.2-BETA";
 
     Minecraft mc = Minecraft.getMinecraft();
     public static Logger logger;
@@ -207,39 +207,41 @@ public class DungeonRooms
                         Thread.sleep(100);
                     }
                     Thread.sleep(3000);
-                    logger.info("DungeonRooms: Checking for conflicting keybindings...");
-                    Utils.checkForConflictingHotkeys();
+                    if (mc.getCurrentServerData().serverIP.toLowerCase().contains("hypixel.")) {
+                        logger.info("DungeonRooms: Checking for conflicting keybindings...");
+                        Utils.checkForConflictingHotkeys();
 
-                    logger.info("DungeonRooms: Checking for updates...");
-                    URL url = new URL("https://api.github.com/repos/Quantizr/DungeonRoomsMod/releases/latest");
-                    URLConnection request = url.openConnection();
-                    request.connect();
-                    JsonParser json = new JsonParser();
-                    JsonObject latestRelease = json.parse(new InputStreamReader((InputStream) request.getContent())).getAsJsonObject();
+                        logger.info("DungeonRooms: Checking for updates...");
+                        URL url = new URL("https://api.github.com/repos/Quantizr/DungeonRoomsMod/releases/latest");
+                        URLConnection request = url.openConnection();
+                        request.connect();
+                        JsonParser json = new JsonParser();
+                        JsonObject latestRelease = json.parse(new InputStreamReader((InputStream) request.getContent())).getAsJsonObject();
 
-                    String latestTag = latestRelease.get("tag_name").getAsString();
-                    DefaultArtifactVersion currentVersion = new DefaultArtifactVersion(VERSION);
-                    DefaultArtifactVersion latestVersion = new DefaultArtifactVersion(latestTag.substring(1));
+                        String latestTag = latestRelease.get("tag_name").getAsString();
+                        DefaultArtifactVersion currentVersion = new DefaultArtifactVersion(VERSION);
+                        DefaultArtifactVersion latestVersion = new DefaultArtifactVersion(latestTag.substring(1));
 
-                    if (currentVersion.compareTo(latestVersion) < 0) {
-                        String releaseURL = "https://github.com/Quantizr/DungeonRoomsMod/releases/latest";
-                        ChatComponentText update = new ChatComponentText(EnumChatFormatting.GREEN + "" + EnumChatFormatting.BOLD + "  [UPDATE]  ");
-                        update.setChatStyle(update.getChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, releaseURL)));
-                        mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "Dungeon Rooms Mod is outdated. Please update to " + latestTag + ".\n").appendSibling(update));
-                    } else {
-                        logger.info("DungeonRooms: No update found");
+                        if (currentVersion.compareTo(latestVersion) < 0) {
+                            String releaseURL = "https://github.com/Quantizr/DungeonRoomsMod/releases/latest";
+                            ChatComponentText update = new ChatComponentText(EnumChatFormatting.GREEN + "" + EnumChatFormatting.BOLD + "  [UPDATE]  ");
+                            update.setChatStyle(update.getChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, releaseURL)));
+                            mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "Dungeon Rooms Mod is outdated. Please update to " + latestTag + ".\n").appendSibling(update));
+                        } else {
+                            logger.info("DungeonRooms: No update found");
+                        }
+
+                        logger.info("DungeonRooms: Getting MOTD...");
+                        url = new URL("https://gist.githubusercontent.com/Quantizr/01aca53e61cef5dfd08989fec600b204/raw/");
+                        BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream(), StandardCharsets.UTF_8));
+                        String line;
+                        motd = new ArrayList<>();
+                        while ((line = in.readLine()) != null) {
+                            motd.add(line);
+                        }
+                        in.close();
+                        logger.info("DungeonRooms: MOTD has been checked");
                     }
-
-                    logger.info("DungeonRooms: Getting MOTD...");
-                    url = new URL("https://gist.githubusercontent.com/Quantizr/01aca53e61cef5dfd08989fec600b204/raw/");
-                    BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream(), StandardCharsets.UTF_8));
-                    String line;
-                    motd = new ArrayList<>();
-                    while ((line = in.readLine()) != null) {
-                        motd.add(line);
-                    }
-                    in.close();
-                    logger.info("DungeonRooms: MOTD has been checked");
                 } catch (IOException | InterruptedException e) {
                     mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "Dungeon Rooms: An error has occured. See logs for more details."));
                     e.printStackTrace();

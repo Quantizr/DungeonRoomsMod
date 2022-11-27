@@ -95,14 +95,14 @@ public class RoomDetection {
                     DungeonRooms.logger.warn("DungeonRooms: Entrance room not found, hotbar map possibly bugged");
                     entranceMapNullCount++;
                     entranceMapCorners = null; //retry getting corners again next loop
-                    if (entranceMapNullCount >= 8) {
+                    if (entranceMapNullCount == 8) {
                         player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED
-                                + "Dungeon Rooms: Error with hotbar map, turning mod off for this run..."));
+                                + "Dungeon Rooms: Error with hotbar map, perhaps your texture pack is interfering with room detection?"));
                         DungeonRooms.textToDisplay = new ArrayList<>(Collections.singletonList(
-                                "Dungeon Rooms: " + EnumChatFormatting.RED + "Hotbar map may be bugged, mod disabled for this run"
+                                "Dungeon Rooms: " + EnumChatFormatting.RED + "Hotbar map may be bugged"
                         ));
-                        gameStage = 4;
-                        DungeonRooms.logger.info("DungeonRooms: gameStage set to " + gameStage);
+                        //gameStage = 4;
+                        //DungeonRooms.logger.info("DungeonRooms: gameStage set to " + gameStage);
                     }
                 } else if (entrancePhysicalNWCorner == null) {
                     DungeonRooms.logger.warn("DungeonRooms: Entrance Room coordinates not found");
