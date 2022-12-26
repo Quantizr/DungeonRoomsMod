@@ -15,12 +15,11 @@
  * You should have received a copy of the GNU General Public License along
  * with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
+package io.github.quantizr.dungeonrooms.events
 
-package io.github.quantizr.dungeonrooms.events;
-
-import net.minecraft.network.Packet;
-import net.minecraftforge.fml.common.eventhandler.Cancelable;
-import net.minecraftforge.fml.common.eventhandler.Event;
+import net.minecraft.network.Packet
+import net.minecraftforge.fml.common.eventhandler.Cancelable
+import net.minecraftforge.fml.common.eventhandler.Event
 
 /**
  * Taken from Skytils under the GNU Affero General Public License v3.0
@@ -28,32 +27,22 @@ import net.minecraftforge.fml.common.eventhandler.Event;
  * @author My-Name-Is-Jeff (lily)
  */
 @Cancelable
-public class PacketEvent extends Event {
+open class PacketEvent(@JvmField var packet: Packet<*>) : Event() {
+    var direction: Direction? = null
 
-    public Direction direction;
-    public Packet<?> packet;
-
-    public PacketEvent(Packet<?> packet) {
-        this.packet = packet;
-    }
-
-    public static class ReceiveEvent extends PacketEvent {
-        public ReceiveEvent(Packet<?> packet) {
-            super(packet);
-            this.direction = Direction.INBOUND;
+    class ReceiveEvent(packet: Packet<*>) : PacketEvent(packet) {
+        init {
+            direction = Direction.INBOUND
         }
     }
 
-    public static class SendEvent extends PacketEvent {
-        public SendEvent(Packet<?> packet) {
-            super(packet);
-            this.direction = Direction.OUTBOUND;
+    class SendEvent(packet: Packet<*>) : PacketEvent(packet) {
+        init {
+            direction = Direction.OUTBOUND
         }
     }
 
-    enum Direction {
-        INBOUND,
-        OUTBOUND
+    enum class Direction {
+        INBOUND, OUTBOUND
     }
-
 }

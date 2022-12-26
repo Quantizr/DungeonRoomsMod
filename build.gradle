@@ -75,16 +75,8 @@ dependencies {
     mappings('de.oceanlabs.mcp:mcp_stable:22-1.8.9')
     forge('net.minecraftforge:forge:1.8.9-11.15.1.2318-1.8.9')
 
-
     implementation 'org.jetbrains:annotations-java5:23.0.0'
 
-    compileOnly 'org.projectlombok:lombok:1.18.24'
-    annotationProcessor 'org.projectlombok:lombok:1.18.24'
-
-
-
-    testCompileOnly 'org.projectlombok:lombok:1.18.24'
-    testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
     modRuntimeOnly('me.djtheredstoner:DevAuth-forge-legacy:1.1.0')
 
     compileOnly 'cc.polyfrost:oneconfig-1.8.9-forge:0.1.0-alpha+' // Should not be included in jar
@@ -97,7 +89,7 @@ tasks.withType(JavaCompile) {
 
 tasks.withType(Jar) {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    archivesBaseName = 'dungeonsguide-lts'
+    archivesBaseName = 'drm'
     manifest {
         attributes['ModSide'] = 'CLIENT'
         attributes['TweakOrder'] = '0'
@@ -114,19 +106,8 @@ tasks.shadowJar {
 
     archiveFileName = jar.archiveFileName
 
-    relocate 'org.java_websocket', 'kr.syeyoung.org.java_websocket'
-
-    relocate 'org.joml', 'kr.syeyoung.org.joml'
-
-    relocate 'com.github.benmanes.caffeine', 'kr.syeyoung.com.github.benmanes.caffeine'
 
     dependencies {
-        include(dependency('org.joml:joml:..*'))
-        include(dependency('com.github.ben-manes.caffeine:caffeine:..*'))
-        include(dependency('org.java-websocket:Java-WebSocket:1.5.3'))
-        include(dependency('org.slf4j:slf4j-api:1.7.25'))
-        include(dependency('org.json:json:20220924'))
-        include(dependency('com.twelvemonkeys..*:.*'))
         include(dependency('cc.polyfrost:oneconfig-wrapper-launchwrapper:..*'))
     }
 }

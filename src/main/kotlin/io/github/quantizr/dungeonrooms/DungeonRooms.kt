@@ -273,8 +273,8 @@ class DungeonRooms {
         lateinit var instance: DungeonRooms
             private set
 
-        const val MODID = "dungeonrooms"
-        const val VERSION = "3.3.2"
+        const val MODID = "@ID@"
+        const val VERSION = "@VER@"
         lateinit var logger: Logger
 
 
