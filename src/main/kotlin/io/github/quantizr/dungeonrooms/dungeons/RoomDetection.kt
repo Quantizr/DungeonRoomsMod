@@ -73,7 +73,7 @@ class RoomDetection {
                     ChatTransmitter.addToQueue(
                         "${EnumChatFormatting.RED}DungeonRooms: Error with hotbar map, perhaps your texture pack is interfering with room detection?"
                     )
-                    DungeonRooms.textToDisplay = ArrayList(
+                    DungeonRooms.instance.textToDisplay = ArrayList(
                         listOf(
                             "Dungeon Rooms: ${EnumChatFormatting.RED}Hotbar map may be bugged"
                         )
@@ -100,7 +100,7 @@ class RoomDetection {
                             DungeonRooms.logger.info("DungeonRooms: entrancePhysicalNWCorner has been set to ${DungeonManager.entrancePhysicalNWCorner}")
                         }
                     } else {
-                        DungeonRooms.textToDisplay = ArrayList(
+                        DungeonRooms.instance.textToDisplay = ArrayList(
                             listOf(
                                 "Dungeon Rooms: ${EnumChatFormatting.RED}Entrance Room coordinates not found",
                                 "${EnumChatFormatting.RED}Please go back into the middle of the Green Entrance Room."
@@ -126,7 +126,7 @@ class RoomDetection {
                 if (roomSize == RoomSize.undefined || roomColor == RoomColor.UNDEFINED) {
                     updateCurrentRoom()
                     if (roomColor == RoomColor.UNDEFINED) {
-                        DungeonRooms.textToDisplay = ArrayList(
+                        DungeonRooms.instance.textToDisplay = ArrayList(
                             listOf(
                                 "Dungeon Rooms: ${EnumChatFormatting.RED}Waiting for hotbar map to update..."
                             )
@@ -177,7 +177,7 @@ class RoomDetection {
             when (possibleRoomsSet.size) {
                 // no match
                 0 -> {
-                    DungeonRooms.textToDisplay = listOf(
+                    DungeonRooms.instance.textToDisplay = listOf(
                         "Dungeon Rooms: ${EnumChatFormatting.RED}No Matching Rooms Detected",
                         "${EnumChatFormatting.RED}This mod might not have data for this room.",
                         "${EnumChatFormatting.WHITE}Retrying every 5 seconds..."
@@ -197,7 +197,7 @@ class RoomDetection {
                 }
                 // too many matches
                 else -> {
-                    DungeonRooms.textToDisplay = listOf(
+                    DungeonRooms.instance.textToDisplay = listOf(
                         "Dungeon Rooms: ${EnumChatFormatting.RED}Unable to Determine Room Name",
                         "${EnumChatFormatting.RED}Not enough valid blocks were scanned, look at a more open area.",
                         "${EnumChatFormatting.WHITE}Retrying every second..."
@@ -550,7 +550,7 @@ class RoomDetection {
     private var redoScan = 0L
     var entranceMapNullCount = 0
     fun resetCurrentRoom() {
-        DungeonRooms.textToDisplay = null
+        DungeonRooms.instance.textToDisplay = emptyList()
         DungeonRooms.instance.waypoints.allFound = false
         currentPhysicalSegments = emptyList<Point>().toMutableList()
         currentMapSegments = emptyList()
@@ -601,7 +601,7 @@ class RoomDetection {
                 lineList.add("${EnumChatFormatting.RED}No waypoints available")
                 lineList.add("${EnumChatFormatting.RED}Press \"${DRMConfig.openSecretImages.display}\" to view images")
             }
-            DungeonRooms.textToDisplay = lineList
+            DungeonRooms.instance.textToDisplay = lineList
         }
 
     }

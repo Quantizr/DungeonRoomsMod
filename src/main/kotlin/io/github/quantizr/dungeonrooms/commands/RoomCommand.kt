@@ -23,7 +23,6 @@ import io.github.quantizr.dungeonrooms.DungeonRooms
 import io.github.quantizr.dungeonrooms.dungeons.DungeonManager
 import io.github.quantizr.dungeonrooms.dungeons.DungeonRunStage
 import io.github.quantizr.dungeonrooms.gui.WaypointsGUI
-import io.github.quantizr.dungeonrooms.handlers.ConfigHandler
 import io.github.quantizr.dungeonrooms.handlers.OpenLink
 import io.github.quantizr.dungeonrooms.utils.MapUtils
 import io.github.quantizr.dungeonrooms.utils.Utils
@@ -93,9 +92,8 @@ class RoomCommand : CommandBase() {
 
             } else {
                 if (DungeonRooms.instance.dungeonManager.gameStage == DungeonRunStage.RoomClear) {
-                    for (line in DungeonRooms.textToDisplay!!) {
-                        player.addChatMessage(ChatComponentText(line))
-                    }
+                    DungeonRooms.instance.textToDisplay.forEach { ChatTransmitter.addToQueue(it) }
+
                     ChatTransmitter.addToQueue(
                         "${EnumChatFormatting.GREEN}Dungeon Rooms: You can also run \"/room help\" for additional options"
                     )
@@ -265,11 +263,6 @@ class RoomCommand : CommandBase() {
                             else -> ChatTransmitter.addToQueue(toggleHelp)
                         }
                     }
-                }
-
-                "reload" -> {
-                    ConfigHandler.reloadConfig()
-                    ChatTransmitter.addToQueue("Dungeon Rooms: Reloaded config file")
                 }
 
                 "discord" -> try {

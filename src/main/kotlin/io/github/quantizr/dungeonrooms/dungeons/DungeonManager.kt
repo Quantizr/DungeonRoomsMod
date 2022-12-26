@@ -109,17 +109,15 @@ class DungeonManager {
                     DungeonRooms.logger.info("DungeonRooms: entrancePhysicalNWCorner has been set to $entrancePhysicalNWCorner")
                 }
             }
-            if (DungeonRooms.textToDisplay == null && DRMConfig.motdToggled) {
+            if (DRMConfig.motdToggled) {
                 DungeonRooms.logger.info("DungeonRooms: Updating MOTD on screen")
                 if (oddRun || !DRMConfig.guiToggled) { // load MOTD on odd runs
-                    if (DungeonRooms.motd != null) {
-                        if (DungeonRooms.motd!!.isNotEmpty()) {
-                            DungeonRooms.textToDisplay = DungeonRooms.motd
-                        }
+                    if (instance.motd.isNotEmpty()) {
+                        instance.textToDisplay = instance.motd
                     }
                 }
-                if (DungeonRooms.textToDisplay == null && DRMConfig.guiToggled) { //if MOTD is empty or not odd run load default text
-                    DungeonRooms.textToDisplay = ArrayList(
+                if (DRMConfig.guiToggled) { //if MOTD is empty or not odd run load default text
+                    instance.textToDisplay = ArrayList(
                         listOf(
                             "Dungeon Rooms: ${EnumChatFormatting.GREEN}Press the hotkey \"${
                                 DRMConfig.waypointGuiKey.display
