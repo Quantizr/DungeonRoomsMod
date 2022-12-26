@@ -51,7 +51,7 @@ class Waypoints {
 
         DungeonRooms.instance.forEverySecretInRoom { (secretsObject, _) ->
             var display = true
-            for (j in 1..secretNum) {
+            for (j in 1..secretCount) {
                 if (!secretsList!![j - 1]) {
                     if (secretsObject["secretName"].asString.substring(0, 2)
                             .replace("[\\D]".toRegex(), "") == j.toString()
@@ -182,7 +182,7 @@ class Waypoints {
                 val splitSecrets = cleanedSection.split("/")
                 completedSecrets = splitSecrets[0].replace("[^0-9]".toRegex(), "").toInt()
                 val totalSecrets = splitSecrets[1].replace("[^0-9]".toRegex(), "").toInt()
-                allFound = totalSecrets == secretNum && completedSecrets == secretNum
+                allFound = totalSecrets == secretCount && completedSecrets == secretCount
                 return
             }
         }
@@ -207,7 +207,7 @@ class Waypoints {
                         DungeonRooms.instance.roomDetection.roomCorner!!
                     )
                 if (pos == event.pos) {
-                    for (j in 1..secretNum) {
+                    for (j in 1..secretCount) {
                         if (secretsObject["secretName"].asString.substring(0, 2)
                                 .replace("[\\D]".toRegex(), "") == j.toString()
                         ) {
@@ -264,7 +264,7 @@ class Waypoints {
                             DungeonRooms.instance.roomDetection.roomCorner!!
                         )
                         if (entity.getDistanceSq(pos) <= 36.0) {
-                            for (j in 1..secretNum) {
+                            for (j in 1..secretCount) {
                                 if (secretsObject["secretName"].asString.substring(0, 2)
                                         .replace("[\\D]".toRegex(), "") == j.toString()
                                 ) {
@@ -309,7 +309,7 @@ class Waypoints {
                             DungeonRooms.instance.roomDetection.roomCorner!!
                         )
                         if (player.getDistanceSq(pos) <= 16.0) {
-                            for (j in 1..secretNum) {
+                            for (j in 1..secretCount) {
                                 if (secretsObject["secretName"].asString.substring(0, 2)
                                         .replace("[\\D]".toRegex(), "") == j.toString()
                                 ) {
@@ -333,7 +333,7 @@ class Waypoints {
         var allFound = false
 
         @JvmField
-        var secretNum: Int = 0
+        var secretCount: Int = 0
         var completedSecrets = 0
 
         @JvmField

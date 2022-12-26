@@ -17,7 +17,6 @@
  */
 package io.github.quantizr.dungeonrooms.dungeons
 
-import cc.polyfrost.oneconfig.config.annotations.Switch
 import io.github.quantizr.dungeonrooms.DRMConfig
 import io.github.quantizr.dungeonrooms.ChatTransmitter
 import io.github.quantizr.dungeonrooms.DungeonRooms
@@ -28,7 +27,6 @@ import io.github.quantizr.dungeonrooms.utils.RoomDetectionUtils
 import io.github.quantizr.dungeonrooms.utils.Utils
 import net.minecraft.block.Block
 import net.minecraft.client.Minecraft
-import net.minecraft.client.settings.GameSettings
 import net.minecraft.util.*
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
@@ -568,20 +566,20 @@ class RoomDetection {
         thaPossibleRooms = null
         incompleteScan = 0
         redoScan = 0
-        Waypoints.secretNum = 0
+        Waypoints.secretCount = 0
     }
 
     private fun newRoom() {
         if (roomName == "undefined" || roomCategory == "undefined") return
         // update Waypoints info
         if (DungeonRooms.instance.roomDataLoader.roomsJson[roomName] != null) {
-            Waypoints.secretNum = DungeonRooms.instance.roomDataLoader.roomsJson[roomName].asJsonObject["secrets"].asInt
+            Waypoints.secretCount = DungeonRooms.instance.roomDataLoader.roomsJson[roomName].asJsonObject["secrets"].asInt
             Waypoints.allSecretsMap.putIfAbsent(
                 roomName,
-                ArrayList(Collections.nCopies(Waypoints.secretNum, true))
+                ArrayList(Collections.nCopies(Waypoints.secretCount, true))
             )
         } else {
-            Waypoints.secretNum = 0
+            Waypoints.secretCount = 0
             Waypoints.allSecretsMap.putIfAbsent(roomName, ArrayList(Collections.nCopies(0, true)))
         }
         Waypoints.secretsList = Waypoints.allSecretsMap[roomName]?.toMutableList()
