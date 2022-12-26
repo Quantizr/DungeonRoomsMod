@@ -18,6 +18,7 @@
 package io.github.quantizr.dungeonrooms.utils
 
 import io.github.quantizr.dungeonrooms.roomdata.RoomColor
+import io.github.quantizr.dungeonrooms.roomdata.RoomSize
 import net.minecraft.block.material.MapColor
 import net.minecraft.client.Minecraft
 import net.minecraft.init.Items
@@ -248,10 +249,10 @@ object MapUtils {
     /**
      * @return the size of the room given a location of each room segment
      */
-    fun roomSize(segments: List<Point>): String {
+    fun roomSize(segments: List<Point>): RoomSize {
         //accepts either map segments or physical segments, does not matter
-        if (segments.size == 1) return "1x1"
-        if (segments.size == 2) return "1x2"
+        if (segments.size == 1) return RoomSize.`1x1`
+        if (segments.size == 2) return RoomSize.`1x2`
         val x = HashSet<Int>()
         val y = HashSet<Int>()
         for (segment in segments) {
@@ -259,18 +260,18 @@ object MapUtils {
             y.add(segment.y)
         }
         if (segments.size == 3) {
-            return if (x.size == 2 && y.size == 2) "L-shape" else "1x3"
+            return if (x.size == 2 && y.size == 2) RoomSize.`L-shape` else RoomSize.`1x3`
         }
         return if (segments.size == 4) {
-            if (x.size == 2 && y.size == 2) "2x2" else "1x4"
-        } else "undefined"
+            if (x.size == 2 && y.size == 2) RoomSize.`2x2` else RoomSize.`1x4`
+        } else RoomSize.undefined
     }
 
     /**
      * @return the category of the room given size and color
      */
-    fun roomCategory(roomSize: String, roomColor: RoomColor): String {
-        return if (roomSize == "1x1") {
+    fun roomCategory(roomSize: RoomSize, roomColor: RoomColor): String {
+        return if (roomSize == RoomSize.`1x1`) {
             when (roomColor) {
                 RoomColor.BROWN -> "1x1"
                 RoomColor.PURPLE -> "Puzzle"
@@ -279,7 +280,7 @@ object MapUtils {
                 else -> "undefined"
             }
         } else {
-            roomSize
+            roomSize.toString()
         }
     }
 
@@ -330,11 +331,11 @@ object MapUtils {
      *
      * @return the possible rotation directions which need to be checked
      */
-    fun possibleDirections(roomSize: String, currentRoomSegments: List<Point>): List<String> {
+    fun possibleDirections(roomSize: RoomSize, currentRoomSegments: List<Point>): List<String> {
         //can take physical or hotbar segments
         //eliminates two possibilities for rectangular rooms, three possibilities for L-shape
         val directions: MutableList<String> = ArrayList()
-        if (roomSize == "1x1" || roomSize == "2x2") {
+        if (roomSize == RoomSize.`1x1` || roomSize == RoomSize.`2x2`) {
             directions.add("NW")
             directions.add("NE")
             directions.add("SE")
@@ -346,7 +347,7 @@ object MapUtils {
                 xSet.add(segment.x)
                 ySet.add(segment.y)
             }
-            if (roomSize == "L-shape") {
+            if (roomSize == RoomSize.`L-shape`) {
                 val x: List<Int> = ArrayList(xSet)
                 val y: List<Int> = ArrayList(ySet)
                 if (!currentRoomSegments.contains(
@@ -372,7 +373,7 @@ object MapUtils {
                         )
                     )
                 ) directions.add("NE")
-            } else if (roomSize.startsWith("1x")) { //not 1x1 bc else statement earlier
+            } else if (roomSize.toString().startsWith("1x")) { //not 1x1 bc else statement earlier
                 if (xSet.size >= 2 && ySet.size == 1) {
                     directions.add("NW")
                     directions.add("SE")

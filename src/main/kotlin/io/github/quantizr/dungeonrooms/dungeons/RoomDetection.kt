@@ -22,6 +22,7 @@ import io.github.quantizr.dungeonrooms.DRMConfig
 import io.github.quantizr.dungeonrooms.ChatTransmitter
 import io.github.quantizr.dungeonrooms.DungeonRooms
 import io.github.quantizr.dungeonrooms.roomdata.RoomColor
+import io.github.quantizr.dungeonrooms.roomdata.RoomSize
 import io.github.quantizr.dungeonrooms.utils.MapUtils
 import io.github.quantizr.dungeonrooms.utils.RoomDetectionUtils
 import io.github.quantizr.dungeonrooms.utils.Utils
@@ -121,7 +122,7 @@ class RoomDetection {
                     thaPossibleRooms = null
                     raytraceBlocks()
                 }
-                if (roomSize == "undefined" || roomColor == RoomColor.UNDEFINED) {
+                if (roomSize == RoomSize.undefined || roomColor == RoomColor.UNDEFINED) {
                     updateCurrentRoom()
                     if (roomColor == RoomColor.UNDEFINED) {
                         DungeonRooms.textToDisplay = ArrayList(
@@ -535,7 +536,7 @@ class RoomDetection {
     private var stage2Ticks = 0
     var currentMapSegments: List<Point> = ArrayList()
     var currentPhysicalSegments: MutableList<Point> = ArrayList()
-    var roomSize = "undefined"
+    var roomSize = RoomSize.undefined
     var roomColor = RoomColor.UNDEFINED
     var roomCategory = "undefined"
     var roomName = "undefined"
@@ -554,7 +555,7 @@ class RoomDetection {
         Waypoints.allFound = false
         currentPhysicalSegments = emptyList<Point>().toMutableList()
         currentMapSegments = emptyList()
-        roomSize = "undefined"
+        roomSize = RoomSize.undefined
         roomColor = RoomColor.UNDEFINED
         roomCategory = "undefined"
         roomName = "undefined"
