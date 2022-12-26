@@ -34,14 +34,12 @@ import io.github.quantizr.dungeonrooms.utils.Utils.checkForCatacombs
 import io.github.quantizr.dungeonrooms.utils.Utils.checkForSkyblock
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.ScaledResolution
-import net.minecraft.client.settings.KeyBinding
 import net.minecraft.event.ClickEvent
 import net.minecraft.util.ChatComponentText
 import net.minecraft.util.EnumChatFormatting
 import net.minecraftforge.client.ClientCommandHandler
 import net.minecraftforge.client.event.RenderGameOverlayEvent
 import net.minecraftforge.common.MinecraftForge
-import net.minecraftforge.fml.client.registry.ClientRegistry
 import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
@@ -55,7 +53,6 @@ import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientConnectedToSe
 import net.minecraftforge.fml.common.versioning.DefaultArtifactVersion
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
-import org.lwjgl.input.Keyboard
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStream
@@ -84,7 +81,7 @@ class DungeonRooms {
 
     @Mod.EventHandler
     fun init(event: FMLInitializationEvent?) {
-        DRMConfig()
+        DRMConfig.init()
         roomDataLoader.startAsyncLoad()
 
         //register classes
