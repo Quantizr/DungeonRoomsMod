@@ -21,19 +21,19 @@ class RoomDataLoader {
         const val secretLocPath = "/assets/dungeonrooms/secretlocations.json"
     }
 
+    private var executor: ExecutorService = Executors.newFixedThreadPool(4)
+
+    // debug info
     private var blockedTime: Long = 0
     private var blockedTimeFor1x1: Long = 0
+    private var asyncLoadStart: Long = 0
     private var asyncLoadTime: Long = 0
 
-
+    // the actual data exposed to the world
+    var ROOM_DATA = HashMap<String, HashMap<String, LongArray>>()
     lateinit var roomData: Map<String, DungeonRoom>
 
-    private lateinit var roomsJson: JsonObject
-    private lateinit var waypointsJson: JsonObject
-    var ROOM_DATA = HashMap<String, HashMap<String, LongArray>>()
-
-    private lateinit var executor: ExecutorService
-
+    // temporary vars used while loading the data
     private lateinit var future1x1: Future<HashMap<String, LongArray>>
     private lateinit var future1x2: Future<HashMap<String, LongArray>>
     private lateinit var future1x3: Future<HashMap<String, LongArray>>
@@ -43,10 +43,10 @@ class RoomDataLoader {
     private lateinit var futurePuzzle: Future<HashMap<String, LongArray>>
     private lateinit var futureTrap: Future<HashMap<String, LongArray>>
 
-    private var asyncLoadStart: Long = 0
+    private lateinit var roomsJson: JsonObject
+    private lateinit var waypointsJson: JsonObject
 
     fun startAsyncLoad(){
-        executor = Executors.newFixedThreadPool(4) // don't need 8 threads because it's just 1x1 that takes longest
         asyncLoadStart = System.currentTimeMillis()
 
         // load the room skeletons
@@ -81,6 +81,8 @@ class RoomDataLoader {
                         }
                     }
                 }
+
+            constructRooms()
         }
     }
 
@@ -114,7 +116,6 @@ class RoomDataLoader {
         DungeonRooms.logger.debug("DungeonRooms: Blocked Time(ms) remaining for other rooms: $blockedTime")
 
         executor.shutdown()
-        constructRooms()
     }
 
 
