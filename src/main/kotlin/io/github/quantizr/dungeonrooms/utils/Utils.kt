@@ -17,13 +17,10 @@
  */
 package io.github.quantizr.dungeonrooms.utils
 
-import io.github.quantizr.dungeonrooms.ChatTransmitter
 import io.github.quantizr.dungeonrooms.DungeonRooms
 import io.github.quantizr.dungeonrooms.handlers.ScoreboardHandler.cleanSB
 import io.github.quantizr.dungeonrooms.handlers.ScoreboardHandler.sidebarLines
 import net.minecraft.client.Minecraft
-import net.minecraft.client.settings.GameSettings
-import net.minecraft.util.ChatComponentText
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
@@ -31,12 +28,14 @@ import org.apache.logging.log4j.core.LoggerContext
 import org.apache.logging.log4j.core.config.BaseConfiguration
 import org.apache.logging.log4j.core.config.LoggerConfig
 import java.io.File
-import java.io.InputStream
 import java.io.ObjectInputStream
-import java.nio.file.Files
-import java.nio.file.Path
-import java.nio.file.Paths
+import java.net.URI
+import java.nio.file.*
+import java.util.*
+import java.util.stream.Stream
 import java.util.zip.InflaterInputStream
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 object Utils {
     @JvmField
@@ -95,13 +94,27 @@ object Utils {
         inCatacombs = false
     }
 
+
+    fun yas(){
+
+    }
+
     /**
      * @return List of the paths to every .skeleton room data file
      */
     @JvmStatic
     fun getAllPaths(folderName: String): List<Path> {
         return ArrayList<Path>().also { paths ->
-            Files.walk(Paths.get(DungeonRooms::class.java.getResource("/assets/dungeonrooms/$folderName")!!.path), 3)
+            val uri: URI = this::class.java.getResource("/assets/dungeonrooms/$folderName").toURI()
+            val myPath: Path = if (uri.scheme.equals("jar")) {
+                val fileSystem: FileSystem =
+                    FileSystems.newFileSystem(uri, emptyMap<String, Any>())
+                fileSystem.getPath("/assets/dungeonrooms/$folderName")
+            } else {
+                Paths.get(uri)
+            }
+
+            Files.walk(myPath, 3)
                 .filter { p: Path -> p.toString().endsWith(".skeleton") }
                 .forEach { p: Path -> paths.add(p) }
         }
