@@ -551,7 +551,7 @@ class RoomDetection {
     var entranceMapNullCount = 0
     fun resetCurrentRoom() {
         DungeonRooms.textToDisplay = null
-        Waypoints.allFound = false
+        DungeonRooms.instance.waypoints.allFound = false
         currentPhysicalSegments = emptyList<Point>().toMutableList()
         currentMapSegments = emptyList()
         roomSize = RoomSize.undefined
@@ -567,7 +567,7 @@ class RoomDetection {
         thaPossibleRooms = null
         incompleteScan = 0
         redoScan = 0
-        Waypoints.secretCount = 0
+        DungeonRooms.instance.waypoints.secretCount = 0
     }
 
     private fun newRoom() {
@@ -575,14 +575,17 @@ class RoomDetection {
         // update Waypoints info
         val roomJson = DungeonRooms.instance.roomDataLoader.roomData[roomName]
         if (roomJson != null) {
-            Waypoints.secretCount = roomJson.data.secrets
-            Waypoints.allSecretsMap.putIfAbsent(roomName, ArrayList(Collections.nCopies(Waypoints.secretCount, true)))
+            DungeonRooms.instance.waypoints.secretCount = roomJson.data.secrets
+            DungeonRooms.instance.waypoints.allSecretsMap.putIfAbsent(roomName, ArrayList(Collections.nCopies(DungeonRooms.instance.waypoints.secretCount, true)))
         } else {
-            Waypoints.secretCount = 0
-            Waypoints.allSecretsMap.putIfAbsent(roomName, ArrayList(Collections.nCopies(0, true)))
+            DungeonRooms.instance.waypoints.secretCount = 0
+            DungeonRooms.instance.waypoints.allSecretsMap.putIfAbsent(roomName, ArrayList(Collections.nCopies(0, true)))
         }
 
-        Waypoints.secretsList = Waypoints.allSecretsMap[roomName]?.toMutableList()
+        DungeonRooms.instance.waypoints.allSecretsMap[roomName]?.let {
+            DungeonRooms.instance.waypoints.secretsList = it.toMutableList()
+        }
+
 
         //update GUI text
         if (DRMConfig.guiToggled) {

@@ -149,7 +149,7 @@ class DungeonManager {
         instance.roomDetection.entranceMapNullCount = 0
         bloodTime = Long.MAX_VALUE
         instance.roomDetection.stage2Executor.shutdown()
-        Waypoints.allSecretsMap.clear()
+        instance.waypoints.allSecretsMap.clear()
         instance.roomDetection.resetCurrentRoom()
     }
 

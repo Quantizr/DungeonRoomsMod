@@ -131,33 +131,33 @@ class WaypointsGUI : GuiScreen() {
         buttonList.add(disableWhenAllFound)
         buttonList.add(close)
         if (Utils.inCatacombs) {
-            if (Waypoints.secretCount > 0) {
-                if (Waypoints.secretCount <= 5) {
-                    for (i in 1..Waypoints.secretCount) {
-                        val adjustPos = -40 * Waypoints.secretCount - 70 + 80 * i
+            if (DungeonRooms.instance.waypoints.secretCount > 0) {
+                if (DungeonRooms.instance.waypoints.secretCount <= 5) {
+                    for (i in 1..DungeonRooms.instance.waypoints.secretCount) {
+                        val adjustPos = -40 * DungeonRooms.instance.waypoints.secretCount - 70 + 80 * i
                         secretButtonList[i - 1] = GuiButton(
                             10 + i, width / 2 + adjustPos, height / 6 + 170, 60, 20, "$i: " + getOnOff(
-                                Waypoints.secretsList!![i - 1]
+                                DungeonRooms.instance.waypoints.secretsList!![i - 1]
                             )
                         )
                         buttonList.add(secretButtonList[i - 1])
                     }
                 } else {
-                    for (i in 1..ceil(Waypoints.secretCount.toDouble() / 2).toInt()) {
-                        val adjustPos = -40 * ceil(Waypoints.secretCount.toDouble() / 2).toInt() - 70 + 80 * i
+                    for (i in 1..ceil(DungeonRooms.instance.waypoints.secretCount.toDouble() / 2).toInt()) {
+                        val adjustPos = -40 * ceil(DungeonRooms.instance.waypoints.secretCount.toDouble() / 2).toInt() - 70 + 80 * i
                         secretButtonList[i - 1] = GuiButton(
                             10 + i, width / 2 + adjustPos, height / 6 + 170, 60, 20, "$i: " + getOnOff(
-                                Waypoints.secretsList!![i - 1]
+                                DungeonRooms.instance.waypoints.secretsList!![i - 1]
                             )
                         )
                         buttonList.add(secretButtonList[i - 1])
                     }
-                    for (i in (ceil((Waypoints.secretCount / 2).toDouble()) + 1).toInt() .. Waypoints.secretCount) {
-                        val adjustPos = -40 * (Waypoints.secretCount - ceil(Waypoints.secretCount.toDouble() / 2)
-                            .toInt()) - 70 + 80 * (i - ceil(Waypoints.secretCount.toDouble() / 2).toInt())
+                    for (i in (ceil((DungeonRooms.instance.waypoints.secretCount / 2).toDouble()) + 1).toInt() .. DungeonRooms.instance.waypoints.secretCount) {
+                        val adjustPos = -40 * (DungeonRooms.instance.waypoints.secretCount - ceil(DungeonRooms.instance.waypoints.secretCount.toDouble() / 2)
+                            .toInt()) - 70 + 80 * (i - ceil(DungeonRooms.instance.waypoints.secretCount.toDouble() / 2).toInt())
                         secretButtonList[i - 1] = GuiButton(
                             10 + i, width / 2 + adjustPos, height / 6 + 200, 60, 20, "$i: " + getOnOff(
-                                Waypoints.secretsList!![i - 1]
+                                DungeonRooms.instance.waypoints.secretsList!![i - 1]
                             )
                         )
                         buttonList.add(secretButtonList[i - 1])
@@ -207,7 +207,7 @@ class WaypointsGUI : GuiScreen() {
                 1.0,
                 false
             )
-        } else if (Waypoints.secretCount == 0) {
+        } else if (DungeonRooms.instance.waypoints.secretCount == 0) {
             val errorText = "No secrets in this room"
             val errorTextWidth = mc.fontRendererObj.getStringWidth(errorText)
             TextRenderer.drawText(
@@ -272,15 +272,15 @@ class WaypointsGUI : GuiScreen() {
             player.closeScreen()
         }
         if (Utils.inCatacombs) {
-            if (Waypoints.secretCount > 0) {
-                for (i in 1..Waypoints.secretCount) {
+            if (DungeonRooms.instance.waypoints.secretCount > 0) {
+                for (i in 1..DungeonRooms.instance.waypoints.secretCount) {
                     if (button === secretButtonList[i - 1]) {
-                        Waypoints.secretsList!![i - 1] = !Waypoints.secretsList!![i - 1]
+                        DungeonRooms.instance.waypoints.secretsList!![i - 1] = !DungeonRooms.instance.waypoints.secretsList!![i - 1]
                         if (DungeonRooms.instance.roomDetection.roomName != "undefined") {
-                            Waypoints.allSecretsMap.replace(DungeonRooms.instance.roomDetection.roomName, Waypoints.secretsList)
+                            DungeonRooms.instance.waypoints.allSecretsMap.replace(DungeonRooms.instance.roomDetection.roomName, DungeonRooms.instance.waypoints.secretsList)
                         }
                         secretButtonList[i - 1].displayString = "$i: " + getOnOff(
-                            Waypoints.secretsList!![i - 1]
+                            DungeonRooms.instance.waypoints.secretsList!![i - 1]
                         )
                         break
                     }
@@ -297,15 +297,15 @@ class WaypointsGUI : GuiScreen() {
     override fun keyTyped(c: Char, keyCode: Int) {
         super.keyTyped(c, keyCode)
         if (waypointGuiOpened && Utils.inCatacombs) {
-            if (Waypoints.secretCount > 0) {
-                for (i in 1..Waypoints.secretCount) {
+            if (DungeonRooms.instance.waypoints.secretCount > 0) {
+                for (i in 1..DungeonRooms.instance.waypoints.secretCount) {
                     if (keyCode - 1 == i) {
-                        Waypoints.secretsList!![i - 1] = !Waypoints.secretsList!![i - 1]
+                        DungeonRooms.instance.waypoints.secretsList!![i - 1] = !DungeonRooms.instance.waypoints.secretsList!![i - 1]
                         if (DungeonRooms.instance.roomDetection.roomName != "undefined") {
-                            Waypoints.allSecretsMap.replace(DungeonRooms.instance.roomDetection.roomName, Waypoints.secretsList)
+                            DungeonRooms.instance.waypoints.allSecretsMap.replace(DungeonRooms.instance.roomDetection.roomName, DungeonRooms.instance.waypoints.secretsList)
                         }
                         secretButtonList[i - 1].displayString = "$i: " + getOnOff(
-                            Waypoints.secretsList!![i - 1]
+                            DungeonRooms.instance.waypoints.secretsList!![i - 1]
                         )
                         break
                     }

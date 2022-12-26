@@ -43,6 +43,12 @@ import java.awt.Color
 
 class Waypoints {
     private var frustum = Frustum()
+    private var completedSecrets = 0
+
+    var allFound = false
+    var secretCount = 0
+    var allSecretsMap: MutableMap<String, List<Boolean>?> = HashMap()
+    var secretsList: MutableList<Boolean> = ArrayList(BooleanArray(10).toList())
 
     @SubscribeEvent
     fun onWorldRender(event: RenderWorldLastEvent) {
@@ -61,7 +67,7 @@ class Waypoints {
             // make sure the secret is not done
             .filter { secret ->
                 val nmbr = getSecretNumber(secret.secretName)
-                nmbr in (1..secretCount) && secretsList!![nmbr - 1]
+                nmbr in (1..secretCount) && secretsList[nmbr - 1]
             }
 
             // make sure we are looking at it
@@ -207,7 +213,7 @@ class Waypoints {
             .filter { getSecretNumber(it.secretName) in (1..secretCount) }
             .forEach {
                 val nmbr = getSecretNumber(it.secretName)
-                secretsList!![nmbr - 1] = false
+                secretsList[nmbr - 1] = false
                 allSecretsMap.replace(roomId, secretsList)
                 DungeonRooms.logger.info("DungeonRooms: Detected ${it.category} click, turning off waypoint for secret #$nmbr")
             }
@@ -262,14 +268,20 @@ class Waypoints {
 
             // check if secret is already found
             .filter { (_, nmbr) ->
-                secretsList!![nmbr - 1]
+                secretsList[nmbr - 1]
             }
 
             // finish the secret
-            .forEach {(secret, nmbr) ->
-                secretsList!![nmbr - 1] = false
+            .forEach { (secret, nmbr) ->
+                secretsList[nmbr - 1] = false
                 allSecretsMap.replace(roomId, secretsList)
-                DungeonRooms.logger.info("DungeonRooms: ${entity.commandSenderEntity.name} picked up ${StringUtils.stripControlCodes(name)} from a ${secret.category} secret, turning off waypoint for secret #$nmbr")
+                DungeonRooms.logger.info(
+                    "DungeonRooms: ${entity.commandSenderEntity.name} picked up ${
+                        StringUtils.stripControlCodes(
+                            name
+                        )
+                    } from a ${secret.category} secret, turning off waypoint for secret #$nmbr"
+                )
                 return@forEach
             }
 
@@ -321,31 +333,16 @@ class Waypoints {
 
             // check if secret is already found
             .filter { (_, nmbr) ->
-                secretsList!![nmbr - 1]
+                secretsList[nmbr - 1]
             }
 
             // finish the secret
-            .forEach {(secret, nmbr) ->
-                secretsList!![nmbr - 1] = false
+            .forEach { (secret, nmbr) ->
+                secretsList[nmbr - 1] = false
                 allSecretsMap.replace(roomId, secretsList)
                 DungeonRooms.logger.info("DungeonRooms: Player sneaked near ${secret.category} secret, turning off waypoint for secret #$nmbr")
                 return@forEach
             }
     }
 
-    companion object {
-
-        var allFound = false
-
-        @JvmField
-        var secretCount: Int = 0
-        var completedSecrets = 0
-
-        @JvmField
-        var allSecretsMap: MutableMap<String, List<Boolean>?> = HashMap()
-
-        @JvmField
-        var secretsList: MutableList<Boolean>? = ArrayList(BooleanArray(10).toMutableList())
-
-    }
 }

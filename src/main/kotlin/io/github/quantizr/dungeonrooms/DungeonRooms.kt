@@ -80,6 +80,7 @@ class DungeonRooms {
     val roomDetection = RoomDetection()
     val roomDataLoader = RoomDataLoader()
     val dungeonManager = DungeonManager()
+    val waypoints = Waypoints()
 
     @Mod.EventHandler
     fun init(event: FMLInitializationEvent?) {
@@ -92,7 +93,7 @@ class DungeonRooms {
         MinecraftForge.EVENT_BUS.register(ChatTransmitter())
         MinecraftForge.EVENT_BUS.register(dungeonManager)
         MinecraftForge.EVENT_BUS.register(roomDetection)
-        MinecraftForge.EVENT_BUS.register(Waypoints())
+        MinecraftForge.EVENT_BUS.register(waypoints)
 
         //reload config
         reloadConfig()
