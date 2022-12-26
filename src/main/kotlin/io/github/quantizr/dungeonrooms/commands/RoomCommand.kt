@@ -21,13 +21,13 @@ import io.github.quantizr.dungeonrooms.DRMConfig
 import io.github.quantizr.dungeonrooms.ChatTransmitter
 import io.github.quantizr.dungeonrooms.DungeonRooms
 import io.github.quantizr.dungeonrooms.dungeons.DungeonManager
+import io.github.quantizr.dungeonrooms.dungeons.DungeonRunStage
 import io.github.quantizr.dungeonrooms.gui.WaypointsGUI
 import io.github.quantizr.dungeonrooms.handlers.ConfigHandler
 import io.github.quantizr.dungeonrooms.handlers.OpenLink
 import io.github.quantizr.dungeonrooms.utils.MapUtils
 import io.github.quantizr.dungeonrooms.utils.Utils
 import net.minecraft.client.Minecraft
-import net.minecraft.client.settings.GameSettings
 import net.minecraft.command.CommandBase
 import net.minecraft.command.ICommandSender
 import net.minecraft.entity.player.EntityPlayer
@@ -92,7 +92,7 @@ class RoomCommand : CommandBase() {
                 )
 
             } else {
-                if (DungeonManager.gameStage == 2) {
+                if (DungeonRooms.instance.dungeonManager.gameStage == DungeonRunStage.RoomClear) {
                     for (line in DungeonRooms.textToDisplay!!) {
                         player.addChatMessage(ChatComponentText(line))
                     }
@@ -295,7 +295,7 @@ class RoomCommand : CommandBase() {
                 }
 
                 "json" -> {
-                    if (!Utils.inCatacombs && DungeonManager.gameStage != 2 && DungeonManager.gameStage != 3) {
+                    if (!Utils.inCatacombs && DungeonRooms.instance.dungeonManager.gameStage != DungeonRunStage.RoomClear && DungeonRooms.instance.dungeonManager.gameStage != DungeonRunStage.Boss) {
                         player.addChatMessage(
                             ChatComponentText(
                                 "${EnumChatFormatting.RED}Dungeon Rooms: Use this command in dungeons"
@@ -311,7 +311,7 @@ class RoomCommand : CommandBase() {
                 }
 
                 "roominfo" -> {
-                    if (!Utils.inCatacombs || DungeonManager.gameStage != 2) {
+                    if (!Utils.inCatacombs || DungeonRooms.instance.dungeonManager.gameStage != DungeonRunStage.RoomClear) {
                         player.addChatMessage(
                             ChatComponentText(
                                 "${EnumChatFormatting.RED}Dungeon Rooms: Not in room clearing phase of dungeons"
@@ -351,7 +351,7 @@ class RoomCommand : CommandBase() {
                 }
 
                 "blocksused" -> {
-                    if (!Utils.inCatacombs || DungeonManager.gameStage != 2) {
+                    if (!Utils.inCatacombs || DungeonRooms.instance.dungeonManager.gameStage != DungeonRunStage.RoomClear) {
                         player.addChatMessage(
                             ChatComponentText("${EnumChatFormatting.RED}Dungeon Rooms: Not in room clearing phase of dungeons")
                         )
@@ -361,7 +361,7 @@ class RoomCommand : CommandBase() {
 
                 "add" -> {
                     val world: World = mc.theWorld
-                    if (!Utils.inCatacombs || DungeonManager.gameStage != 2 || DungeonRooms.instance.roomDetection.roomDirection == "undefined" || DungeonRooms.instance.roomDetection.roomCorner == null) {
+                    if (!Utils.inCatacombs || DungeonRooms.instance.dungeonManager.gameStage != DungeonRunStage.RoomClear || DungeonRooms.instance.roomDetection.roomDirection == "undefined" || DungeonRooms.instance.roomDetection.roomCorner == null) {
                         player.addChatMessage(
                             ChatComponentText(
                                 "${EnumChatFormatting.RED}Dungeon Rooms: Current dungeon room is undefined"

@@ -24,7 +24,6 @@ import io.github.quantizr.dungeonrooms.DungeonRooms.Companion.instance
 import io.github.quantizr.dungeonrooms.utils.MapUtils
 import io.github.quantizr.dungeonrooms.utils.Utils
 import net.minecraft.client.Minecraft
-import net.minecraft.client.settings.GameSettings
 import net.minecraft.util.EnumChatFormatting
 import net.minecraft.util.Vec3
 import net.minecraftforge.client.event.ClientChatReceivedEvent
@@ -47,7 +46,7 @@ class DungeonManager {
 
         //gameStage set from 0 to 1 in the onTick function later
         if (message.startsWith("§e[NPC] §bMort§f: §rHere, I found this map when I first entered the dungeon.§r")) {
-            gameStage = 2
+            gameStage = DungeonRunStage.RoomClear
             DungeonRooms.logger.info("DungeonRooms: gameStage set to $gameStage")
         } else if (message.startsWith("§r§c[BOSS] The Watcher§r§f: You have proven yourself. You may pass.§r")) {
             bloodTime = System.currentTimeMillis() + 5000 //5 seconds because additional messages might come through
@@ -56,8 +55,8 @@ class DungeonManager {
                 "§r§4[BOSS] "
             ))
         ) {
-            if (gameStage != 3) {
-                gameStage = 3
+            if (gameStage != DungeonRunStage.RoomClear) {
+                gameStage = DungeonRunStage.RoomClear
                 DungeonRooms.logger.info("DungeonRooms: gameStage set to $gameStage")
 
                 //this part mostly so /room json doesn't error out
@@ -67,7 +66,7 @@ class DungeonManager {
                 //RoomDetection.newRoom() //uncomment to display Boss Room in gui
             }
         } else if (message.contains("§r§c☠ §r§eDefeated §r")) {
-            gameStage = 4
+            gameStage = DungeonRunStage.Boss
             DungeonRooms.logger.info("DungeonRooms: gameStage set to $gameStage")
             instance.roomDetection.resetCurrentRoom()
         }
@@ -79,7 +78,7 @@ class DungeonManager {
         val player = mc.thePlayer
         if (!Utils.inCatacombs) return  //From this point forward, everything assumes that Utils.inCatacombs == true
         tickAmount++
-        if ((gameStage == 0 || gameStage == 1) && tickAmount % 20 == 0) {
+        if ((gameStage == DungeonRunStage.NotInDungeon || gameStage == DungeonRunStage.NotStarted) && tickAmount % 20 == 0) {
             if (DungeonRooms.firstLogin) {
                 DungeonRooms.firstLogin = false
                 ChatTransmitter.addToQueue(
@@ -93,18 +92,17 @@ class DungeonManager {
                     )
 
             }
-            if (gameStage == 0) {
-                gameStage = 1
+            if (gameStage == DungeonRunStage.NotInDungeon) {
+                gameStage = DungeonRunStage.NotStarted
                 DungeonRooms.logger.info("DungeonRooms: gameStage set to $gameStage")
             }
-            val map = MapUtils.updatedMap()
-            if (map != null) {
+            if (MapUtils.updatedMap() != null) {
                 DungeonRooms.logger.warn("DungeonRooms: Run started but gameStage is not on 2")
-                gameStage = 2
+                gameStage = DungeonRunStage.RoomClear
                 DungeonRooms.logger.info("DungeonRooms: gameStage set to $gameStage")
                 return
             }
-            if (gameStage == 1 && entrancePhysicalNWCorner == null) {
+            if (gameStage == DungeonRunStage.NotStarted && entrancePhysicalNWCorner == null) {
                 if (player.positionVector != Vec3(0.0, 0.0, 0.0)) {
                     //this point is calculated using math, not scanning, which may cause issues when reconnecting to a run
                     entrancePhysicalNWCorner = MapUtils.getClosestNWPhysicalCorner(player.positionVector)
@@ -113,7 +111,7 @@ class DungeonManager {
             }
             if (DungeonRooms.textToDisplay == null && DRMConfig.motdToggled) {
                 DungeonRooms.logger.info("DungeonRooms: Updating MOTD on screen")
-                if (oddRun || !DRMConfig.guiToggled) { //load MOTD on odd runs
+                if (oddRun || !DRMConfig.guiToggled) { // load MOTD on odd runs
                     if (DungeonRooms.motd != null) {
                         if (DungeonRooms.motd!!.isNotEmpty()) {
                             DungeonRooms.textToDisplay = DungeonRooms.motd
@@ -144,7 +142,7 @@ class DungeonManager {
     fun onWorldUnload(event: WorldEvent.Unload?) {
         Utils.inCatacombs = false
         tickAmount = 0
-        gameStage = 0
+        gameStage = DungeonRunStage.NotInDungeon
         map = null
         entranceMapCorners = null
         entrancePhysicalNWCorner = null
@@ -155,9 +153,11 @@ class DungeonManager {
         instance.roomDetection.resetCurrentRoom()
     }
 
+    var gameStage = DungeonRunStage.NotInDungeon
+
     companion object {
-        @JvmField
-        var gameStage = 0 //0: Not in Dungeon, 1: Entrance/Not Started, 2: Room Clear, 3: Boss, 4: Done
+//        @JvmField
+//        var gameStage = 0 //0: Not in Dungeon, 1: Entrance/Not Started, 2: Room Clear, 3: Boss, 4: Done
 
         @JvmField
         var map: Array<Array<Int?>>? = null

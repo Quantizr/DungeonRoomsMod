@@ -78,16 +78,18 @@ class DungeonRooms {
 
     val roomDetection = RoomDetection()
     val roomDataLoader = RoomDataLoader()
+    val dungeonManager = DungeonManager()
 
     @Mod.EventHandler
     fun init(event: FMLInitializationEvent?) {
+
         DRMConfig.init()
         roomDataLoader.startAsyncLoad()
 
         //register classes
         MinecraftForge.EVENT_BUS.register(this)
         MinecraftForge.EVENT_BUS.register(ChatTransmitter())
-        MinecraftForge.EVENT_BUS.register(DungeonManager())
+        MinecraftForge.EVENT_BUS.register(dungeonManager)
         MinecraftForge.EVENT_BUS.register(roomDetection)
         MinecraftForge.EVENT_BUS.register(Waypoints())
 

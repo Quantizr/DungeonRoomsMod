@@ -48,7 +48,7 @@ class RoomDetection {
         if (!Utils.inCatacombs) return
 
         // From this point forward, everything assumes that Utils.inCatacombs == true
-        if (DungeonManager.gameStage != 2) return
+        if (DungeonRooms.instance.dungeonManager.gameStage != DungeonRunStage.RoomClear) return
 
         // Room clearing phase
         stage2Ticks++
