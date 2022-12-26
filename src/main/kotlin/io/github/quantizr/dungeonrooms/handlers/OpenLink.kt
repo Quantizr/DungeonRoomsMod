@@ -36,8 +36,8 @@ object OpenLink {
     fun checkForLink(type: String?) {
         val mc = Minecraft.getMinecraft()
 
-        (DungeonRooms.instance.getSecretsObject() ?: return).let { (obj, _) ->
-            if (obj["dsg"].asString == "null" && obj["sbp"] == null) {
+        DungeonRooms.instance.roomDataLoader.roomData[DungeonRooms.instance.roomDetection.roomName]?.let {
+            if (it.data.dgs == "null" && it.data.sbp == "null") {
                 ChatTransmitter.addToQueue("${EnumChatFormatting.RED}Dungeon Rooms: There are no channels/images for this room.")
                 return
             }
@@ -64,19 +64,19 @@ object OpenLink {
         val mc = Minecraft.getMinecraft()
         val player = mc.thePlayer
 
-        val (roomJson, _) = DungeonRooms.instance.getSecretsObject() ?: return
+        val room = DungeonRooms.instance.roomDataLoader.roomData[DungeonRooms.instance.roomDetection.roomName] ?: return
 
-        if (roomJson["dsg"].asString == "null") {
+        if (room.data.dgs == "null") {
             ChatTransmitter.addToQueue("${EnumChatFormatting.RED}Dungeon Rooms: There is no DSG channel for this room.")
             return
         }
         try {
             if (type == "client") {
                 player.addChatMessage(ChatComponentText("Dungeon Rooms: Opening DSG Discord in Client..."))
-                Desktop.getDesktop().browse(URI("discord://" + roomJson["dsg"].asString))
+                Desktop.getDesktop().browse(URI("discord://" + room.data.dgs))
             } else {
                 player.addChatMessage(ChatComponentText("Dungeon Rooms: Opening DSG Discord in Browser..."))
-                Desktop.getDesktop().browse(URI("https://discord.com" + roomJson["dsg"].asString))
+                Desktop.getDesktop().browse(URI("https://discord.com" + room.data.dgs))
             }
         } catch (e: IOException) {
             e.printStackTrace()
@@ -86,13 +86,15 @@ object OpenLink {
     }
 
     fun openSBPSecrets() {
-        val (roomJson, _) = DungeonRooms.instance.getSecretsObject() ?: return
-        if (roomJson["sbp"] == null) {
+
+        val room = DungeonRooms.instance.roomDataLoader.roomData[DungeonRooms.instance.roomDetection.roomName] ?: return
+
+        if (room.data.sbp == "null") {
             ChatTransmitter.addToQueue("${EnumChatFormatting.RED}Dungeon Rooms: There are no SBP images for this room.")
             return
         }
-        val name = roomJson["sbp"].asString
-        var category = roomJson["category"].asString
+        val name = room.data.sbp
+        var category = room.data.category
         when (category) {
             "Puzzle", "Trap" -> category = "puzzles"
             "L-shape" -> category = "L"

@@ -17,8 +17,8 @@
  */
 package io.github.quantizr.dungeonrooms.utils
 
-import io.github.quantizr.dungeonrooms.roomdata.RoomColor
-import io.github.quantizr.dungeonrooms.roomdata.RoomSize
+import io.github.quantizr.dungeonrooms.dungeons.data.room.RoomColor
+import io.github.quantizr.dungeonrooms.dungeons.data.room.RoomSize
 import net.minecraft.block.material.MapColor
 import net.minecraft.client.Minecraft
 import net.minecraft.init.Items

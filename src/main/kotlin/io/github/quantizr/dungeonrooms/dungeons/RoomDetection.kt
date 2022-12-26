@@ -17,17 +17,20 @@
  */
 package io.github.quantizr.dungeonrooms.dungeons
 
-import io.github.quantizr.dungeonrooms.DRMConfig
 import io.github.quantizr.dungeonrooms.ChatTransmitter
+import io.github.quantizr.dungeonrooms.DRMConfig
 import io.github.quantizr.dungeonrooms.DungeonRooms
-import io.github.quantizr.dungeonrooms.roomdata.RoomColor
-import io.github.quantizr.dungeonrooms.roomdata.RoomSize
+import io.github.quantizr.dungeonrooms.dungeons.data.room.RoomColor
+import io.github.quantizr.dungeonrooms.dungeons.data.room.RoomSize
 import io.github.quantizr.dungeonrooms.utils.MapUtils
 import io.github.quantizr.dungeonrooms.utils.RoomDetectionUtils
 import io.github.quantizr.dungeonrooms.utils.Utils
 import net.minecraft.block.Block
 import net.minecraft.client.Minecraft
-import net.minecraft.util.*
+import net.minecraft.util.BlockPos
+import net.minecraft.util.EnumChatFormatting
+import net.minecraft.util.MovingObjectPosition
+import net.minecraft.util.Vec3
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
@@ -68,8 +71,8 @@ class RoomDetection {
                 DungeonManager.entranceMapCorners = null // retry getting corners again next loop
                 if (entranceMapNullCount == 8) {
                     ChatTransmitter.addToQueue(
-                            "${EnumChatFormatting.RED}DungeonRooms: Error with hotbar map, perhaps your texture pack is interfering with room detection?"
-                        )
+                        "${EnumChatFormatting.RED}DungeonRooms: Error with hotbar map, perhaps your texture pack is interfering with room detection?"
+                    )
                     DungeonRooms.textToDisplay = ArrayList(
                         listOf(
                             "Dungeon Rooms: ${EnumChatFormatting.RED}Hotbar map may be bugged"
@@ -174,13 +177,12 @@ class RoomDetection {
             when (possibleRoomsSet.size) {
                 // no match
                 0 -> {
-                    DungeonRooms.textToDisplay = ArrayList(
-                        listOf(
-                            "Dungeon Rooms: ${EnumChatFormatting.RED}No Matching Rooms Detected",
-                            "${EnumChatFormatting.RED}This mod might not have data for this room.",
-                            "${EnumChatFormatting.WHITE}Retrying every 5 seconds..."
-                        )
+                    DungeonRooms.textToDisplay = listOf(
+                        "Dungeon Rooms: ${EnumChatFormatting.RED}No Matching Rooms Detected",
+                        "${EnumChatFormatting.RED}This mod might not have data for this room.",
+                        "${EnumChatFormatting.WHITE}Retrying every 5 seconds..."
                     )
+
                     redoScan = System.currentTimeMillis() + 5000
                 }
                 //room found
@@ -195,13 +197,12 @@ class RoomDetection {
                 }
                 // too many matches
                 else -> {
-                    DungeonRooms.textToDisplay = ArrayList(
-                        listOf(
-                            "Dungeon Rooms: ${EnumChatFormatting.RED}Unable to Determine Room Name",
-                            "${EnumChatFormatting.RED}Not enough valid blocks were scanned, look at a more open area.",
-                            "${EnumChatFormatting.WHITE}Retrying every second..."
-                        )
+                    DungeonRooms.textToDisplay = listOf(
+                        "Dungeon Rooms: ${EnumChatFormatting.RED}Unable to Determine Room Name",
+                        "${EnumChatFormatting.RED}Not enough valid blocks were scanned, look at a more open area.",
+                        "${EnumChatFormatting.WHITE}Retrying every second..."
                     )
+
                     DungeonRooms.logger.info("DungeonRooms: Possible rooms list = ${ArrayList(possibleRoomsSet)}")
                     incompleteScan = System.currentTimeMillis() + 1000
                 }
@@ -572,33 +573,30 @@ class RoomDetection {
     private fun newRoom() {
         if (roomName == "undefined" || roomCategory == "undefined") return
         // update Waypoints info
-        if (DungeonRooms.instance.roomDataLoader.roomsJson[roomName] != null) {
-            Waypoints.secretCount = DungeonRooms.instance.roomDataLoader.roomsJson[roomName].asJsonObject["secrets"].asInt
-            Waypoints.allSecretsMap.putIfAbsent(
-                roomName,
-                ArrayList(Collections.nCopies(Waypoints.secretCount, true))
-            )
+        val roomJson = DungeonRooms.instance.roomDataLoader.roomData[roomName]
+        if (roomJson != null) {
+            Waypoints.secretCount = roomJson.data.secrets
+            Waypoints.allSecretsMap.putIfAbsent(roomName, ArrayList(Collections.nCopies(Waypoints.secretCount, true)))
         } else {
             Waypoints.secretCount = 0
             Waypoints.allSecretsMap.putIfAbsent(roomName, ArrayList(Collections.nCopies(0, true)))
         }
+
         Waypoints.secretsList = Waypoints.allSecretsMap[roomName]?.toMutableList()
 
         //update GUI text
         if (DRMConfig.guiToggled) {
             val lineList: MutableList<String> = ArrayList()
-            var line =
-                ("Dungeon Rooms: You are in ${EnumChatFormatting.GREEN}$roomCategory${EnumChatFormatting.WHITE} - ${EnumChatFormatting.GREEN}$roomName")
-            if (DungeonRooms.instance.roomDataLoader.roomsJson[roomName] != null) {
-                val roomJson = DungeonRooms.instance.roomDataLoader.roomsJson[roomName].asJsonObject
-                if (roomJson["fairysoul"].asBoolean) {
-                    line = "$line${EnumChatFormatting.WHITE} - ${EnumChatFormatting.LIGHT_PURPLE}Fairy Soul"
+            val roomJson = DungeonRooms.instance.roomDataLoader.roomData[roomName]
+            if (roomJson != null) {
+                var line = "Dungeon Rooms: You are in ${EnumChatFormatting.GREEN}$roomCategory${EnumChatFormatting.WHITE} - ${EnumChatFormatting.GREEN}$roomName"
+                if (roomJson.data.fairysoul) {
+                    line += "${EnumChatFormatting.WHITE} - ${EnumChatFormatting.LIGHT_PURPLE}Fairy Soul"
                 }
                 lineList.add(line)
-                if (DRMConfig.waypointsEnabled && roomJson["secrets"].asInt != 0 && DungeonRooms.instance.roomDataLoader.waypointsJson[roomName] == null) {
-                    lineList.add("${EnumChatFormatting.RED}No waypoints available")
-                    lineList.add("${EnumChatFormatting.RED}Press \"${DRMConfig.openSecretImages.display}\" to view images")
-                }
+            } else if (DRMConfig.waypointsEnabled){
+                lineList.add("${EnumChatFormatting.RED}No waypoints available")
+                lineList.add("${EnumChatFormatting.RED}Press \"${DRMConfig.openSecretImages.display}\" to view images")
             }
             DungeonRooms.textToDisplay = lineList
         }

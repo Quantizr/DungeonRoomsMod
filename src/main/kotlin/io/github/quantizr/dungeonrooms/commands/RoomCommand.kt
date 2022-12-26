@@ -296,38 +296,23 @@ class RoomCommand : CommandBase() {
 
                 "json" -> {
                     if (!Utils.inCatacombs && DungeonRooms.instance.dungeonManager.gameStage != DungeonRunStage.RoomClear && DungeonRooms.instance.dungeonManager.gameStage != DungeonRunStage.Boss) {
-                        player.addChatMessage(
-                            ChatComponentText(
-                                "${EnumChatFormatting.RED}Dungeon Rooms: Use this command in dungeons"
-                            )
-                        )
+                        ChatTransmitter.addToQueue("${EnumChatFormatting.RED}Dungeon Rooms: Use this command in dungeons")
                         return
                     }
-                    if (DungeonRooms.instance.roomDataLoader.roomsJson[DungeonRooms.instance.roomDetection.roomName] != null) {
-                        val json = DungeonRooms.instance.roomDataLoader.roomsJson[DungeonRooms.instance.roomDetection.roomName].asJsonObject
-                        json.addProperty("name", DungeonRooms.instance.roomDetection.roomName) //add room name property
-                        ChatTransmitter.addToQueue(json.toString())
+                    val room = DungeonRooms.instance.roomDataLoader.roomData[DungeonRooms.instance.roomDetection.roomName]
+
+                    if(room != null){
+                        ChatTransmitter.addToQueue(room.toString())
                     }
                 }
 
                 "roominfo" -> {
                     if (!Utils.inCatacombs || DungeonRooms.instance.dungeonManager.gameStage != DungeonRunStage.RoomClear) {
-                        player.addChatMessage(
-                            ChatComponentText(
-                                "${EnumChatFormatting.RED}Dungeon Rooms: Not in room clearing phase of dungeons"
-                            )
-                        )
+                        ChatTransmitter.addToQueue("${EnumChatFormatting.RED}Dungeon Rooms: Not in room clearing phase of dungeons")
                     }
                     if (DungeonManager.entranceMapCorners != null) {
-                        player.addChatMessage(
-                            ChatComponentText(
-                                "dev: entranceMapCorners = " + ArrayList(
-                                    listOf(
-                                        DungeonManager.entranceMapCorners
-                                    )
-                                )
-                            )
-                        )
+                        ChatTransmitter.addToQueue("dev: entranceMapCorners = ${listOf(DungeonManager.entranceMapCorners)}")
+
                     } else {
                         ChatTransmitter.addToQueue("dev: entranceMapCorners = null")
                     }

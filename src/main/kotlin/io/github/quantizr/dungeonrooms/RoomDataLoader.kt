@@ -1,7 +1,11 @@
 package io.github.quantizr.dungeonrooms
 
 import com.google.gson.Gson
+import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import io.github.quantizr.dungeonrooms.dungeons.data.meta.DungeonRoom
+import io.github.quantizr.dungeonrooms.dungeons.data.meta.RoomMetaData
+import io.github.quantizr.dungeonrooms.dungeons.data.meta.SecretMetaData
 import io.github.quantizr.dungeonrooms.utils.Utils
 import java.io.InputStreamReader
 import java.util.HashMap
@@ -22,8 +26,10 @@ class RoomDataLoader {
     private var asyncLoadTime: Long = 0
 
 
-    lateinit var roomsJson: JsonObject
-    lateinit var waypointsJson: JsonObject
+    lateinit var roomData: Map<String, DungeonRoom>
+
+    private lateinit var roomsJson: JsonObject
+    private lateinit var waypointsJson: JsonObject
     var ROOM_DATA = HashMap<String, HashMap<String, LongArray>>()
 
     private lateinit var executor: ExecutorService
@@ -108,6 +114,56 @@ class RoomDataLoader {
         DungeonRooms.logger.debug("DungeonRooms: Blocked Time(ms) remaining for other rooms: $blockedTime")
 
         executor.shutdown()
+        constructRooms()
+    }
+
+
+    private fun deconstructRoomData(): Map<String, RoomMetaData> {
+
+        val tmpMap = HashMap<String, RoomMetaData>()
+
+        roomsJson.entrySet().forEach {(name, element) ->
+            if(element is JsonObject && element.has("category")) {
+                val roomData = RoomMetaData(element.get("category").asString, element.get("secrets").asInt, element.get("fairysoul").asBoolean, element.get("dsg").asString, if(element.has("sbp")) element.get("sbp").asString else "null")
+                tmpMap[name] = roomData
+            }
+        }
+
+        return tmpMap
+    }
+
+    private fun deconstructSecretLocationMetadata(): Map<String, Array<SecretMetaData>> {
+
+        val tmp = HashMap<String, Array<SecretMetaData>>()
+
+        waypointsJson.entrySet().forEach { (name, element) ->
+            if(element is JsonArray) {
+
+                val secrets = element.map { it.asJsonObject }.map{ SecretMetaData(it.get("secretName").asString, it.get("category").asString, it.get("x").asInt, it.get("y").asInt, it.get("z").asInt) }.toTypedArray()
+
+                tmp[name] = secrets
+            }
+        }
+
+        return tmp
+    }
+
+
+    private fun constructRooms(){
+        val roomMetaData = deconstructRoomData()
+        val secretMetaData = deconstructSecretLocationMetadata()
+
+        val tmp = HashMap<String, DungeonRoom>()
+
+        secretMetaData.forEach { (secretName, secrets) ->
+            roomMetaData.forEach { (metaName, meta) ->
+                if(secretName == metaName) {
+                    tmp[secretName] = DungeonRoom(secretName, meta, secrets)
+                }
+            }
+        }
+        println("Example room data: ${tmp["Perch-2"]}")
+        roomData = tmp
     }
 
 }

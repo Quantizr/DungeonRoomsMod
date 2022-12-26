@@ -24,6 +24,7 @@ import io.github.quantizr.dungeonrooms.commands.RoomCommand
 import io.github.quantizr.dungeonrooms.dungeons.DungeonManager
 import io.github.quantizr.dungeonrooms.dungeons.RoomDetection
 import io.github.quantizr.dungeonrooms.dungeons.Waypoints
+import io.github.quantizr.dungeonrooms.dungeons.data.meta.SecretMetaData
 import io.github.quantizr.dungeonrooms.gui.WaypointsGUI
 import io.github.quantizr.dungeonrooms.handlers.ConfigHandler.reloadConfig
 import io.github.quantizr.dungeonrooms.handlers.OpenLink.checkForLink
@@ -106,30 +107,12 @@ class DungeonRooms {
         logger.info("DungeonRooms: SBP Dungeon Secrets detection: $usingSBPSecrets")
     }
 
-    fun forEverySecretInRoom(comsumer: Consumer<Pair<JsonObject, String>>) {
-        val (secretsArray, roomName) = getSecretsArray() ?: return
-
-        for (i in 0 until secretsArray.size()) {
-            val secret = secretsArray[i].asJsonObject
-            comsumer.accept(Pair(secret, roomName))
-        }
-
-    }
-
-    fun getSecretsObject(): Pair<JsonObject, String>? {
+    fun getJsonSecretList(): Pair<String, List<SecretMetaData>>? {
         if(roomDetection.roomName == "undefined") return null
 
-        val arr = roomDataLoader.waypointsJson[roomDetection.roomName] ?: return null
+        val room = roomDataLoader.roomData[roomDetection.roomName] ?: return null
 
-        return Pair(arr.asJsonObject, roomDetection.roomName)
-    }
-    
-    fun getSecretsArray(): Pair<JsonArray, String>? {
-        if(roomDetection.roomName == "undefined") return null
-
-        val arr = roomDataLoader.waypointsJson[roomDetection.roomName] ?: return null
-
-        return Pair(arr.asJsonArray, roomDetection.roomName)
+        return Pair(room.id, room.secrets.toList())
     }
 
     /**

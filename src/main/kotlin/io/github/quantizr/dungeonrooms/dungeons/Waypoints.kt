@@ -48,30 +48,26 @@ class Waypoints {
     fun onWorldRender(event: RenderWorldLastEvent) {
         if (!DRMConfig.waypointsEnabled) return
         if (DRMConfig.practiceModeOn && !DRMConfig.practiceModeKeyBind.isActive) return
+        if (DRMConfig.disableWhenAllFound && allFound) return
 
-        DungeonRooms.instance.forEverySecretInRoom { (secretsObject, _) ->
-            var display = true
-            for (j in 1..secretCount) {
-                if (!secretsList!![j - 1]) {
-                    if (secretsObject["secretName"].asString.substring(0, 2)
-                            .replace("[\\D]".toRegex(), "") == j.toString()
-                    ) {
-                        display = false
-                        break
-                    }
-                }
+        val (_, secretList) = DungeonRooms.instance.getJsonSecretList() ?: return
+        val viewer = Minecraft.getMinecraft().renderViewEntity
+        frustum.setPosition(viewer.posX, viewer.posY, viewer.posZ)
+
+        secretList.stream()
+            // don't render fairy souls
+            .filter { it.category != "fairysoul" }
+
+            // make sure the secret is not done
+            .filter { secret ->
+                val nmbr = getSecretNumber(secret.secretName)
+                nmbr in (1..secretCount) && secretsList!![nmbr - 1]
             }
-            if (!display) return@forEverySecretInRoom
-            if (DRMConfig.disableWhenAllFound && allFound && secretsObject["category"].asString != "fairysoul") return@forEverySecretInRoom
-            val relative = BlockPos(secretsObject["x"].asInt, secretsObject["y"].asInt, secretsObject["z"].asInt)
-            val pos = MapUtils.relativeToActual(
-                relative,
-                DungeonRooms.instance.roomDetection.roomDirection,
-                DungeonRooms.instance.roomDetection.roomCorner!!
-            )
-            val viewer = Minecraft.getMinecraft().renderViewEntity
-            frustum.setPosition(viewer.posX, viewer.posY, viewer.posZ)
-            if (!frustum.isBoxInFrustum(
+
+            // make sure we are looking at it
+            .filter {
+                val pos = getSecretPos(it.x, it.y, it.z)
+                frustum.isBoxInFrustum(
                     pos.x.toDouble(),
                     pos.y.toDouble(),
                     pos.z.toDouble(),
@@ -79,96 +75,102 @@ class Waypoints {
                     255.0,
                     (pos.z + 1).toDouble()
                 )
-            ) {
-                return@forEverySecretInRoom
             }
-            val color = when (secretsObject["category"].asString) {
-                "entrance" -> {
-                    if (!DRMConfig.showEntrance) return@forEverySecretInRoom
-                    Color(0, 255, 0)
-                }
 
-                "superboom" -> {
-                    if (!DRMConfig.showSuperboom) return@forEverySecretInRoom
-                    Color(255, 0, 0)
-                }
+            // render the beacon-text
+            .forEach {
+                val pos = getSecretPos(it.x, it.y, it.z)
+                val color = when (it.category) {
+                    "entrance" -> {
+                        if (!DRMConfig.showEntrance) return@forEach
+                        Color(0, 255, 0)
+                    }
 
-                "chest" -> {
-                    if (!DRMConfig.showSecrets) return@forEverySecretInRoom
-                    Color(2, 213, 250)
-                }
+                    "superboom" -> {
+                        if (!DRMConfig.showSuperboom) return@forEach
+                        Color(255, 0, 0)
+                    }
 
-                "item" -> {
-                    if (!DRMConfig.showSecrets) return@forEverySecretInRoom
-                    Color(2, 64, 250)
-                }
+                    "chest" -> {
+                        if (!DRMConfig.showSecrets) return@forEach
+                        Color(2, 213, 250)
+                    }
 
-                "bat" -> {
-                    if (!DRMConfig.showSecrets) return@forEverySecretInRoom
-                    Color(142, 66, 0)
-                }
+                    "item" -> {
+                        if (!DRMConfig.showSecrets) return@forEach
+                        Color(2, 64, 250)
+                    }
 
-                "wither" -> {
-                    if (!DRMConfig.showSecrets) return@forEverySecretInRoom
-                    Color(30, 30, 30)
-                }
+                    "bat" -> {
+                        if (!DRMConfig.showSecrets) return@forEach
+                        Color(142, 66, 0)
+                    }
 
-                "lever" -> {
-                    if (!DRMConfig.showSecrets) return@forEverySecretInRoom
-                    Color(250, 217, 2)
-                }
+                    "wither" -> {
+                        if (!DRMConfig.showSecrets) return@forEach
+                        Color(30, 30, 30)
+                    }
 
-                "fairysoul" -> {
-                    if (!DRMConfig.showFairySouls) return@forEverySecretInRoom
-                    Color(255, 85, 255)
-                }
+                    "lever" -> {
+                        if (!DRMConfig.showSecrets) return@forEach
+                        Color(250, 217, 2)
+                    }
 
-                "stonk" -> {
-                    if (!DRMConfig.showStonk) return@forEverySecretInRoom
-                    Color(146, 52, 235)
-                }
+                    "fairysoul" -> {
+                        if (!DRMConfig.showFairySouls) return@forEach
+                        Color(255, 85, 255)
+                    }
 
-                else -> Color(190, 255, 252)
+                    "stonk" -> {
+                        if (!DRMConfig.showStonk) return@forEach
+                        Color(146, 52, 235)
+                    }
+
+                    else -> Color(190, 255, 252)
+                }
+                val viewerX = viewer.lastTickPosX + (viewer.posX - viewer.lastTickPosX) * event.partialTicks
+                val viewerY = viewer.lastTickPosY + (viewer.posY - viewer.lastTickPosY) * event.partialTicks
+                val viewerZ = viewer.lastTickPosZ + (viewer.posZ - viewer.lastTickPosZ) * event.partialTicks
+                val x = pos.x - viewerX
+                val y = pos.y - viewerY
+                val z = pos.z - viewerZ
+                val distSq = x * x + y * y + z * z
+                GlStateManager.disableDepth()
+                GlStateManager.disableCull()
+                if (DRMConfig.showBoundingBox && frustum.isBoxInFrustum(
+                        pos.x.toDouble(),
+                        pos.y.toDouble(),
+                        pos.z.toDouble(),
+                        (pos.x + 1).toDouble(),
+                        (pos.y + 1).toDouble(),
+                        (pos.z + 1).toDouble()
+                    )
+                ) {
+                    WaypointUtils.drawFilledBoundingBox(AxisAlignedBB(x, y, z, x + 1, y + 1, z + 1), color, 0.4f)
+                }
+                GlStateManager.disableTexture2D()
+                if (DRMConfig.showBeacon && distSq > 5 * 5) {
+                    WaypointUtils.renderBeaconBeam(
+                        x,
+                        y + 1,
+                        z,
+                        color.rgb,
+                        0.25f,
+                        event.partialTicks
+                    )
+                }
+                if (DRMConfig.showWaypointText) {
+                    WaypointUtils.renderWaypointText(
+                        it.secretName,
+                        pos.up(2),
+                        event.partialTicks
+                    )
+                }
+                GlStateManager.disableLighting()
+                GlStateManager.enableTexture2D()
+                GlStateManager.enableDepth()
+                GlStateManager.enableCull()
             }
-            val viewerX = viewer.lastTickPosX + (viewer.posX - viewer.lastTickPosX) * event.partialTicks
-            val viewerY = viewer.lastTickPosY + (viewer.posY - viewer.lastTickPosY) * event.partialTicks
-            val viewerZ = viewer.lastTickPosZ + (viewer.posZ - viewer.lastTickPosZ) * event.partialTicks
-            val x = pos.x - viewerX
-            val y = pos.y - viewerY
-            val z = pos.z - viewerZ
-            val distSq = x * x + y * y + z * z
-            GlStateManager.disableDepth()
-            GlStateManager.disableCull()
-            if (DRMConfig.showBoundingBox && frustum.isBoxInFrustum(
-                    pos.x.toDouble(),
-                    pos.y.toDouble(),
-                    pos.z.toDouble(),
-                    (pos.x + 1).toDouble(),
-                    (pos.y + 1).toDouble(),
-                    (pos.z + 1).toDouble()
-                )
-            ) {
-                WaypointUtils.drawFilledBoundingBox(AxisAlignedBB(x, y, z, x + 1, y + 1, z + 1), color, 0.4f)
-            }
-            GlStateManager.disableTexture2D()
-            if (DRMConfig.showBeacon && distSq > 5 * 5) WaypointUtils.renderBeaconBeam(
-                x,
-                y + 1,
-                z,
-                color.rgb,
-                0.25f,
-                event.partialTicks
-            )
-            if (DRMConfig.showWaypointText) WaypointUtils.renderWaypointText(
-                secretsObject["secretName"].asString,
-                pos.up(2),
-                event.partialTicks
-            )
-            GlStateManager.disableLighting()
-            GlStateManager.enableTexture2D()
-            GlStateManager.enableDepth()
-            GlStateManager.enableCull()
-        }
     }
 
     @SubscribeEvent(priority = EventPriority.HIGHEST)
@@ -196,138 +198,141 @@ class Waypoints {
         val block = event.world.getBlockState(event.pos).block
         if (block != Blocks.chest && block != Blocks.skull) return
 
-        DungeonRooms.instance.forEverySecretInRoom { (secretsObject, roomName) ->
-            if (secretsObject["category"].asString == "chest" || secretsObject["category"].asString == "wither") {
-                val relative =
-                    BlockPos(secretsObject["x"].asInt, secretsObject["y"].asInt, secretsObject["z"].asInt)
-                val pos =
-                    MapUtils.relativeToActual(
-                        relative,
-                        DungeonRooms.instance.roomDetection.roomDirection,
-                        DungeonRooms.instance.roomDetection.roomCorner!!
-                    )
-                if (pos == event.pos) {
-                    for (j in 1..secretCount) {
-                        if (secretsObject["secretName"].asString.substring(0, 2)
-                                .replace("[\\D]".toRegex(), "") == j.toString()
-                        ) {
-                            secretsList!![j - 1] = false
-                            allSecretsMap.replace(roomName, secretsList)
-                            DungeonRooms.logger.info("DungeonRooms: Detected " + secretsObject["category"].asString + " click, turning off waypoint for secret #" + j)
-                            break
-                        }
-                    }
-                }
+
+        val (roomId, secretList) = DungeonRooms.instance.getJsonSecretList() ?: return
+
+        secretList.stream()
+            .filter { it.category == "chest" || it.category == "wither" }
+            .filter { getSecretPos(it.x, it.y, it.z) == event.pos }
+            .filter { getSecretNumber(it.secretName) in (1..secretCount) }
+            .forEach {
+                val nmbr = getSecretNumber(it.secretName)
+                secretsList!![nmbr - 1] = false
+                allSecretsMap.replace(roomId, secretsList)
+                DungeonRooms.logger.info("DungeonRooms: Detected ${it.category} click, turning off waypoint for secret #$nmbr")
             }
-        }
     }
 
     @SubscribeEvent
     fun onReceivePacket(event: ReceiveEvent) {
         if (!Utils.inCatacombs || !DRMConfig.waypointsEnabled) return
         if (DRMConfig.disableWhenAllFound && allFound) return
+
+        if (event.packet !is S0DPacketCollectItem) return
+        val packet = event.packet as S0DPacketCollectItem
+
         val mc = Minecraft.getMinecraft()
-        if (event.packet is S0DPacketCollectItem) {
-            val packet = event.packet as S0DPacketCollectItem
-            var entity = mc.theWorld.getEntityByID(packet.collectedItemEntityID)
-            if (entity is EntityItem) {
-                val item = entity
-                entity = mc.theWorld.getEntityByID(packet.entityID) ?: return
-                val name = item.entityItem.displayName
-                if (!name.contains("Decoy")
-                    && !name.contains("Defuse Kit")
-                    && !name.contains("Dungeon Chest Key")
-                    && !name.contains("Healing VIII")
-                    && !name.contains("Inflatable Jerry")
-                    && !name.contains("Spirit Leap")
-                    && !name.contains("Training Weights")
-                    && !name.contains("Trap")
-                    && !name.contains("Treasure Talisman")
-                ) {
-                    return
-                }
-                if (entity.commandSenderEntity.name != mc.thePlayer.name) {
-                    // Do nothing if someone else picks up the item in order to follow Hypixel rules
-                    return
-                }
-
-                DungeonRooms.instance.forEverySecretInRoom { (secretsObject, roomName) ->
-                    if (secretsObject["category"].asString == "item" || secretsObject["category"].asString == "bat") {
-                        val relative = BlockPos(
-                            secretsObject["x"].asInt,
-                            secretsObject["y"].asInt,
-                            secretsObject["z"].asInt
-                        )
-                        val pos = MapUtils.relativeToActual(
-                            relative,
-                            DungeonRooms.instance.roomDetection.roomDirection,
-                            DungeonRooms.instance.roomDetection.roomCorner!!
-                        )
-                        if (entity.getDistanceSq(pos) <= 36.0) {
-                            for (j in 1..secretCount) {
-                                if (secretsObject["secretName"].asString.substring(0, 2)
-                                        .replace("[\\D]".toRegex(), "") == j.toString()
-                                ) {
-                                    if (!secretsList!![j - 1]) continue
-                                    secretsList!![j - 1] = false
-                                    allSecretsMap.replace(roomName, secretsList)
-                                    DungeonRooms.logger.info(
-                                        "DungeonRooms: ${entity.commandSenderEntity.name} picked up ${
-                                            StringUtils.stripControlCodes(
-                                                name
-                                            )
-                                        } from a ${secretsObject["category"].asString} secret, turning off waypoint for secret #$j"
-                                    )
-                                    return@forEverySecretInRoom
-                                }
-                            }
-                        }
-                    }
-
-                }
-            }
+        var entity = mc.theWorld.getEntityByID(packet.collectedItemEntityID) ?: return
+        if (entity !is EntityItem) return
+        val item = entity // smart casting shat itself and I have to use this
+        entity = mc.theWorld.getEntityByID(packet.entityID) ?: return
+        val name = item.entityItem.displayName
+        if (!name.contains("Decoy") &&
+            !name.contains("Defuse Kit") &&
+            !name.contains("Dungeon Chest Key") &&
+            !name.contains("Healing VIII") &&
+            !name.contains("Inflatable Jerry") &&
+            !name.contains("Spirit Leap") &&
+            !name.contains("Training Weights") &&
+            !name.contains("Trap") &&
+            !name.contains("Treasure Talisman")
+        ) {
+            return
         }
+        if (entity.commandSenderEntity.name != mc.thePlayer.name) {
+            // Do nothing if someone else picks up the item in order to follow Hypixel rules (laugh haha lol)
+            return
+        }
+
+        val (roomId, secretList) = DungeonRooms.instance.getJsonSecretList() ?: return
+
+        secretList.stream()
+            .filter { it.category == "item" || it.category == "bat" } // only bats and items
+            .filter { entity.getDistanceSq(getSecretPos(it.x, it.y, it.z)) <= 36 } // within 6 blocks
+
+            // map the secret name to the secret number, so we don't recalc it every time
+            .map { secret ->
+                Pair(secret, getSecretNumber(secret.secretName))
+            }
+
+            // get current secret
+            .filter { (_, nmbr) ->
+                nmbr in (1..secretCount)
+            }
+
+            // check if secret is already found
+            .filter { (_, nmbr) ->
+                secretsList!![nmbr - 1]
+            }
+
+            // finish the secret
+            .forEach {(secret, nmbr) ->
+                secretsList!![nmbr - 1] = false
+                allSecretsMap.replace(roomId, secretsList)
+                DungeonRooms.logger.info("DungeonRooms: ${entity.commandSenderEntity.name} picked up ${StringUtils.stripControlCodes(name)} from a ${secret.category} secret, turning off waypoint for secret #$nmbr")
+                return@forEach
+            }
+
     }
+
+    private fun getSecretPos(x: Int, y: Int, z: Int): BlockPos {
+        return MapUtils.relativeToActual(
+            BlockPos(x, y, z),
+            DungeonRooms.instance.roomDetection.roomDirection,
+            DungeonRooms.instance.roomDetection.roomCorner!!
+        )
+    }
+
+
+    private fun getSecretNumber(secretName: String): Int {
+        return secretName.substring(0, 2).replace("\\D".toRegex(), "").toInt()
+    }
+
+    private var lastSneakTime: Long = 0
 
     // Disable waypoint within 4 blocks away on sneak
     @SubscribeEvent
     fun onKey(event: InputEvent.KeyInputEvent?) {
         if (!Utils.inCatacombs || !DRMConfig.waypointsEnabled || !DRMConfig.sneakToDisable) return
-        val player = Minecraft.getMinecraft().thePlayer
-        if (FMLClientHandler.instance().client.gameSettings.keyBindSneak.isPressed) {
-            val preupdate = lastSneakTime
-            lastSneakTime = System.currentTimeMillis()
-            if (System.currentTimeMillis() - preupdate < 500) { // check for two taps in under half a second
+        if (!FMLClientHandler.instance().client.gameSettings.keyBindSneak.isPressed) return
 
-                DungeonRooms.instance.forEverySecretInRoom { (secretsObject, roomName) ->
-                    if (secretsObject["category"].asString == "chest" || secretsObject["category"].asString == "wither" || secretsObject["category"].asString == "item" || secretsObject["category"].asString == "bat") {
-                        val relative =
-                            BlockPos(secretsObject["x"].asInt, secretsObject["y"].asInt, secretsObject["z"].asInt)
-                        val pos = MapUtils.relativeToActual(
-                            relative,
-                            DungeonRooms.instance.roomDetection.roomDirection,
-                            DungeonRooms.instance.roomDetection.roomCorner!!
-                        )
-                        if (player.getDistanceSq(pos) <= 16.0) {
-                            for (j in 1..secretCount) {
-                                if (secretsObject["secretName"].asString.substring(0, 2)
-                                        .replace("[\\D]".toRegex(), "") == j.toString()
-                                ) {
-                                    if (!secretsList!![j - 1]) continue
-                                    secretsList!![j - 1] = false
-                                    allSecretsMap.replace(roomName, secretsList)
-                                    DungeonRooms.logger.info("DungeonRooms: Player sneaked near " + secretsObject["category"].asString + " secret, turning off waypoint for secret #" + j)
-                                    return@forEverySecretInRoom
-                                }
-                            }
-                        }
-                    }
-                }
+        val tmp = lastSneakTime // use temp value cuz we want to update the time at the start and not the end
+        lastSneakTime = System.currentTimeMillis()
+
+        // check for two taps in under half a second
+        if ((System.currentTimeMillis() - tmp) >= 500) return
+
+        val player = Minecraft.getMinecraft().thePlayer
+
+
+        val (roomId, secretList) = DungeonRooms.instance.getJsonSecretList() ?: return
+
+        secretList.stream()
+            .filter { it.category == "chest" || it.category == "wither" || it.category == "item" || it.category == "bat" }
+            .filter { player.getDistanceSq(getSecretPos(it.x, it.y, it.z)) <= 16 } // within 4 blocks
+
+            // map the secret name to the secret number, so we don't recalc it every time
+            .map { secret -> Pair(secret, getSecretNumber(secret.secretName)) }
+
+            // get current secret
+            .filter { (_, nmbr) ->
+                nmbr in (1..secretCount)
             }
-        }
+
+            // check if secret is already found
+            .filter { (_, nmbr) ->
+                secretsList!![nmbr - 1]
+            }
+
+            // finish the secret
+            .forEach {(secret, nmbr) ->
+                secretsList!![nmbr - 1] = false
+                allSecretsMap.replace(roomId, secretsList)
+                DungeonRooms.logger.info("DungeonRooms: Player sneaked near ${secret.category} secret, turning off waypoint for secret #$nmbr")
+                return@forEach
+            }
     }
 
-    private var lastSneakTime: Long = 0
     companion object {
 
         var allFound = false
