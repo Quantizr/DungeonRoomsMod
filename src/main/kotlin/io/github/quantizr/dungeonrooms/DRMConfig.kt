@@ -63,7 +63,7 @@ object DRMConfig :
     @Dropdown(
         description = "Select pathfinding algorithm",
         name = "Pathfinding Algorithm",
-        options = ["THETA* (recommended)", "A* Diagonal", "A* Fine-Grid", "Jump Point Search"],
+        options = ["THETA* (recommended)", "A* Diagonal", "A* Fine-Grid"],
         subcategory = "Pathfinding",
         category = "Waypoints"
     )

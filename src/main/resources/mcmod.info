@@ -7,7 +7,7 @@
   "mcversion": "1.8.9",
   "url": "https://discord.gg/7B5RbsArYK",
   "updateUrl": "",
-  "authorList": ["_risk (aka Quantizr)"],
+  "authorList": ["_risk (aka Quantizr)", "cyoung06 (DungeonGuide developer, thanks for pathfind code)"],
   "credits": "",
   "logoFile": "assets/dungeonrooms/logo.png",
   "screenshots": [],
