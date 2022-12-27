@@ -2,7 +2,7 @@ package io.github.quantizr.dungeonrooms.pathfinding
 
 import com.github.benmanes.caffeine.cache.Caffeine
 import io.github.quantizr.dungeonrooms.DungeonRooms
-import io.github.quantizr.dungeonrooms.pathfinding.algorithms.AlgBuilder
+import io.github.quantizr.dungeonrooms.pathfinding.algorithms.CachedAlgBuilder
 import io.github.quantizr.dungeonrooms.test.PathfindTest
 import io.github.quantizr.dungeonrooms.utils.BlockCache
 import net.minecraft.client.Minecraft
@@ -20,20 +20,19 @@ import kotlin.math.floor
 
 object CachedPathFinder {
 
-    @Suppress("UnstableApiUsage")
     private val cache = Caffeine.newBuilder()
         .maximumSize(500)
         .build { job: PfJob ->
-            val stat = AlgBuilder.buildPfStrategy(job.room)
+            val stat = CachedAlgBuilder.buildPfStrategy(job.to)
             val now = System.nanoTime()
             stat.pathfind(job)
             if (DungeonRooms.debug) {
                 PathfindTest.textToDisplay = listOf("Pathfinding took: ${(System.nanoTime() - now) / 1000000}ms")
             }
-            return@build PfPath(stat.route)
+            return@build PfPath(job.id, stat.route)
         }
 
-    private val defaultAccessor: BlockedChecker = object : BlockedChecker {
+    val defaultAccessor: BlockedChecker = object : BlockedChecker {
         val playerWidth = 0.3f
         val preBuilt = Blocks.stone.getStateFromMeta(2)
 
@@ -66,7 +65,7 @@ object CachedPathFinder {
                     for (l1 in i1 until j1) {
                         for (i2 in k - 1 until l) {
                             blockPos[k1, i2] = l1
-                            val blxState = BlockCache.getBlockState(blockPos)!!
+                            val blxState = BlockCache.getBlockState(blockPos, true)!!
                             if (blxState.block.material.blocksMovement()) {
                                 if (!blxState.block.isFullCube || i2 != k - 1) {
                                     if (blxState != preBuilt) {
@@ -107,14 +106,16 @@ object CachedPathFinder {
     fun CreatePath(
         entityIn: Entity,
         targetPos: Vector3i,
-        room: BlockedChecker = defaultAccessor
-    ): Future<List<Vector3d>> {
-        return DungeonRooms.instance.ex.submit<List<Vector3d>> {
+        room: BlockedChecker = defaultAccessor,
+        id: String = UUID.randomUUID().toString()
+    ): Future<PfPath> {
+        return DungeonRooms.instance.ex.submit<PfPath> {
             return@submit cache[PfJob(
                 Vector3i(entityIn.posX.toInt(), entityIn.posY.toInt(), entityIn.posZ.toInt()),
                 Vector3d(targetPos).add(.5, .5, .5),
-                room
-            )]!!.path
+                room,
+                id
+            )]!!
         }
     }
 

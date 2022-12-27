@@ -9,9 +9,10 @@ import java.util.*
 
 abstract class IPathfinderAlgorithm(open val roomAccessor: BlockedChecker) {
     var route = LinkedList<Vector3d>()
+        protected set
 
-    abstract fun pathfind(from: Vector3i, to:Vector3d, timeout: Float): Boolean
+    abstract fun pathfind(from: Vector3i, to:Vector3d, timeout: Float = 2000f): Boolean
     fun pathfind(job: PfJob): Boolean {
-        return pathfind(job.from, job.to, 2000f)
+        return pathfind(job.from, job.to)
     }
 }

@@ -8,6 +8,7 @@ import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.MathHelper
 import org.joml.Vector3d
+import org.joml.Vector3f
 import org.joml.Vector3i
 import java.util.*
 import kotlin.math.ceil
@@ -20,7 +21,7 @@ class ThetaStar(room: BlockedChecker) : IPathfinderAlgorithm(room) {
 
 
     private lateinit var destinationBB: AxisAlignedBB
-    private val nodeMap: MutableMap<AStarUtil.Coordinate, Node> = HashMap()
+    private val nodeMap: MutableMap<Vector3i, Node> = HashMap()
 
     private val open = PriorityQueue(
         Comparator.comparing { a: Node? -> a?.f ?: Float.MAX_VALUE }
@@ -38,7 +39,7 @@ class ThetaStar(room: BlockedChecker) : IPathfinderAlgorithm(room) {
 
 
     private fun openNode(x: Int, y: Int, z: Int): Node {
-        val coordinate = AStarUtil.Coordinate(x, y, z)
+        val coordinate = Vector3i(x, y, z)
         return nodeMap.computeIfAbsent(coordinate) { Node(coordinate) }
     }
 
@@ -152,7 +153,7 @@ class ThetaStar(room: BlockedChecker) : IPathfinderAlgorithm(room) {
                         (n.parent!!.coordinate.y - neighbor.coordinate.y).toFloat(),
                         (n.parent!!.coordinate.z - neighbor.coordinate.z).toFloat()
                     )
-                    if (tempGScore < neighbor.g && lineofsight(n.parent, neighbor)) {
+                    if (tempGScore < neighbor.g && lineofsightALT(n.parent, neighbor)) {
                         neighbor.parent = n.parent
                         neighbor.g = tempGScore
                         neighbor.f = tempGScore + distSq(
@@ -189,37 +190,30 @@ class ThetaStar(room: BlockedChecker) : IPathfinderAlgorithm(room) {
         return true
     }
 
-    private fun lineofsight(a: Node?, b: Node?): Boolean {
+    private fun lineofsightALT(a: Node?, b: Node?): Boolean {
         if (a == null || b == null) return false
-        var sx = a.coordinate.x.toFloat()
-        var sy = a.coordinate.y.toFloat()
-        var sz = a.coordinate.z.toFloat()
-        val ex = b.coordinate.x
-        val ey = b.coordinate.y
-        val ez = b.coordinate.z
-        var dxx = ex - sx
-        var dyy = ey - sy
-        var dzz = ez - sz
-        val len = distSq(dxx, dyy, dzz)
-        dxx /= len
-        dyy /= len
-        dzz /= len
+        val s = Vector3f(a.coordinate)
+        val e = Vector3f(b.coordinate)
+        val dd = Vector3f()
+        e.sub(s, dd)
+        val len = dd.length()
+        dd.normalize()
+
         var d = 0
         while (d <= len) {
-            val round = sx.roundToInt()
-            val ceil = ceil(sy.toDouble())
-            val round1 = sz.roundToInt()
-            if (roomAccessor.isBlocked(round, ceil.toInt(), round1)) return false
-            if (roomAccessor.isBlocked(round + 1, ceil.toInt(), round1 + 1)) return false
-            if (roomAccessor.isBlocked(round - 1, ceil.toInt(), round1 - 1)) return false
-            if (roomAccessor.isBlocked(round + 1, ceil.toInt(), round1 - 1)) return false
-            if (roomAccessor.isBlocked(round - 1, ceil.toInt(), round1 + 1)) return false
-            sx += dxx
-            sy += dyy
-            sz += dzz
+            val x = s.x().toInt()
+            val y = s.y().toInt()
+            val z = s.z().toInt()
+            if (roomAccessor.isBlocked(x, y, z)) return false
+            if (roomAccessor.isBlocked(x + 1, y, z + 1)) return false
+            if (roomAccessor.isBlocked(x - 1, y, z - 1)) return false
+            if (roomAccessor.isBlocked(x + 1, y, z - 1)) return false
+            if (roomAccessor.isBlocked(x - 1, y, z + 1)) return false
+            s.add(dd)
             d += 1
         }
         return true
+
     }
 
     private fun distSq(x: Float, y: Float, z: Float): Float {

@@ -1,7 +1,6 @@
 package io.github.quantizr.dungeonrooms.pathfinding.algorithms.impl
 
 import io.github.quantizr.dungeonrooms.pathfinding.BlockedChecker
-import io.github.quantizr.dungeonrooms.pathfinding.algorithms.AStarUtil.Coordinate
 import io.github.quantizr.dungeonrooms.pathfinding.algorithms.AStarUtil.Node
 import io.github.quantizr.dungeonrooms.pathfinding.algorithms.IPathfinderAlgorithm
 import net.minecraft.util.AxisAlignedBB
@@ -17,7 +16,7 @@ class AStarCornerCut(private val room: BlockedChecker) : IPathfinderAlgorithm(ro
 
 
     private lateinit var destinationBB: AxisAlignedBB
-    private val nodeMap: MutableMap<Coordinate, Node> = HashMap()
+    private val nodeMap: MutableMap<Vector3i, Node> = HashMap()
 
 
     private val open = PriorityQueue(
@@ -36,7 +35,7 @@ class AStarCornerCut(private val room: BlockedChecker) : IPathfinderAlgorithm(ro
 
 
     private fun openNode(x: Int, y: Int, z: Int): Node {
-        val cord = Coordinate(x, y, z)
+        val cord = Vector3i(x, y, z)
         return nodeMap.getOrPut(cord) {
             Node(cord)
         }
@@ -140,17 +139,15 @@ class AStarCornerCut(private val room: BlockedChecker) : IPathfinderAlgorithm(ro
                         )
 
                         // check blocked.
-                        if (!(destinationBB.minX <= neighbor.coordinate.x &&
-                                    neighbor.coordinate.x <= destinationBB.maxX &&
-                                    destinationBB.minY <= neighbor.coordinate.y &&
-                                    neighbor.coordinate.y <= destinationBB.maxY &&
-                                    destinationBB.minZ <= neighbor.coordinate.z &&
-                                    neighbor.coordinate.z <= destinationBB.maxZ // near destination
-                                    || !roomAccessor.isBlocked(
-                                neighbor.coordinate.x,
-                                neighbor.coordinate.y,
-                                neighbor.coordinate.z
-                            ))
+                        if (!(destinationBB.minX <= neighbor.coordinate.x
+                                    && neighbor.coordinate.x <= destinationBB.maxX
+                                    && destinationBB.minY <= neighbor.coordinate.y
+                                    && neighbor.coordinate.y <= destinationBB.maxY
+                                    && destinationBB.minZ <= neighbor.coordinate.z
+                                    && neighbor.coordinate.z <= destinationBB.maxZ // near destination
+                                    ||
+                                    !roomAccessor.isBlocked(neighbor.coordinate.x, neighbor.coordinate.y, neighbor.coordinate.z)
+                                )
                         ) { // not blocked
                             continue
                         }

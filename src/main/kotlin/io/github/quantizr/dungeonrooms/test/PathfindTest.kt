@@ -4,6 +4,7 @@ import io.github.quantizr.dungeonrooms.DRMConfig
 import io.github.quantizr.dungeonrooms.DungeonRooms
 import io.github.quantizr.dungeonrooms.handlers.TextRenderer
 import io.github.quantizr.dungeonrooms.pathfinding.CachedPathFinder
+import io.github.quantizr.dungeonrooms.pathfinding.PfPath
 import io.github.quantizr.dungeonrooms.utils.WaypointUtils
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.ScaledResolution
@@ -22,8 +23,8 @@ class PathfindTest {
         var textToDisplay: List<String> = emptyList()
     }
 
-    private val pathfindFutures: MutableMap<Vector3i, Future<List<Vector3d>>> = HashMap()
-    private val donePathfindFutures: MutableMap<Vector3i, List<Vector3d>> = HashMap()
+    private val pathfindFutures: MutableMap<Vector3i, Future<PfPath>> = HashMap()
+    private val donePathfindFutures: MutableMap<Vector3i, PfPath> = HashMap()
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
@@ -56,7 +57,14 @@ class PathfindTest {
     fun onWorldRender(event: RenderWorldLastEvent) {
         if (!Minecraft.getMinecraft().isSingleplayer || !DungeonRooms.debug) return
         donePathfindFutures.forEach { (_, points) ->
-            WaypointUtils.drawLinesVec3(points, Color(255, 0, 0, 255), 2.0f, event.partialTicks, true)
+            WaypointUtils.drawLinesVec3(
+                points.path,
+                Color(255, 0, 0, 255),
+                Color(0, 255, 0, 255),
+                2.0f,
+                event.partialTicks,
+                true
+            )
         }
     }
 

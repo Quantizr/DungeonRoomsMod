@@ -17,6 +17,7 @@
  */
 package io.github.quantizr.dungeonrooms.utils
 
+import io.github.quantizr.dungeonrooms.test.PathfindTest
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
@@ -264,7 +265,22 @@ object WaypointUtils {
     }
 
 
-    fun drawLinesVec3(poses: List<Vector3d>, colour: Color, thickness: Float, partialTicks: Float, depth: Boolean) {
+    fun getTotalLength(pos: List<Vector3d>): Long {
+        var total = 0.0
+        for (i in 0 until pos.size - 1) {
+            total += pos[i].distance(pos[i + 1])
+        }
+        return total.toLong()
+    }
+
+    fun drawLinesVec3(
+        poses: List<Vector3d>,
+        colour: Color,
+        colorMax: Color,
+        thickness: Float,
+        partialTicks: Float,
+        depth: Boolean
+    ) {
         val render = Minecraft.getMinecraft().renderViewEntity
         val worldRenderer = Tessellator.getInstance().worldRenderer
         val realX = render.lastTickPosX + (render.posX - render.lastTickPosX) * partialTicks
@@ -286,14 +302,20 @@ object WaypointUtils {
 
         GlStateManager.color(1f, 1f, 1f, 1f)
         worldRenderer.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION_COLOR)
+
+
+        val totalLength = getTotalLength(poses)
         for (pos in poses) {
-            val i: Int = colour.rgb
-            worldRenderer.pos(pos.x, pos.y, pos.z).color(
-                (i shr 16 and 0xFF) / 255.0f,
-                (i shr 8 and 0xFF) / 255.0f,
-                (i and 0xFF) / 255.0f,
-                (i shr 24 and 0xFF) / 255.0f
-            ).endVertex()
+            // mix two color based on distance in a gradient
+
+            var progress = (totalLength - pos.x) / totalLength
+            if(progress < 0) progress = 0.0
+            val r = ((colorMax.red + ((colour.red - colorMax.red) * progress)).toFloat() / 255.0f)
+            val g = ((colorMax.green + ((colour.green - colorMax.green) * progress)).toFloat() / 255.0f)
+            val b = ((colorMax.blue + ((colour.blue - colorMax.blue) * progress)).toFloat() / 255.0f)
+            val a = ((colorMax.alpha + ((colour.alpha - colorMax.alpha) * progress)).toFloat() / 255.0f)
+
+            worldRenderer.pos(pos.x, pos.y, pos.z).color(r, g, b, a).endVertex()
         }
         Tessellator.getInstance().draw()
         GlStateManager.translate(realX, realY, realZ)

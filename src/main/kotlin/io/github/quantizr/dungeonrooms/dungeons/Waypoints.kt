@@ -21,6 +21,7 @@ import io.github.quantizr.dungeonrooms.DRMConfig
 import io.github.quantizr.dungeonrooms.DungeonRooms
 import io.github.quantizr.dungeonrooms.events.PacketEvent.ReceiveEvent
 import io.github.quantizr.dungeonrooms.pathfinding.CachedPathFinder
+import io.github.quantizr.dungeonrooms.pathfinding.PfPath
 import io.github.quantizr.dungeonrooms.utils.MapUtils
 import io.github.quantizr.dungeonrooms.utils.Utils
 import io.github.quantizr.dungeonrooms.utils.WaypointUtils
@@ -41,7 +42,6 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.InputEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
-import org.joml.Vector3d
 import org.joml.Vector3i
 import java.awt.Color
 import java.util.concurrent.Future
@@ -53,11 +53,18 @@ class Waypoints {
     var allFound = false
     var secretCount = 0
     var allSecretsMap: MutableMap<String, List<Boolean>?> = HashMap()
-    var secretsList: MutableList<Boolean> = ArrayList(BooleanArray(10).toList())
+    var secretCompletionList: MutableList<Boolean> = ArrayList(BooleanArray(10).toList())
 
     private var tickCounter = 0
-    private val pathfindFutures: MutableMap<Vector3i, Future<List<Vector3d>>> = HashMap()
-    private val donePathfindFutures: MutableMap<Vector3i, List<Vector3d>> = HashMap()
+
+    // secret loc <-> pfjob
+    // currently executing pathfind jobs that are saved here
+    val pathfindFutures: MutableMap<Vector3i, Future<PfPath>> = HashMap()
+
+    // user loc <-> pfjob
+    // this is used as a "last result cache",
+    // since new the player is moving and we want to save the last result
+    val donePathfindFutures: MutableMap<Vector3i, PfPath> = HashMap()
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
@@ -66,8 +73,6 @@ class Waypoints {
         if (!DRMConfig.pathfindingEnabled) return
         if (DRMConfig.practiceModeOn && !DRMConfig.practiceModeKeyBind.isActive) return
         if (DRMConfig.disableWhenAllFound && allFound) return
-
-
 
         updateFinishedFutures()
         tickCounter++
@@ -79,17 +84,18 @@ class Waypoints {
         val (_, secretList) = DungeonRooms.instance.getJsonSecretList() ?: return
 
         secretList.stream()
+            .filter { it.category == "chest" || it.category == "wither" || it.category == "item" || it.category == "bat" }
             // make sure the secret is not done / and only target the first secret in the chain
             .filter { secret ->
                 val nmbr = getSecretNumber(secret.secretName)
-                nmbr in (1..secretCount) && secretsList[nmbr - 1]
+                nmbr in (1..secretCount) && secretCompletionList[nmbr - 1]
             }
             .forEach {
                 val pos = getSecretPos(it.x, it.y, it.z)
                 val scrtLoc = Vector3i(pos.x, pos.y, pos.z)
                 val oldFuture = pathfindFutures[scrtLoc]
                 if(oldFuture == null || oldFuture.isDone) {
-                    pathfindFutures[scrtLoc] = CachedPathFinder.CreatePath(player, scrtLoc)
+                    pathfindFutures[scrtLoc] = CachedPathFinder.CreatePath(player, scrtLoc, id=it.secretName)
                 }
             }
 
@@ -98,6 +104,7 @@ class Waypoints {
 
 
     private fun updateFinishedFutures(){
+        // cache competed pathfind jobs to the donePathfindFutures map
         with(pathfindFutures.iterator()) {
             forEach {(loc, ftr) ->
                 if(ftr.isDone){
@@ -106,6 +113,25 @@ class Waypoints {
                 }
             }
         }
+
+        // remove cached pathfind jobs that are leading to done secrets
+        val (_, secretList) = DungeonRooms.instance.getJsonSecretList() ?: return
+        secretList.stream()
+            .filter { secret ->
+                val nmbr = getSecretNumber(secret.secretName)
+                nmbr in (1..secretCount) && !secretCompletionList[nmbr - 1]
+            }
+
+            // for each completed secret
+            .forEach {
+                // remove competed secrets from display
+
+                donePathfindFutures
+                    .filter { (_, job) -> job.id == it.secretName }
+                    .forEach { (loc, _) -> donePathfindFutures.remove(loc) }
+
+            }
+
     }
 
 
@@ -117,7 +143,7 @@ class Waypoints {
 
         if(DRMConfig.pathfindingEnabled){
             donePathfindFutures.forEach { (_, points) ->
-                WaypointUtils.drawLinesVec3(points, Color(255, 0, 0, 255), 2.0f, event.partialTicks, true)
+                WaypointUtils.drawLinesVec3(points.path, Color(255, 0, 0, 255), Color(0, 255, 0, 255), 2.0f, event.partialTicks, true)
             }
         }
 
@@ -132,7 +158,7 @@ class Waypoints {
             // make sure the secret is not done
             .filter { secret ->
                 val nmbr = getSecretNumber(secret.secretName)
-                nmbr in (1..secretCount) && secretsList[nmbr - 1]
+                nmbr in (1..secretCount) && secretCompletionList[nmbr - 1]
             }
 
             // make sure we are looking at it
@@ -278,8 +304,8 @@ class Waypoints {
             .filter { getSecretNumber(it.secretName) in (1..secretCount) }
             .forEach {
                 val nmbr = getSecretNumber(it.secretName)
-                secretsList[nmbr - 1] = false
-                allSecretsMap.replace(roomId, secretsList)
+                secretCompletionList[nmbr - 1] = false
+                allSecretsMap.replace(roomId, secretCompletionList)
                 DungeonRooms.logger.info("DungeonRooms: Detected ${it.category} click, turning off waypoint for secret #$nmbr")
             }
     }
@@ -333,13 +359,13 @@ class Waypoints {
 
             // check if secret is already found
             .filter { (_, nmbr) ->
-                secretsList[nmbr - 1]
+                secretCompletionList[nmbr - 1]
             }
 
             // finish the secret
             .forEach { (secret, nmbr) ->
-                secretsList[nmbr - 1] = false
-                allSecretsMap.replace(roomId, secretsList)
+                secretCompletionList[nmbr - 1] = false
+                allSecretsMap.replace(roomId, secretCompletionList)
                 DungeonRooms.logger.info(
                     "DungeonRooms: ${entity.commandSenderEntity.name} picked up ${
                         StringUtils.stripControlCodes(
@@ -403,13 +429,13 @@ class Waypoints {
 
             // check if secret is already found
             .filter { (_, nmbr) ->
-                secretsList[nmbr - 1]
+                secretCompletionList[nmbr - 1]
             }
 
             // finish the secret
             .forEach { (secret, nmbr) ->
-                secretsList[nmbr - 1] = false
-                allSecretsMap.replace(roomId, secretsList)
+                secretCompletionList[nmbr - 1] = false
+                allSecretsMap.replace(roomId, secretCompletionList)
                 DungeonRooms.logger.info("DungeonRooms: Player sneaked near ${secret.category} secret, turning off waypoint for secret #$nmbr")
                 return@forEach
             }

@@ -251,7 +251,7 @@ class DungeonRooms {
         @JvmStatic
         lateinit var instance: DungeonRooms
             private set
-        const val debug = false
+        const val debug = true
 
         const val MODID = "@ID@"
         const val VERSION = "@VER@"

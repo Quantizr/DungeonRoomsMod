@@ -11,14 +11,14 @@ import org.joml.Vector3d
 import org.joml.Vector3i
 import java.util.*
 
-class AStarFineGrid(private val room: BlockedChecker) : IPathfinderAlgorithm(room) {
+class AStarFineGrid(room: BlockedChecker) : IPathfinderAlgorithm(room) {
     var dx: Int = 0
     var dy: Int = 0
     var dz: Int = 0
 
 
     private lateinit var destinationBB: AxisAlignedBB
-    private val nodeMap: MutableMap<AStarUtil.Coordinate, Node> = HashMap()
+    private val nodeMap: MutableMap<Vector3i, Node> = HashMap()
 
     private val open = PriorityQueue(
         Comparator.comparing { a: Node? -> a?.f ?: Float.MAX_VALUE }
@@ -47,8 +47,7 @@ class AStarFineGrid(private val room: BlockedChecker) : IPathfinderAlgorithm(roo
             (dz + 2).toDouble()
         )
 
-        if (lastSx != from.x * 2 || lastSy != from.y * 2
-                .toInt() || lastSz != from.z * 2
+        if (lastSx != from.x * 2 || lastSy != from.y * 2 || lastSz != from.z * 2
         ) open.clear()
         lastSx = from.x * 2
         lastSy = from.y * 2
@@ -93,7 +92,6 @@ class AStarFineGrid(private val room: BlockedChecker) : IPathfinderAlgorithm(roo
                 if (n.lastVisited == pfindIdx) continue
                 n.lastVisited = pfindIdx
                 if (n === goalNode) {
-                    // route = reconstructPath(startNode)
                     val route = LinkedList<Vector3d>()
                     var curr: Node? = goalNode
                     while (curr!!.parent != null) {
@@ -119,7 +117,7 @@ class AStarFineGrid(private val room: BlockedChecker) : IPathfinderAlgorithm(roo
             }
             for (value in EnumFacing.VALUES) {
                 val neighbor = openNode(
-                    n?.coordinate!!.x + value.frontOffsetX,
+                    n!!.coordinate.x + value.frontOffsetX,
                     n.coordinate.y + value.frontOffsetY,
                     n.coordinate.z + value.frontOffsetZ
                 )
@@ -161,7 +159,7 @@ class AStarFineGrid(private val room: BlockedChecker) : IPathfinderAlgorithm(roo
 
 
     private fun openNode(x: Int, y: Int, z: Int): Node {
-        val coordinate = AStarUtil.Coordinate(x, y, z)
+        val coordinate = Vector3i(x, y, z)
         var node = nodeMap[coordinate]
         if (node == null) {
             node = Node(coordinate)

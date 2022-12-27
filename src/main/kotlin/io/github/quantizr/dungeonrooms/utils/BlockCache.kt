@@ -28,7 +28,10 @@ object BlockCache {
         return cache[BlockPos(pos.x, pos.y, pos.z)]
     }
 
-    fun getBlockState(pos: BlockPos): IBlockState? {
+    fun getBlockState(pos: BlockPos, skip: Boolean = false): IBlockState? {
+        if(skip){
+            return Minecraft.getMinecraft().theWorld.getBlockState(pos)
+        }
         return cache[pos]
     }
 
