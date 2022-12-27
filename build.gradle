@@ -39,6 +39,7 @@ loom {
     runs {
         'client' {
             property('devauth.enabled','true')
+            property('dungeonsroommod_debug','true')
             client()
         }
     }

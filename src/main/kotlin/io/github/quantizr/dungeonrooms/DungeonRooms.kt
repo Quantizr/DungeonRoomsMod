@@ -105,6 +105,7 @@ class DungeonRooms {
         DRMConfig.init()
         roomDataLoader.startAsyncLoad()
         firstLogin = isFirstLaunch()
+        if(System.getProperty("dungeonsroommod_debug") != null) debug = true
 
         //register classes
         MinecraftForge.EVENT_BUS.register(this)
@@ -251,7 +252,8 @@ class DungeonRooms {
         @JvmStatic
         lateinit var instance: DungeonRooms
             private set
-        const val debug = true
+        var debug = false
+          private set
 
         const val MODID = "@ID@"
         const val VERSION = "@VER@"
