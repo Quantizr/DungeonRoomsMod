@@ -14,7 +14,7 @@ tasks.wrapper {
     // the full version (with sources and documentation) of Gradle (ALL)
     distributionType = Wrapper.DistributionType.ALL
 }
-version = '3.3.2'
+version = '4.0.0'
 group = 'io.github.quantizr.DungeonRooms'
 archivesBaseName = 'Dungeon_Rooms'
 var mod_name = 'DRM'
