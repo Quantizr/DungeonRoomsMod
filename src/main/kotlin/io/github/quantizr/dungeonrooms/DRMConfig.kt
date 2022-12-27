@@ -7,6 +7,7 @@ import cc.polyfrost.oneconfig.config.data.InfoType
 import cc.polyfrost.oneconfig.config.data.Mod
 import cc.polyfrost.oneconfig.config.data.ModType
 import cc.polyfrost.oneconfig.libs.universal.UKeyboard.KEY_I
+import cc.polyfrost.oneconfig.libs.universal.UKeyboard.KEY_NONE
 import cc.polyfrost.oneconfig.libs.universal.UKeyboard.KEY_O
 import cc.polyfrost.oneconfig.libs.universal.UKeyboard.KEY_P
 import io.github.quantizr.dungeonrooms.ChatTransmitter.Companion.addToQueue
@@ -34,6 +35,9 @@ object DRMConfig :
 
     @KeyBind(name = "Quick Access Gui Key", subcategory = "General")
     var waypointGuiKey = OneKeyBind(KEY_P)
+
+    @KeyBind(name = "Force Refresh RoomDetection (Map Data)", subcategory = "General")
+    var refreshMapKeybind = OneKeyBind(KEY_NONE)
 
     @Dropdown(name = "Secret Image Provider", options = ["gui", "dsg", "sbp"], subcategory = "Secret Images")
     var imageHotkeyOpen = 0

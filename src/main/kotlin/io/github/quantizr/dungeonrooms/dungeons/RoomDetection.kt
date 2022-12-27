@@ -22,6 +22,8 @@ import io.github.quantizr.dungeonrooms.DRMConfig
 import io.github.quantizr.dungeonrooms.DungeonRooms
 import io.github.quantizr.dungeonrooms.dungeons.data.room.RoomColor
 import io.github.quantizr.dungeonrooms.dungeons.data.room.RoomSize
+import io.github.quantizr.dungeonrooms.gui.WaypointsGUI
+import io.github.quantizr.dungeonrooms.handlers.OpenLink
 import io.github.quantizr.dungeonrooms.utils.MapUtils
 import io.github.quantizr.dungeonrooms.utils.RoomDetectionUtils
 import io.github.quantizr.dungeonrooms.utils.Utils
@@ -32,6 +34,7 @@ import net.minecraft.util.EnumChatFormatting
 import net.minecraft.util.MovingObjectPosition
 import net.minecraft.util.Vec3
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
+import net.minecraftforge.fml.common.gameevent.InputEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 import java.awt.Point
@@ -42,6 +45,16 @@ import java.util.concurrent.Future
 
 class RoomDetection {
     val mc: Minecraft = Minecraft.getMinecraft()
+
+    @SubscribeEvent
+    fun onKey(event: InputEvent.KeyInputEvent?) {
+        when {
+            DRMConfig.refreshMapKeybind.isActive -> {
+                entranceMapNullCount = 0
+                stage2Ticks = 0
+            }
+        }
+    }
 
     @SubscribeEvent
     fun onTick(event: ClientTickEvent) {
@@ -288,40 +301,6 @@ class RoomDetection {
 
                 }
         }
-
-//        val vecList = RoomDetectionUtils.vectorsToRaytrace(24)
-//        for (vec in vecList) {
-//            // The super fancy Minecraft built-in raytracing function so that the mod only scan line of sight blocks!
-//            // This is the ONLY place where this mod accesses blocks in the physical map, and they are all within FOV
-//            player.entityWorld.rayTraceBlocks(
-//                eyes,
-//                vec,
-//                false,
-//                false,
-//                true
-//            )?.let { raytraceResult ->
-//                if (raytraceResult.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK) {
-//                    //the following is filtering out blocks which we don't want for detection, note that these blocks are also line of sight
-//                    val raytracedBlockPos = raytraceResult.blockPos
-//                    if (!currentScannedBlocks.contains(raytracedBlockPos)) {
-//                        currentScannedBlocks.add(raytracedBlockPos)
-//                        //scanned block is outside of current room
-//                        if (currentPhysicalSegments.contains(MapUtils.getClosestNWPhysicalCorner(raytracedBlockPos))) {
-//                            //scanned block may be part of a corridor
-//                            if (!RoomDetectionUtils.blockPartOfDoorway(raytracedBlockPos)) {
-//                                val hitBlock = mc.theWorld.getBlockState(raytracedBlockPos)
-//                                val identifier =
-//                                    Block.getIdFromBlock(hitBlock.block) * 100 + hitBlock.block.damageDropped(hitBlock)
-//                                if (RoomDetectionUtils.whitelistedBlocks.contains(identifier)) {
-//                                    blocksToCheck[raytracedBlockPos] =
-//                                        identifier //will be checked  and filtered in getPossibleRooms()
-//                                }
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//        }
         DungeonRooms.logger.info("DungeonRooms: Finished raytracing, amount of blocks to check: ${blocksToCheck.size}")
         DungeonRooms.logger.info("DungeonRooms: Time to raytrace and filter (in ms): ${System.currentTimeMillis() - timeStart}")
 
