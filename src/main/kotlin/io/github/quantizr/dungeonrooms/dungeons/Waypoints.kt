@@ -20,6 +20,7 @@ package io.github.quantizr.dungeonrooms.dungeons
 import io.github.quantizr.dungeonrooms.DRMConfig
 import io.github.quantizr.dungeonrooms.DungeonRooms
 import io.github.quantizr.dungeonrooms.events.PacketEvent.ReceiveEvent
+import io.github.quantizr.dungeonrooms.pathfinding.CachedPathFinder
 import io.github.quantizr.dungeonrooms.utils.MapUtils
 import io.github.quantizr.dungeonrooms.utils.Utils
 import io.github.quantizr.dungeonrooms.utils.WaypointUtils
@@ -39,7 +40,11 @@ import net.minecraftforge.fml.client.FMLClientHandler
 import net.minecraftforge.fml.common.eventhandler.EventPriority
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.InputEvent
+import net.minecraftforge.fml.common.gameevent.TickEvent
+import org.joml.Vector3d
+import org.joml.Vector3i
 import java.awt.Color
+import java.util.concurrent.Future
 
 class Waypoints {
     private var frustum = Frustum()
@@ -50,11 +55,71 @@ class Waypoints {
     var allSecretsMap: MutableMap<String, List<Boolean>?> = HashMap()
     var secretsList: MutableList<Boolean> = ArrayList(BooleanArray(10).toList())
 
+    private var tickCounter = 0
+    private val pathfindFutures: MutableMap<Vector3i, Future<List<Vector3d>>> = HashMap()
+    private val donePathfindFutures: MutableMap<Vector3i, List<Vector3d>> = HashMap()
+
+    @SubscribeEvent
+    fun onTick(event: TickEvent.ClientTickEvent) {
+        if (event.phase != TickEvent.Phase.START) return
+        if (!DRMConfig.waypointsEnabled) return
+        if (!DRMConfig.pathfindingEnabled) return
+        if (DRMConfig.practiceModeOn && !DRMConfig.practiceModeKeyBind.isActive) return
+        if (DRMConfig.disableWhenAllFound && allFound) return
+
+
+
+        updateFinishedFutures()
+        tickCounter++
+        if (tickCounter % DRMConfig.pathfindingRefreshRate != 0) return
+        tickCounter = 0
+
+        val player = Minecraft.getMinecraft().thePlayer
+
+        val (_, secretList) = DungeonRooms.instance.getJsonSecretList() ?: return
+
+        secretList.stream()
+            // make sure the secret is not done / and only target the first secret in the chain
+            .filter { secret ->
+                val nmbr = getSecretNumber(secret.secretName)
+                nmbr in (1..secretCount) && secretsList[nmbr - 1]
+            }
+            .forEach {
+                val pos = getSecretPos(it.x, it.y, it.z)
+                val scrtLoc = Vector3i(pos.x, pos.y, pos.z)
+                val oldFuture = pathfindFutures[scrtLoc]
+                if(oldFuture == null || oldFuture.isDone) {
+                    pathfindFutures[scrtLoc] = CachedPathFinder.CreatePath(player, scrtLoc)
+                }
+            }
+
+
+    }
+
+
+    private fun updateFinishedFutures(){
+        with(pathfindFutures.iterator()) {
+            forEach {(loc, ftr) ->
+                if(ftr.isDone){
+                    donePathfindFutures[loc] = ftr.get()
+                    remove()
+                }
+            }
+        }
+    }
+
+
     @SubscribeEvent
     fun onWorldRender(event: RenderWorldLastEvent) {
         if (!DRMConfig.waypointsEnabled) return
         if (DRMConfig.practiceModeOn && !DRMConfig.practiceModeKeyBind.isActive) return
         if (DRMConfig.disableWhenAllFound && allFound) return
+
+        if(DRMConfig.pathfindingEnabled){
+            donePathfindFutures.forEach { (_, points) ->
+                WaypointUtils.drawLinesVec3(points, Color(255, 0, 0, 255), 2.0f, event.partialTicks, true)
+            }
+        }
 
         val (_, secretList) = DungeonRooms.instance.getJsonSecretList() ?: return
         val viewer = Minecraft.getMinecraft().renderViewEntity
@@ -297,7 +362,12 @@ class Waypoints {
 
 
     private fun getSecretNumber(secretName: String): Int {
-        return secretName.substring(0, 2).replace("\\D".toRegex(), "").toInt()
+        val substring = secretName.substring(0, 2).replace("\\D".toRegex(), "")
+        return try {
+            substring.toInt()
+        } catch (e: NumberFormatException) {
+            0
+        }
     }
 
     private var lastSneakTime: Long = 0

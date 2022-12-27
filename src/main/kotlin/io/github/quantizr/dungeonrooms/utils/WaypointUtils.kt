@@ -22,6 +22,7 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.*
+import org.joml.Vector3d
 import org.lwjgl.opengl.GL11
 import java.awt.Color
 import kotlin.math.cos
@@ -261,4 +262,51 @@ object WaypointUtils {
         GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
         GlStateManager.popMatrix()
     }
+
+
+    fun drawLinesVec3(poses: List<Vector3d>, colour: Color, thickness: Float, partialTicks: Float, depth: Boolean) {
+        val render = Minecraft.getMinecraft().renderViewEntity
+        val worldRenderer = Tessellator.getInstance().worldRenderer
+        val realX = render.lastTickPosX + (render.posX - render.lastTickPosX) * partialTicks
+        val realY = render.lastTickPosY + (render.posY - render.lastTickPosY) * partialTicks
+        val realZ = render.lastTickPosZ + (render.posZ - render.lastTickPosZ) * partialTicks
+        GlStateManager.pushMatrix()
+        GlStateManager.translate(-realX, -realY, -realZ)
+        GlStateManager.disableTexture2D()
+        GlStateManager.disableLighting()
+        GL11.glDisable(GL11.GL_TEXTURE_2D)
+        GlStateManager.enableBlend()
+        GlStateManager.disableAlpha()
+        GL11.glLineWidth(thickness)
+        if (!depth) {
+            GlStateManager.disableDepth()
+            GlStateManager.depthMask(false)
+        }
+        GlStateManager.tryBlendFuncSeparate(770, 771, 1, 0)
+
+        GlStateManager.color(1f, 1f, 1f, 1f)
+        worldRenderer.begin(GL11.GL_LINE_STRIP, DefaultVertexFormats.POSITION_COLOR)
+        for (pos in poses) {
+            val i: Int = colour.rgb
+            worldRenderer.pos(pos.x, pos.y, pos.z).color(
+                (i shr 16 and 0xFF) / 255.0f,
+                (i shr 8 and 0xFF) / 255.0f,
+                (i and 0xFF) / 255.0f,
+                (i shr 24 and 0xFF) / 255.0f
+            ).endVertex()
+        }
+        Tessellator.getInstance().draw()
+        GlStateManager.translate(realX, realY, realZ)
+        GlStateManager.disableBlend()
+        GlStateManager.enableAlpha()
+        GlStateManager.enableTexture2D()
+        if (!depth) {
+            GlStateManager.enableDepth()
+            GlStateManager.depthMask(true)
+        }
+        GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
+        GlStateManager.popMatrix()
+        GL11.glLineWidth(1f)
+    }
+
 }

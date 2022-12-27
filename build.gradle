@@ -76,6 +76,8 @@ dependencies {
     forge('net.minecraftforge:forge:1.8.9-11.15.1.2318-1.8.9')
 
     implementation 'org.jetbrains:annotations-java5:23.0.0'
+    implementation 'org.joml:joml:1.10.5'
+    implementation 'com.github.ben-manes.caffeine:caffeine:2.9.3'
 
     modRuntimeOnly('me.djtheredstoner:DevAuth-forge-legacy:1.1.0')
 
@@ -105,10 +107,13 @@ tasks.withType(Jar) {
 tasks.shadowJar {
 
     archiveFileName = jar.archiveFileName
-
+    relocate 'org.joml', 'io.github.quantizr.org.joml'
+    relocate 'com.github.benmanes.caffeine', 'io.github.quantizr.com.github.benmanes.caffeine'
 
     dependencies {
+        include(dependency('org.joml:joml:..*'))
         include(dependency('cc.polyfrost:oneconfig-wrapper-launchwrapper:..*'))
+        include(dependency('com.github.ben-manes.caffeine:caffeine:..*'))
     }
 }
 

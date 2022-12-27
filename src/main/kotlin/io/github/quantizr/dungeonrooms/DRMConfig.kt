@@ -50,6 +50,21 @@ object DRMConfig :
     @Switch(name = "Disable When All Secrets Found", category = "Waypoints", subcategory = "Preferences")
     var disableWhenAllFound = true
 
+    @Switch(name = "Enable Pathfinding To Waypoints", subcategory = "Pathfinding", category = "Waypoints")
+    var pathfindingEnabled = true
+
+    @Slider(name = "Pathfinding Refresh Rate (In Ticks)", min = 1f, max = 40f, category = "Waypoints", subcategory = "Pathfinding")
+    var pathfindingRefreshRate: Int = 20
+
+    @Dropdown(
+        description = "Select pathfinding algorithm",
+        name = "Pathfinding Algorithm",
+        options = ["THETA* (recommended)", "A* Diagonal", "A* Fine-Grid", "Jump Point Search"],
+        subcategory = "Pathfinding",
+        category = "Waypoints"
+    )
+    var secretPathfindStrategy = 0
+
     @Info(
         text = "See waypoints when the key is pressed, useful for practice.",
         category = "Waypoints",

@@ -17,6 +17,7 @@
  */
 package io.github.quantizr.dungeonrooms
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import io.github.quantizr.dungeonrooms.commands.RoomCommand
@@ -28,6 +29,8 @@ import io.github.quantizr.dungeonrooms.gui.WaypointsGUI
 import io.github.quantizr.dungeonrooms.handlers.OpenLink.checkForLink
 import io.github.quantizr.dungeonrooms.handlers.PacketHandler
 import io.github.quantizr.dungeonrooms.handlers.TextRenderer.drawText
+import io.github.quantizr.dungeonrooms.test.PathfindTest
+import io.github.quantizr.dungeonrooms.utils.BlockCache
 import io.github.quantizr.dungeonrooms.utils.Utils
 import io.github.quantizr.dungeonrooms.utils.Utils.checkForCatacombs
 import io.github.quantizr.dungeonrooms.utils.Utils.checkForSkyblock
@@ -51,28 +54,33 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
 import net.minecraftforge.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent
 import net.minecraftforge.fml.common.versioning.DefaultArtifactVersion
 import org.apache.commons.io.IOUtils
-import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import java.io.File
 import java.io.IOException
 import java.net.URL
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
 @Mod(modid = DungeonRooms.MODID, version = DungeonRooms.VERSION)
 class DungeonRooms {
     val mc: Minecraft = Minecraft.getMinecraft()
     val motd: MutableList<String> = ArrayList()
     var textToDisplay: List<String> = emptyList()
-
+    lateinit var ex: ExecutorService
     private var tickAmount = 1
 
     @Mod.EventHandler
     fun preInit(event: FMLPreInitializationEvent) {
         ClientCommandHandler.instance.registerCommand(RoomCommand())
 
+        ex = Executors.newCachedThreadPool(
+            ThreadFactoryBuilder().setNameFormat("Dg-AsyncPathFinder-%d").build()
+        )
+
         //initialize logger
         logger = LogManager.getLogger(instance::class.java)
-        if(debug) Utils.setLogLevel(LogManager.getLogger(DungeonRooms::class.java), Level.DEBUG)
+//        if(debug) Utils.setLogLevel(LogManager.getLogger(DungeonRooms::class.java), Level.DEBUG)
     }
 
     val roomDetection = RoomDetection()
@@ -100,10 +108,13 @@ class DungeonRooms {
 
         //register classes
         MinecraftForge.EVENT_BUS.register(this)
+        MinecraftForge.EVENT_BUS.register(BlockCache)
+
         MinecraftForge.EVENT_BUS.register(ChatTransmitter())
         MinecraftForge.EVENT_BUS.register(dungeonManager)
         MinecraftForge.EVENT_BUS.register(roomDetection)
         MinecraftForge.EVENT_BUS.register(waypoints)
+        if(debug) MinecraftForge.EVENT_BUS.register(PathfindTest())
 
         roomDataLoader.blockTillLoad()
 
