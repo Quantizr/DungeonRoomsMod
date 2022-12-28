@@ -3,16 +3,14 @@ package io.github.quantizr.dungeonrooms.pathfinding.algorithms.impl
 import io.github.quantizr.dungeonrooms.pathfinding.BlockedChecker
 import io.github.quantizr.dungeonrooms.pathfinding.algorithms.AStarUtil
 import io.github.quantizr.dungeonrooms.pathfinding.algorithms.AStarUtil.Node
+import io.github.quantizr.dungeonrooms.pathfinding.algorithms.AStarUtil.reconstructPath
 import io.github.quantizr.dungeonrooms.pathfinding.algorithms.IPathfinderAlgorithm
 import net.minecraft.util.AxisAlignedBB
 import net.minecraft.util.EnumFacing
-import net.minecraft.util.MathHelper
 import org.joml.Vector3d
 import org.joml.Vector3f
 import org.joml.Vector3i
 import java.util.*
-import kotlin.math.ceil
-import kotlin.math.roundToInt
 
 class ThetaStar(room: BlockedChecker) : IPathfinderAlgorithm(room) {
     private var dx: Int = 0
@@ -34,163 +32,17 @@ class ThetaStar(room: BlockedChecker) : IPathfinderAlgorithm(room) {
     private var lastSy = 0
     private var lastSz = 0
 
-
-    private var pfindIdx = 0
-
+    private var cacheMarker = 0
 
     private fun openNode(x: Int, y: Int, z: Int): Node {
         val coordinate = Vector3i(x, y, z)
         return nodeMap.computeIfAbsent(coordinate) { Node(coordinate) }
     }
 
-    override fun pathfind(from: Vector3i, to: Vector3d, timeout: Float): Boolean {
-        pfindIdx++
-
-        dx = (to.x * 2).toInt()
-        dy = (to.y * 2).toInt()
-        dz = (to.z * 2).toInt()
-        destinationBB = AxisAlignedBB.fromBounds(
-            (dx - 2).toDouble(),
-            (dy - 2).toDouble(),
-            (dz - 2).toDouble(),
-            (dx + 2).toDouble(),
-            (dy + 2).toDouble(),
-            (dz + 2).toDouble()
-        )
-
-        if (lastSx != (from.x * 2) || lastSy != (from.y * 2) || lastSz != (from.z * 2)) {
-            open.clear()
-        }
-        lastSx = (from.x * 2)
-        lastSy = (from.y * 2)
-        lastSz = (from.z * 2)
-        if (roomAccessor.isBlocked(lastSx, lastSy, lastSz)) return false
-        val startNode = openNode(dx, dy, dz)
-        val goalNode = openNode(lastSx, lastSy, lastSz)
-        startNode.g = 0f
-        startNode.f = 0f
-        goalNode.g = Int.MAX_VALUE.toFloat()
-        goalNode.f = Int.MAX_VALUE.toFloat()
-        if (goalNode.parent != null) {
-            val route = LinkedList<Vector3d>()
-            var curr: Node? = goalNode
-            while (curr!!.parent != null) {
-                route.addLast(
-                    Vector3d(
-                        curr.coordinate.x / 2.0,
-                        curr.coordinate.y / 2.0 + 0.1,
-                        curr.coordinate.z / 2.0
-                    )
-                )
-                curr = curr.parent
-            }
-            route.addLast(Vector3d(curr.coordinate.x / 2.0, curr.coordinate.y / 2.0 + 0.1, curr.coordinate.z / 2.0))
-            this.route = route
-            return true
-        }
-        open.add(startNode)
-        val end = System.currentTimeMillis() + timeout
-        while (!open.isEmpty()) {
-            if (System.currentTimeMillis() > end) {
-                return false
-            }
-            val n = open.poll()
-
-
-            if (n != null) {
-                if (n.lastVisited == pfindIdx) {
-                    continue
-                }
-                n.lastVisited = pfindIdx
-            }
-
-            if (n === goalNode) {
-                // route = reconstructPath(startNode)
-                val route = LinkedList<Vector3d>()
-                var curr: Node? = goalNode
-                while (curr!!.parent != null) {
-                    route.addLast(
-                        Vector3d(
-                            curr.coordinate.x / 2.0,
-                            curr.coordinate.y / 2.0 + 0.1,
-                            curr.coordinate.z / 2.0
-                        )
-                    )
-                    curr = curr.parent
-                }
-                route.addLast(
-                    Vector3d(
-                        curr.coordinate.x / 2.0,
-                        curr.coordinate.y / 2.0 + 0.1,
-                        curr.coordinate.z / 2.0
-                    )
-                )
-                this.route = route
-                return true
-            }
-            for (value in EnumFacing.VALUES) {
-                val neighbor = openNode(
-                    n?.coordinate!!.x + value.frontOffsetX,
-                    n.coordinate.y + value.frontOffsetY,
-                    n.coordinate.z + value.frontOffsetZ
-                )
-
-                // check blocked.
-                if (!(destinationBB.minX <= neighbor.coordinate.x && neighbor.coordinate.x <= destinationBB.maxX && destinationBB.minY <= neighbor.coordinate.y && neighbor.coordinate.y <= destinationBB.maxY && destinationBB.minZ <= neighbor.coordinate.z && neighbor.coordinate.z <= destinationBB.maxZ // near destination
-                            || !roomAccessor.isBlocked(
-                        neighbor.coordinate.x,
-                        neighbor.coordinate.y,
-                        neighbor.coordinate.z
-                    ))
-                ) { // not blocked
-                    continue
-                }
-                if (neighbor.lastVisited == pfindIdx) continue
-                var flag = false
-                if (n.parent != null) {
-                    val tempGScore = n.parent!!.g + distSq(
-                        (n.parent!!.coordinate.x - neighbor.coordinate.x).toFloat(),
-                        (n.parent!!.coordinate.y - neighbor.coordinate.y).toFloat(),
-                        (n.parent!!.coordinate.z - neighbor.coordinate.z).toFloat()
-                    )
-                    if (tempGScore < neighbor.g && lineofsightALT(n.parent, neighbor)) {
-                        neighbor.parent = n.parent
-                        neighbor.g = tempGScore
-                        neighbor.f = tempGScore + distSq(
-                            (goalNode.coordinate.x - neighbor.coordinate.x).toFloat(),
-                            (goalNode.coordinate.y - neighbor.coordinate.y).toFloat(),
-                            (goalNode.coordinate.z - neighbor.coordinate.z).toFloat()
-                        )
-                        open.add(neighbor)
-                        flag = true
-                    }
-                }
-                if (!flag) {
-                    val gScore = n.g + 1
-                    if (gScore < neighbor.g) {
-                        neighbor.parent = n
-                        neighbor.g = gScore
-                        neighbor.f = gScore + distSq(
-                            (goalNode.coordinate.x - neighbor.coordinate.x).toFloat(),
-                            (goalNode.coordinate.y - neighbor.coordinate.y).toFloat(),
-                            (goalNode.coordinate.z - neighbor.coordinate.z).toFloat()
-                        )
-                        open.add(neighbor)
-                    } else if (neighbor.lastVisited != pfindIdx) {
-                        neighbor.f = neighbor.g + distSq(
-                            (goalNode.coordinate.x - neighbor.coordinate.x).toFloat(),
-                            (goalNode.coordinate.y - neighbor.coordinate.y).toFloat(),
-                            (goalNode.coordinate.z - neighbor.coordinate.z).toFloat()
-                        )
-                        open.add(neighbor)
-                    }
-                }
-            }
-        }
-        return true
-    }
-
-    private fun lineofsightALT(a: Node?, b: Node?): Boolean {
+    /**
+     * raytrace and check if the path is blocked along the way
+     */
+    private fun lineofsight(a: Node?, b: Node?): Boolean {
         if (a == null || b == null) return false
         val s = Vector3f(a.coordinate)
         val e = Vector3f(b.coordinate)
@@ -216,8 +68,120 @@ class ThetaStar(room: BlockedChecker) : IPathfinderAlgorithm(room) {
 
     }
 
-    private fun distSq(x: Float, y: Float, z: Float): Float {
-        return MathHelper.sqrt_float(x * x + y * y + z * z)
+    override fun pathfind(from: Vector3i, to: Vector3d, timeout: Float): Boolean {
+        cacheMarker++
+
+        dx = (to.x * 2).toInt()
+        dy = (to.y * 2).toInt()
+        dz = (to.z * 2).toInt()
+        destinationBB = AxisAlignedBB.fromBounds(
+            (dx - 2).toDouble(),
+            (dy - 2).toDouble(),
+            (dz - 2).toDouble(),
+            (dx + 2).toDouble(),
+            (dy + 2).toDouble(),
+            (dz + 2).toDouble()
+        )
+
+        val i = from.x * 2
+        val i1 = from.y * 2
+        val i2 = from.z * 2
+        if (lastSx != i || lastSy != i1 || lastSz != i2) {
+            open.clear()
+        }
+        lastSx = i
+        lastSy = i1
+        lastSz = i2
+        if (roomAccessor.isBlocked(lastSx, lastSy, lastSz)) return false
+        val startNode = openNode(dx, dy, dz)
+        val goalNode = openNode(lastSx, lastSy, lastSz)
+        startNode.g = 0f
+        startNode.f = 0f
+        goalNode.g = Float.MAX_VALUE
+        goalNode.f = Float.MAX_VALUE
+        if (goalNode.parent != null) {
+            this.route = reconstructPath(goalNode)
+            return true
+        }
+        open.add(startNode)
+        val end = System.currentTimeMillis() + timeout
+        while (!open.isEmpty()) {
+            if (System.currentTimeMillis() > end) {
+                return false
+            }
+            val n = open.poll()
+
+
+            if (n != null) {
+                if (n.cacheMarker == cacheMarker) {
+                    continue
+                }
+                n.cacheMarker = cacheMarker
+            }
+
+            if (n === goalNode) {
+                this.route = reconstructPath(goalNode)
+                return true
+            }
+            for (value in EnumFacing.VALUES) {
+                n!!
+                val neighbor = openNode(
+                    n.coordinate.x + value.frontOffsetX,
+                    n.coordinate.y + value.frontOffsetY,
+                    n.coordinate.z + value.frontOffsetZ
+                )
+
+                if (destinationBB.minX <= neighbor.coordinate.x
+                    && neighbor.coordinate.x <= destinationBB.maxX
+                    && destinationBB.minY <= neighbor.coordinate.y
+                    && neighbor.coordinate.y <= destinationBB.maxY
+                    && destinationBB.minZ <= neighbor.coordinate.z
+                    && neighbor.coordinate.z <= destinationBB.maxZ
+                    || !roomAccessor.isBlocked(
+                        neighbor.coordinate.x,
+                        neighbor.coordinate.y,
+                        neighbor.coordinate.z
+                    )
+                ) {
+                    if (neighbor.cacheMarker != cacheMarker) {
+                        var flag = false
+                        val distSq = AStarUtil.distSq(
+                            goalNode.coordinate.x - neighbor.coordinate.x,
+                            goalNode.coordinate.y - neighbor.coordinate.y,
+                            goalNode.coordinate.z - neighbor.coordinate.z
+                        )
+                        val parent = n.parent
+                        if (parent != null) {
+                            val tempGScore = parent.g + AStarUtil.distSq(
+                                parent.coordinate.x - neighbor.coordinate.x,
+                                parent.coordinate.y - neighbor.coordinate.y,
+                                parent.coordinate.z - neighbor.coordinate.z
+                            )
+                            if (tempGScore < neighbor.g && lineofsight(parent, neighbor)) {
+                                neighbor.parent = parent
+                                neighbor.g = tempGScore
+                                neighbor.f = tempGScore + distSq
+                                open.add(neighbor)
+                                flag = true
+                            }
+                        }
+                        if (!flag) {
+                            val gScore = n.g + 1
+                            if (gScore < neighbor.g) {
+                                neighbor.parent = n
+                                neighbor.g = gScore
+                                neighbor.f = gScore + distSq
+                                open.add(neighbor)
+                            } else if (neighbor.cacheMarker != cacheMarker) {
+                                neighbor.f = neighbor.g + distSq
+                                open.add(neighbor)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return true
     }
 
 }

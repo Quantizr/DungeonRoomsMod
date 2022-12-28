@@ -103,8 +103,8 @@ class AStarCornerCut(private val room: BlockedChecker) : IPathfinderAlgorithm(ro
             }
             val n = open.poll()
             if (n != null) {
-                if (n.lastVisited == pfindIdx) continue
-                n.lastVisited = pfindIdx
+                if (n.cacheMarker == pfindIdx) continue
+                n.cacheMarker = pfindIdx
             }
             if (n === goalNode) {
                 // route = reconstructPath(startNode)
@@ -151,7 +151,7 @@ class AStarCornerCut(private val room: BlockedChecker) : IPathfinderAlgorithm(ro
                         ) { // not blocked
                             continue
                         }
-                        if (neighbor.lastVisited == pfindIdx) continue
+                        if (neighbor.cacheMarker == pfindIdx) continue
                         val gScore =
                             n.g.plus(
                                 MathHelper.sqrt_float((x * x + y * y + z * z).toFloat())
@@ -165,7 +165,7 @@ class AStarCornerCut(private val room: BlockedChecker) : IPathfinderAlgorithm(ro
                                 (goalNode.coordinate.z - neighbor.coordinate.z).toFloat()
                             )
                             open.add(neighbor)
-                        } else if (neighbor.lastVisited != pfindIdx) {
+                        } else if (neighbor.cacheMarker != pfindIdx) {
                             neighbor.f = gScore + distSq(
                                 (goalNode.coordinate.x - neighbor.coordinate.x).toFloat(),
                                 (goalNode.coordinate.y - neighbor.coordinate.y).toFloat(),

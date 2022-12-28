@@ -37,7 +37,7 @@ object CachedPathFinder {
         val preBuilt = Blocks.stone.getStateFromMeta(2)
 
         private val cache = Caffeine.newBuilder()
-            .maximumSize(500_000)
+            .maximumSize(50_000)
             .expireAfterWrite(Duration.ofSeconds(6))
             .build { key: Vector3i ->
                 if(Minecraft.getMinecraft().theWorld == null) return@build null
@@ -65,18 +65,18 @@ object CachedPathFinder {
                     for (l1 in i1 until j1) {
                         for (i2 in k - 1 until l) {
                             blockPos[k1, i2] = l1
-                            val blxState = BlockCache.getBlockState(blockPos, true)!!
-                            if (blxState.block.material.blocksMovement()) {
-                                if (!blxState.block.isFullCube || i2 != k - 1) {
-                                    if (blxState != preBuilt) {
-                                        if (blxState.block.isFullCube) {
+                            val blockState = BlockCache.getBlockState(blockPos, true) ?: return@build true
+                            if (blockState.block.material.blocksMovement()) {
+                                if (!blockState.block.isFullCube || i2 != k - 1) {
+                                    if (blockState != preBuilt) {
+                                        if (blockState.block.isFullCube) {
                                             return@build true
                                         }
                                         try {
-                                            blxState.block.addCollisionBoxesToList(
+                                            blockState.block.addCollisionBoxesToList(
                                                 Minecraft.getMinecraft().theWorld,
                                                 blockPos,
-                                                blxState,
+                                                blockState,
                                                 bb,
                                                 list,
                                                 null

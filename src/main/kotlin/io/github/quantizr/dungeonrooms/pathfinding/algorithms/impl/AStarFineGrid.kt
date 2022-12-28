@@ -89,8 +89,8 @@ class AStarFineGrid(room: BlockedChecker) : IPathfinderAlgorithm(room) {
             }
             val n = open.poll()
             if (n != null) {
-                if (n.lastVisited == pfindIdx) continue
-                n.lastVisited = pfindIdx
+                if (n.cacheMarker == pfindIdx) continue
+                n.cacheMarker = pfindIdx
                 if (n === goalNode) {
                     val route = LinkedList<Vector3d>()
                     var curr: Node? = goalNode
@@ -123,33 +123,35 @@ class AStarFineGrid(room: BlockedChecker) : IPathfinderAlgorithm(room) {
                 )
 
                 // check blocked.
-                if (!(destinationBB.minX <= neighbor.coordinate.x && neighbor.coordinate.x <= destinationBB.maxX && destinationBB.minY <= neighbor.coordinate.y && neighbor.coordinate.y <= destinationBB.maxY && destinationBB.minZ <= neighbor.coordinate.z && neighbor.coordinate.z <= destinationBB.maxZ // near destination
-                            || !roomAccessor.isBlocked(
+                if (destinationBB.minX <= neighbor.coordinate.x
+                    && neighbor.coordinate.x <= destinationBB.maxX
+                    && destinationBB.minY <= neighbor.coordinate.y
+                    && neighbor.coordinate.y <= destinationBB.maxY
+                    && destinationBB.minZ <= neighbor.coordinate.z
+                    && neighbor.coordinate.z <= destinationBB.maxZ // near destination
+                    || !roomAccessor.isBlocked(
                         neighbor.coordinate.x,
                         neighbor.coordinate.y,
                         neighbor.coordinate.z
-                    ))
-                ) { // not blocked
-                    continue
-                }
-                val gScore = n.g + 1 // altho it's sq, it should be fine
-                if (gScore < neighbor.g) {
-                    neighbor.parent = n
-                    neighbor.g = gScore
-                    neighbor.f = gScore + distSq(
+                    )
+                ) {
+                    val gScore = n.g + 1
+                    val distSq = AStarUtil.distSq(
                         (goalNode.coordinate.x - neighbor.coordinate.x).toFloat(),
                         (goalNode.coordinate.y - neighbor.coordinate.y).toFloat(),
                         (goalNode.coordinate.z - neighbor.coordinate.z).toFloat()
                     )
-                    open.add(neighbor)
-                } else if (neighbor.lastVisited != pfindIdx) {
-                    neighbor.f = gScore + distSq(
-                        (goalNode.coordinate.x - neighbor.coordinate.x).toFloat(),
-                        (goalNode.coordinate.y - neighbor.coordinate.y).toFloat(),
-                        (goalNode.coordinate.z - neighbor.coordinate.z).toFloat()
-                    )
-                    open.add(neighbor)
+                    if (gScore < neighbor.g) {
+                        neighbor.parent = n
+                        neighbor.g = gScore
+                        neighbor.f = gScore + distSq
+                        open.add(neighbor)
+                    } else if (neighbor.cacheMarker != pfindIdx) {
+                        neighbor.f = gScore + distSq
+                        open.add(neighbor)
+                    }
                 }
+                // not blocked
             }
         }
         return true
@@ -166,11 +168,6 @@ class AStarFineGrid(room: BlockedChecker) : IPathfinderAlgorithm(room) {
             nodeMap[coordinate] = node
         }
         return node
-    }
-
-
-    private fun distSq(x: Float, y: Float, z: Float): Float {
-        return MathHelper.sqrt_float(x * x + y * y + z * z)
     }
 
 }

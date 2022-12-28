@@ -13,7 +13,7 @@ object CachedAlgBuilder {
     // since we pathfind to the same destination and the world does not change,
     // we can cache open nodes in the A* family of algorithms
     private val cache = Caffeine.newBuilder()
-        .maximumSize(20)
+        .maximumSize(11)
         .expireAfterWrite(Duration.ofMinutes(2))
         .build { _: Vector3d ->
             return@build when (DRMConfig.secretPathfindStrategy) {
@@ -27,6 +27,4 @@ object CachedAlgBuilder {
     fun buildPfStrategy(cacheDestenation: Vector3d): IPathfinderAlgorithm {
         return cache.get(cacheDestenation)!!
     }
-
-
 }
