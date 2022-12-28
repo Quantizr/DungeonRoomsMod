@@ -13,7 +13,7 @@ import cc.polyfrost.oneconfig.libs.universal.UKeyboard.KEY_P
 import io.github.quantizr.dungeonrooms.ChatTransmitter.Companion.addToQueue
 
 object DRMConfig :
-    Config(Mod("DungeonsRoomsMod", ModType.SKYBLOCK, "/drm_logo_x128.png"), DungeonRooms.MODID + ".json") {
+    Config(Mod("DungeonsRoomsMod", ModType.SKYBLOCK, "/assets/dungeonrooms/logo.png"), DungeonRooms.MODID + ".json") {
 
     fun init(){
         initialize()
