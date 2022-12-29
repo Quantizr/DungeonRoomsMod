@@ -547,7 +547,6 @@ class RoomDetection {
         incompleteScan = 0
         redoScan = 0
         DungeonRooms.instance.waypoints.secretCount = 0
-        DungeonRooms.instance.waypoints.pathfindFutures.clear()
         DungeonRooms.instance.waypoints.donePathfindFutures.clear()
 
     }

@@ -67,16 +67,11 @@ class DungeonRooms {
     val mc: Minecraft = Minecraft.getMinecraft()
     val motd: MutableList<String> = ArrayList()
     var textToDisplay: List<String> = emptyList()
-    lateinit var ex: ExecutorService
     private var tickAmount = 1
 
     @Mod.EventHandler
     fun preInit(event: FMLPreInitializationEvent) {
         ClientCommandHandler.instance.registerCommand(RoomCommand())
-
-        ex = Executors.newCachedThreadPool(
-            ThreadFactoryBuilder().setNameFormat("Dg-AsyncPathFinder-%d").build()
-        )
 
         //initialize logger
         logger = LogManager.getLogger(instance::class.java)
@@ -105,7 +100,6 @@ class DungeonRooms {
         DRMConfig.init()
         roomDataLoader.startAsyncLoad()
         firstLogin = isFirstLaunch()
-        if(System.getProperty("dungeonsroommod_debug") != null) debug = true
 
         //register classes
         MinecraftForge.EVENT_BUS.register(this)
@@ -115,7 +109,7 @@ class DungeonRooms {
         MinecraftForge.EVENT_BUS.register(dungeonManager)
         MinecraftForge.EVENT_BUS.register(roomDetection)
         MinecraftForge.EVENT_BUS.register(waypoints)
-        if(debug) MinecraftForge.EVENT_BUS.register(PathfindTest())
+        if (DRMConfig.debug) MinecraftForge.EVENT_BUS.register(PathfindTest())
 
         roomDataLoader.blockTillLoad()
 
@@ -123,7 +117,10 @@ class DungeonRooms {
             try {
                 logger.info("DungeonRooms: Checking for updates...")
                 val gson = Gson()
-                val thaobject = gson.fromJson(IOUtils.toString(URL("https://api.github.com/repos/Quantizr/DungeonRoomsMod/releases/latest")), JsonObject::class.java)
+                val thaobject = gson.fromJson(
+                    IOUtils.toString(URL("https://api.github.com/repos/Quantizr/DungeonRoomsMod/releases/latest")),
+                    JsonObject::class.java
+                )
                 val latestTag = thaobject.get("tag_name").asString
                 val currentVersion = DefaultArtifactVersion(VERSION)
                 val latestVersion = DefaultArtifactVersion(latestTag.substring(1))
@@ -132,7 +129,9 @@ class DungeonRooms {
                     val update = ChatComponentText("${EnumChatFormatting.GREEN}${EnumChatFormatting.BOLD}  [UPDATE]  ")
                     update.chatStyle.chatClickEvent = ClickEvent(ClickEvent.Action.OPEN_URL, releaseURL)
                     ChatTransmitter.addToQueue(
-                        ChatComponentText("${EnumChatFormatting.RED}Dungeon Rooms Mod is outdated. Please update to $latestTag.").appendSibling(update)
+                        ChatComponentText("${EnumChatFormatting.RED}Dungeon Rooms Mod is outdated. Please update to $latestTag.").appendSibling(
+                            update
+                        )
                     )
                 } else {
                     logger.info("DungeonRooms: No update found")
@@ -145,10 +144,10 @@ class DungeonRooms {
                 logger.info("DungeonRooms: MOTD has been checked")
 
             } catch (e: IOException) {
-                ChatTransmitter.addToQueue(ChatComponentText(EnumChatFormatting.RED.toString() + "Dungeon Rooms: An error has occured. See logs for more details."))
+                ChatTransmitter.addToQueue("${EnumChatFormatting.RED}Dungeon Rooms: An error has occured. See logs for more details.")
                 e.printStackTrace()
             } catch (e: InterruptedException) {
-                ChatTransmitter.addToQueue(ChatComponentText(EnumChatFormatting.RED.toString() + "Dungeon Rooms: An error has occured. See logs for more details."))
+                ChatTransmitter.addToQueue("${EnumChatFormatting.RED}Dungeon Rooms: An error has occured. See logs for more details.")
                 e.printStackTrace()
             }
         }.start()
@@ -172,7 +171,6 @@ class DungeonRooms {
      * Modified from Danker's Skyblock Mod under the GNU General Public License v3.0
      * https://github.com/bowser0000/SkyblockMod/blob/master/LICENSE
      * @author bowser0000
-     * modified by kingstefan26
      */
     @SubscribeEvent
     fun onServerConnect(event: ClientConnectedToServerEvent) {
@@ -252,8 +250,6 @@ class DungeonRooms {
         @JvmStatic
         lateinit var instance: DungeonRooms
             private set
-        var debug = false
-          private set
 
         const val MODID = "@ID@"
         const val VERSION = "@VER@"

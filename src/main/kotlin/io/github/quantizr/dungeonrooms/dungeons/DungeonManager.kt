@@ -21,6 +21,7 @@ import io.github.quantizr.dungeonrooms.ChatTransmitter
 import io.github.quantizr.dungeonrooms.DRMConfig
 import io.github.quantizr.dungeonrooms.DungeonRooms
 import io.github.quantizr.dungeonrooms.DungeonRooms.Companion.instance
+import io.github.quantizr.dungeonrooms.pathfinding.CachedPathFinder
 import io.github.quantizr.dungeonrooms.utils.MapUtils
 import io.github.quantizr.dungeonrooms.utils.Utils
 import net.minecraft.client.Minecraft

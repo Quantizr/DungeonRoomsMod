@@ -25,6 +25,7 @@ import io.github.quantizr.dungeonrooms.pathfinding.PfPath
 import io.github.quantizr.dungeonrooms.utils.MapUtils
 import io.github.quantizr.dungeonrooms.utils.Utils
 import io.github.quantizr.dungeonrooms.utils.WaypointUtils
+import kotlinx.coroutines.Deferred
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.culling.Frustum
@@ -44,11 +45,13 @@ import net.minecraftforge.fml.common.gameevent.InputEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import org.joml.Vector3i
 import java.awt.Color
-import java.util.concurrent.Future
+import java.util.concurrent.ConcurrentHashMap
 
 class Waypoints {
     private var frustum = Frustum()
     private var completedSecrets = 0
+
+    val cachedPathFinder = CachedPathFinder()
 
     var allFound = false
     var secretCount = 0
@@ -57,14 +60,12 @@ class Waypoints {
 
     private var tickCounter = 0
 
-    // secret loc <-> pfjob
-    // currently executing pathfind jobs that are saved here
-    val pathfindFutures: MutableMap<Vector3i, Future<PfPath>> = HashMap()
 
     // user loc <-> pfjob
     // this is used as a "last result cache",
-    // since new the player is moving and we want to save the last result
+    // since new the player is moving, and we want to save the last processed path
     val donePathfindFutures: MutableMap<Vector3i, PfPath> = HashMap()
+
 
     @SubscribeEvent
     fun onTick(event: TickEvent.ClientTickEvent) {
@@ -79,12 +80,11 @@ class Waypoints {
         if (tickCounter % DRMConfig.pathfindingRefreshRate != 0) return
         tickCounter = 0
 
-        val player = Minecraft.getMinecraft().thePlayer
-
         val (_, secretList) = DungeonRooms.instance.getJsonSecretList() ?: return
 
         secretList.stream()
             .filter { it.category == "chest" || it.category == "wither" || it.category == "item" || it.category == "bat" }
+
             // make sure the secret is not done / and only target the first secret in the chain
             .filter { secret ->
                 val nmbr = getSecretNumber(secret.secretName)
@@ -93,9 +93,17 @@ class Waypoints {
             .forEach {
                 val pos = getSecretPos(it.x, it.y, it.z)
                 val scrtLoc = Vector3i(pos.x, pos.y, pos.z)
-                val oldFuture = pathfindFutures[scrtLoc]
-                if(oldFuture == null || oldFuture.isDone) {
-                    pathfindFutures[scrtLoc] = CachedPathFinder.CreatePath(player, scrtLoc, id=it.secretName)
+                cachedPathFinder.createPathAsync(
+                    Vector3i(
+                        Minecraft.getMinecraft().thePlayer.posX.toInt(),
+                        Minecraft.getMinecraft().thePlayer.posY.toInt(),
+                        Minecraft.getMinecraft().thePlayer.posZ.toInt()
+                    ),
+                    scrtLoc,
+                    id = it.secretName,
+                    lockProcessingThisTarget = true
+                ) { path ->
+                    donePathfindFutures[scrtLoc] = path
                 }
             }
 
@@ -104,16 +112,6 @@ class Waypoints {
 
 
     private fun updateFinishedFutures(){
-        // cache competed pathfind jobs to the donePathfindFutures map
-        with(pathfindFutures.iterator()) {
-            forEach {(loc, ftr) ->
-                if(ftr.isDone){
-                    donePathfindFutures[loc] = ftr.get()
-                    remove()
-                }
-            }
-        }
-
         // remove cached pathfind jobs that are leading to done secrets
         val (_, secretList) = DungeonRooms.instance.getJsonSecretList() ?: return
         secretList.stream()

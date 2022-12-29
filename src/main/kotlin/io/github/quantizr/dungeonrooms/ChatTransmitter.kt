@@ -60,7 +60,7 @@ class ChatTransmitter {
 
         @JvmStatic
         fun sendDebugChat(iChatComponent: IChatComponent) {
-            if (DungeonRooms.debug) addToQueue(iChatComponent as ChatComponentText)
+            if (DRMConfig.debug) addToQueue(iChatComponent as ChatComponentText)
         }
 
         @JvmStatic

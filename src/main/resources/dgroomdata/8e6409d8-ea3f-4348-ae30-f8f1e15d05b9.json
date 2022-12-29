@@ -1,0 +1,393 @@
+{
+  "isUserMade": false,
+  "shape": 1,
+  "color": 62,
+  "uuid": "8e6409d8-ea3f-4348-ae30-f8f1e15d05b9",
+  "name": "Trap-very-hard2",
+  "processorId": "default",
+  "properties": {},
+  "mechanics": {
+    "chest-2": {
+      "mechType": "Secret",
+      "secretPoint": {
+        "x": 15,
+        "y": 20,
+        "z": 5
+      },
+      "secretType": "CHEST",
+      "preRequisite": [
+        "door-2:open"
+      ]
+    },
+    "chest-1": {
+      "mechType": "Secret",
+      "secretPoint": {
+        "x": 13,
+        "y": -3,
+        "z": 26
+      },
+      "secretType": "CHEST",
+      "preRequisite": []
+    },
+    "door-1": {
+      "secretPoint": {
+        "offsetPointList": [
+          {
+            "x": 24,
+            "y": 10,
+            "z": 4
+          },
+          {
+            "x": 24,
+            "y": 9,
+            "z": 4
+          },
+          {
+            "x": 24,
+            "y": 8,
+            "z": 4
+          },
+          {
+            "x": 24,
+            "y": 7,
+            "z": 4
+          },
+          {
+            "x": 24,
+            "y": 6,
+            "z": 4
+          },
+          {
+            "x": 24,
+            "y": 5,
+            "z": 4
+          },
+          {
+            "x": 24,
+            "y": 10,
+            "z": 5
+          },
+          {
+            "x": 24,
+            "y": 9,
+            "z": 5
+          },
+          {
+            "x": 24,
+            "y": 8,
+            "z": 5
+          },
+          {
+            "x": 24,
+            "y": 7,
+            "z": 5
+          },
+          {
+            "x": 24,
+            "y": 6,
+            "z": 5
+          },
+          {
+            "x": 24,
+            "y": 5,
+            "z": 5
+          },
+          {
+            "x": 24,
+            "y": 10,
+            "z": 6
+          },
+          {
+            "x": 24,
+            "y": 9,
+            "z": 6
+          },
+          {
+            "x": 24,
+            "y": 8,
+            "z": 6
+          },
+          {
+            "x": 24,
+            "y": 7,
+            "z": 6
+          },
+          {
+            "x": 24,
+            "y": 6,
+            "z": 6
+          },
+          {
+            "x": 24,
+            "y": 5,
+            "z": 6
+          }
+        ]
+      },
+      "preRequisite": [
+        "lever-1:triggered"
+      ],
+      "mechType": "OnewayDoor"
+    },
+    "lever-1": {
+      "mechType": "OnewayLever",
+      "leverPoint": {
+        "x": 21,
+        "y": -4,
+        "z": 9
+      },
+      "preRequisite": [
+        "crypt-1:open"
+      ],
+      "triggering": "door-1"
+    },
+    "lever-2": {
+      "mechType": "OnewayLever",
+      "leverPoint": {
+        "x": 19,
+        "y": 11,
+        "z": 30
+      },
+      "preRequisite": [
+        "superboom-1:open"
+      ],
+      "triggering": "door-2"
+    },
+    "door-2": {
+      "secretPoint": {
+        "offsetPointList": [
+          {
+            "x": 22,
+            "y": 22,
+            "z": 4
+          },
+          {
+            "x": 22,
+            "y": 21,
+            "z": 4
+          },
+          {
+            "x": 22,
+            "y": 20,
+            "z": 4
+          },
+          {
+            "x": 22,
+            "y": 19,
+            "z": 4
+          },
+          {
+            "x": 22,
+            "y": 22,
+            "z": 5
+          },
+          {
+            "x": 22,
+            "y": 21,
+            "z": 5
+          },
+          {
+            "x": 22,
+            "y": 20,
+            "z": 5
+          },
+          {
+            "x": 22,
+            "y": 19,
+            "z": 5
+          }
+        ]
+      },
+      "preRequisite": [
+        "lever-2:triggered"
+      ],
+      "mechType": "OnewayDoor"
+    },
+    "bat-1": {
+      "mechType": "Secret",
+      "secretPoint": {
+        "x": 22,
+        "y": 22,
+        "z": 10
+      },
+      "secretType": "BAT",
+      "preRequisite": [
+        "superboom-1:open"
+      ]
+    },
+    "crypt-1": {
+      "secretPoint": {
+        "offsetPointList": [
+          {
+            "x": 20,
+            "y": -4,
+            "z": 7
+          },
+          {
+            "x": 20,
+            "y": -5,
+            "z": 7
+          },
+          {
+            "x": 21,
+            "y": -4,
+            "z": 7
+          },
+          {
+            "x": 21,
+            "y": -5,
+            "z": 7
+          },
+          {
+            "x": 22,
+            "y": -4,
+            "z": 7
+          },
+          {
+            "x": 22,
+            "y": -5,
+            "z": 7
+          },
+          {
+            "x": 20,
+            "y": -4,
+            "z": 8
+          },
+          {
+            "x": 20,
+            "y": -5,
+            "z": 8
+          },
+          {
+            "x": 21,
+            "y": -4,
+            "z": 8
+          },
+          {
+            "x": 21,
+            "y": -5,
+            "z": 8
+          },
+          {
+            "x": 22,
+            "y": -4,
+            "z": 8
+          },
+          {
+            "x": 22,
+            "y": -5,
+            "z": 8
+          }
+        ]
+      },
+      "preRequisite": [],
+      "mechType": "Tomb"
+    },
+    "superboom-1": {
+      "secretPoint": {
+        "offsetPointList": [
+          {
+            "x": 3,
+            "y": 16,
+            "z": 22
+          },
+          {
+            "x": 3,
+            "y": 15,
+            "z": 22
+          },
+          {
+            "x": 3,
+            "y": 14,
+            "z": 22
+          },
+          {
+            "x": 3,
+            "y": 13,
+            "z": 22
+          },
+          {
+            "x": 3,
+            "y": 12,
+            "z": 22
+          },
+          {
+            "x": 3,
+            "y": 11,
+            "z": 22
+          },
+          {
+            "x": 4,
+            "y": 17,
+            "z": 22
+          },
+          {
+            "x": 4,
+            "y": 16,
+            "z": 22
+          },
+          {
+            "x": 4,
+            "y": 15,
+            "z": 22
+          },
+          {
+            "x": 4,
+            "y": 14,
+            "z": 22
+          },
+          {
+            "x": 4,
+            "y": 13,
+            "z": 22
+          },
+          {
+            "x": 4,
+            "y": 12,
+            "z": 22
+          },
+          {
+            "x": 4,
+            "y": 11,
+            "z": 22
+          },
+          {
+            "x": 5,
+            "y": 16,
+            "z": 22
+          },
+          {
+            "x": 5,
+            "y": 15,
+            "z": 22
+          },
+          {
+            "x": 5,
+            "y": 14,
+            "z": 22
+          },
+          {
+            "x": 5,
+            "y": 13,
+            "z": 22
+          },
+          {
+            "x": 5,
+            "y": 12,
+            "z": 22
+          },
+          {
+            "x": 5,
+            "y": 11,
+            "z": 22
+          }
+        ]
+      },
+      "preRequisite": [
+        "door-1:open"
+      ],
+      "mechType": "BreakableWall"
+    }
+  },
+  "totalSecrets": 3
+}

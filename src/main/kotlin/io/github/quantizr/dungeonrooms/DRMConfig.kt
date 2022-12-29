@@ -18,12 +18,13 @@ object DRMConfig :
     fun init(){
         initialize()
         addListener("practiceModeOn") {
-            val text = """
+            addToQueue(
+                """
                 §eDungeon Rooms: Practice Mode has been enabled.
                 §e Waypoints will ONLY show up while you are pressing ${practiceModeKeyBind.display}
                 §r (Hotkey is configurable in Minecraft Controls menu)
                 """.trimIndent()
-            addToQueue(text)
+            )
         }
     }
 
@@ -44,6 +45,9 @@ object DRMConfig :
 
     @KeyBind(name = "Keybinding For Opening Room Images From DSG/SBP", size = 2, subcategory = "Secret Images")
     var openSecretImages = OneKeyBind(KEY_O)
+
+    @Switch(name = "Debug mode", subcategory = "Debug")
+    var debug = false
 
     @Switch(name = "Waypoints Enabled", category = "Waypoints", subcategory = "Preferences", size = 2)
     var waypointsEnabled = true

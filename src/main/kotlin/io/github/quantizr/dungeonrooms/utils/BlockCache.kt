@@ -14,7 +14,6 @@ import java.time.Duration
 object BlockCache {
     private val cache = Caffeine.newBuilder()
         .maximumSize(30_000)
-        .expireAfterWrite(Duration.ofMinutes(1))
         .build { key: BlockPos? ->
             Minecraft.getMinecraft().theWorld.getBlockState(key)
         }
