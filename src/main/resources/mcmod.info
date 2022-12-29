@@ -4,11 +4,10 @@
   "name": "Dungeon Rooms Mod",
   "description": "Adds Secret Waypoints and tells you the name of your current room in Skyblock Dungeons.",
   "version": "${version}",
-  "mcversion": "${mcversion}",
+  "mcversion": "1.8.9",
   "url": "https://discord.gg/7B5RbsArYK",
   "updateUrl": "",
   "authorList": ["_risk (aka Quantizr)"],
-  "credits": "",
   "logoFile": "assets/dungeonrooms/logo.png",
   "screenshots": [],
   "dependencies": []
