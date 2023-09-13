@@ -923,9 +923,9 @@
     "fairysoul": false,
     "sbp": "draw-bridge"
   },
-  "Double-Stair-2": {
+  "Double-Stair-3": {
     "category": "1x1",
-    "secrets": 2,
+    "secrets": 3,
     "fairysoul": false,
     "sbp": "double-stair"
   },
