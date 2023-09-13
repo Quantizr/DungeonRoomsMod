@@ -887,9 +887,9 @@
     "dsg": "/channels/727426780381577291/732154637506969650/733875583536201820",
     "sbp": "spider"
   },
-  "Redstone-Skull-2": {
+  "Redstone-Skull-3": {
     "category": "1x1",
-    "secrets": 2,
+    "secrets": 3,
     "fairysoul": false,
     "sbp": "redstone-skull"
   },
@@ -940,11 +940,5 @@
     "secrets": 1,
     "fairysoul": false,
     "sbp": "four-banner"
-  },
-  "Trinity-4": {
-    "category": "1x1",
-    "secrets": 4,
-    "fairysoul": false,
-    "sbp": "trinity"
   }
 }
