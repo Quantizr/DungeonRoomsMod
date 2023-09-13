@@ -940,5 +940,11 @@
     "secrets": 1,
     "fairysoul": false,
     "sbp": "four-banner"
+  },
+  "Trinity-4": {
+    "category": "1x1",
+    "secrets": 4,
+    "fairysoul": false,
+    "sbp": "trinity"
   }
 }
