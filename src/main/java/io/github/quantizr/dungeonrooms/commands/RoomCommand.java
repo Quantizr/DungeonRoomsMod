@@ -532,6 +532,33 @@ public class RoomCommand extends CommandBase {
                                 player.addChatMessage(new ChatComponentText("You are not looking at anything"));
                             }
                             break;
+                        case "stonk":
+                            if (mc.objectMouseOver != null && mc.objectMouseOver.typeOfHit == MovingObjectPosition.MovingObjectType.BLOCK && mc.objectMouseOver.getBlockPos() != null) {
+                                BlockPos viewingPos = MapUtils.actualToRelative(mc.objectMouseOver.getBlockPos(), RoomDetection.roomDirection, RoomDetection.roomCorner);
+                                player.addChatMessage(new ChatComponentText("{\n" +
+                                        "  \"secretName\":\"# - Stonk\",\n" +
+                                        "  \"category\":\"stonk\",\n" +
+                                        "  \"x\":" + viewingPos.getX() + ",\n" +
+                                        "  \"y\":" + viewingPos.getY() + ",\n" +
+                                        "  \"z\":" + viewingPos.getZ() + "\n" +
+                                        "}"));
+                                Toolkit.getDefaultToolkit()
+                                        .getSystemClipboard()
+                                        .setContents(
+                                                new StringSelection("{\n" +
+                                                        "  \"secretName\":\"# - Stonk\",\n" +
+                                                        "  \"category\":\"stonk\",\n" +
+                                                        "  \"x\":" + viewingPos.getX() + ",\n" +
+                                                        "  \"y\":" + viewingPos.getY() + ",\n" +
+                                                        "  \"z\":" + viewingPos.getZ() + "\n" +
+                                                        "}"),
+                                                null
+                                        );
+
+                            } else {
+                                player.addChatMessage(new ChatComponentText("You are not looking at anything"));
+                            }
+                            break;
                         case "item":
                             BlockPos playerPos = MapUtils.actualToRelative(new BlockPos(player.posX,player.posY,player.posZ), RoomDetection.roomDirection, RoomDetection.roomCorner);
                             player.addChatMessage(new ChatComponentText("{\n" +
