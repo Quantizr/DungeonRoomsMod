@@ -48,7 +48,7 @@ public class OpenLink {
         }
 
         JsonObject roomJson = DungeonRooms.roomsJson.get(RoomDetection.roomName).getAsJsonObject();
-        if (roomJson.get("dsg").getAsString().equals("null") && roomJson.get("sbp") == null) {
+        if ((roomJson.get("dsg") == null || roomJson.get("dsg").getAsString().equals("null")) && roomJson.get("sbp") == null) {
             player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED
                     + "Dungeon Rooms: There are no channels/images for this room."));
             return;
@@ -87,7 +87,7 @@ public class OpenLink {
         }
 
         JsonObject roomJson = DungeonRooms.roomsJson.get(RoomDetection.roomName).getAsJsonObject();
-        if (roomJson.get("dsg").getAsString().equals("null")) {
+        if (roomJson.get("dsg") == null || roomJson.get("dsg").getAsString().equals("null")) {
             player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED
                     + "Dungeon Rooms: There is no DSG channel for this room."));
             return;

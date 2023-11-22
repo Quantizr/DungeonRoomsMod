@@ -102,7 +102,7 @@ public class LinkGUI extends GuiScreen {
                 ChatComponentText sbp = new ChatComponentText(EnumChatFormatting.YELLOW + "" + EnumChatFormatting.UNDERLINE + sbpURL);
                 sbp.setChatStyle(sbp.getChatStyle().setChatClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, sbpURL)));
                 player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED
-                        + "Dungeon Rooms: You need theSkyblock Personalized (SBP) Mod for this feature, get it from ").appendSibling(sbp));
+                        + "Dungeon Rooms: You need the Skyblock Personalized (SBP) Mod for this feature, get it from ").appendSibling(sbp));
             }
            player.closeScreen();
         } else if (button == close) {

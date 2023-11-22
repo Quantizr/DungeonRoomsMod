@@ -890,55 +890,46 @@
   "Redstone-Skull-3": {
     "category": "1x1",
     "secrets": 3,
-    "fairysoul": false,
-    "sbp": "redstone-skull"
+    "fairysoul": false
   },
   "Sewer-7": {
     "category": "1x4",
     "secrets": 7,
-    "fairysoul": false,
-    "sbp": "sewer"
+    "fairysoul": false
   },
   "Altar-6": {
     "category": "L-shape",
     "secrets": 6,
-    "fairysoul": false,
-    "sbp": "altar"
+    "fairysoul": false
   },
   "Slime-5": {
     "category": "1x3",
     "secrets": 5,
-    "fairysoul": false,
-    "sbp": "slime"
+    "fairysoul": false
   },
   "Crypts-1": {
     "category": "1x1",
     "secrets": 1,
-    "fairysoul": false,
-    "sbp": "crypts"
+    "fairysoul": false
   },
   "Draw-Bridge-6": {
     "category": "1x1",
     "secrets": 6,
-    "fairysoul": false,
-    "sbp": "draw-bridge"
+    "fairysoul": false
   },
   "Double-Stair-3": {
     "category": "1x1",
     "secrets": 3,
-    "fairysoul": false,
-    "sbp": "double-stair"
+    "fairysoul": false
   },
   "Lava-Skulls-3": {
     "category": "1x1",
     "secrets": 3,
-    "fairysoul": false,
-    "sbp": "lava-skulls"
+    "fairysoul": false
   },
   "Four-Banner-1": {
     "category": "1x1",
     "secrets": 1,
-    "fairysoul": false,
-    "sbp": "four-banner"
+    "fairysoul": false
   }
 }

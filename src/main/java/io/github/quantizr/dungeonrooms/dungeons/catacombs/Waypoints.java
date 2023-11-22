@@ -18,6 +18,7 @@
 
 package io.github.quantizr.dungeonrooms.dungeons.catacombs;
 
+import com.google.common.collect.EvictingQueue;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import io.github.quantizr.dungeonrooms.DungeonRooms;
@@ -34,6 +35,9 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.init.Blocks;
 import net.minecraft.network.play.server.S0DPacketCollectItem;
+import net.minecraft.network.play.server.S24PacketBlockAction;
+import net.minecraft.tileentity.TileEntity;
+import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.BlockPos;
 import net.minecraft.util.StringUtils;
@@ -46,8 +50,8 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 public class Waypoints {
     public static boolean enabled = true;
@@ -74,7 +78,8 @@ public class Waypoints {
     public static Map<String, List<Boolean>> allSecretsMap = new HashMap<>();
     public static List<Boolean> secretsList = new ArrayList<>(Arrays.asList(new Boolean[10]));
 
-    static long lastSneakTime = 0;
+    public static EvictingQueue<BlockPos> clickedPos = EvictingQueue.create(50);
+    public static long lastSneakTime = 0;
 
     Frustum frustum = new Frustum();
 
@@ -209,7 +214,17 @@ public class Waypoints {
 
         if (event.action == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK) {
             Block block = event.world.getBlockState(event.pos).getBlock();
-            if (block != Blocks.chest && block != Blocks.skull) return;
+            if (block == Blocks.chest) {
+                TileEntity tileEntity = event.world.getTileEntity(event.pos);
+                if (!(tileEntity instanceof TileEntityChest))
+                    return;
+                if (((TileEntityChest) tileEntity).numPlayersUsing == 0) {
+                    clickedPos.add(event.pos);
+                    return;
+                }
+            } else if (block != Blocks.skull && block != Blocks.trapped_chest) {
+                return;
+            }
             String roomName = RoomDetection.roomName;
             if (roomName.equals("undefined") || DungeonRooms.roomsJson.get(roomName) == null || secretsList == null) return;
             if (DungeonRooms.waypointsJson.get(roomName) != null) {
@@ -253,7 +268,7 @@ public class Waypoints {
                 String name = item.getEntityItem().getDisplayName();
                 if (name.contains("Decoy") || name.contains("Defuse Kit") || name.contains("Dungeon Chest Key") ||
                         name.contains("Healing VIII") || name.contains("Inflatable Jerry") || name.contains("Spirit Leap") ||
-                        name.contains("Training Weights") || name.contains("Trap") || name.contains("Treasure Talisman")) {
+                        name.contains("Training Weights") || name.contains("Trap") || name.contains("Treasure Talisman") || name.contains("Revive Stone")) {
                     if (!entity.getCommandSenderEntity().getName().equals(mc.thePlayer.getName())) {
                         //Do nothing if someone else picks up the item in order to follow Hypixel rules
                         return;
@@ -285,9 +300,44 @@ public class Waypoints {
                     }
                 }
             }
+        } else if (event.packet instanceof S24PacketBlockAction) {
+            S24PacketBlockAction packet = (S24PacketBlockAction) event.packet;
+            // The chest has not been opened
+            if (packet.getData2() == 0 || packet.getBlockType() != Blocks.chest)
+                return;
+            while (clickedPos.size() > 0) {
+                BlockPos pos = clickedPos.remove();
+                // Do nothing if someone else has possibly opened the chest in order to follow Hypixel rules
+                if (!packet.getBlockPosition().equals(pos))
+                    continue;
+                String roomName = RoomDetection.roomName;
+                if (roomName.equals("undefined") || DungeonRooms.roomsJson.get(roomName) == null || secretsList == null)
+                    return;
+                if (DungeonRooms.waypointsJson.get(roomName) != null) {
+                    JsonArray secretsArray = DungeonRooms.waypointsJson.get(roomName).getAsJsonArray();
+                    int arraySize = secretsArray.size();
+                    for (int i = 0; i < arraySize; i++) {
+                        JsonObject secretsObject = secretsArray.get(i).getAsJsonObject();
+                        if (secretsObject.get("category").getAsString().equals("chest")) {
+                            BlockPos relative = new BlockPos(secretsObject.get("x").getAsInt(), secretsObject.get("y").getAsInt(), secretsObject.get("z").getAsInt());
+                            BlockPos roomPos = MapUtils.relativeToActual(relative, RoomDetection.roomDirection, RoomDetection.roomCorner);
+
+                            if (roomPos.equals(packet.getBlockPosition())) {
+                                for (int j = 1; j <= secretNum; j++) {
+                                    if (secretsObject.get("secretName").getAsString().substring(0, 2).replaceAll("[\\D]", "").equals(String.valueOf(j))) {
+                                        Waypoints.secretsList.set(j - 1, false);
+                                        Waypoints.allSecretsMap.replace(roomName, Waypoints.secretsList);
+                                        DungeonRooms.logger.info("DungeonRooms: Detected open " + secretsObject.get("category").getAsString() + ", turning off waypoint for secret #" + j);
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
-
 
     //Disable waypoint within 4 blocks away on sneak
     @SubscribeEvent
