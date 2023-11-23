@@ -204,6 +204,9 @@ public class Waypoints {
                     break;
                 }
             }
+        } else if (event.type == 0 && event.message.getUnformattedText().equals("That chest is locked!")) {
+            // Follow Hypixel rules
+            clickedPos.remove();
         }
     }
 
@@ -216,7 +219,7 @@ public class Waypoints {
             Block block = event.world.getBlockState(event.pos).getBlock();
             if (block == Blocks.chest) {
                 TileEntity tileEntity = event.world.getTileEntity(event.pos);
-                if (!(tileEntity instanceof TileEntityChest))
+                if (!(tileEntity instanceof TileEntityChest) || clickedPos.contains(event.pos))
                     return;
                 if (((TileEntityChest) tileEntity).numPlayersUsing == 0) {
                     clickedPos.add(event.pos);
