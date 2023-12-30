@@ -219,7 +219,7 @@ public class Waypoints {
             Block block = event.world.getBlockState(event.pos).getBlock();
             if (block == Blocks.chest) {
                 TileEntity tileEntity = event.world.getTileEntity(event.pos);
-                if (!(tileEntity instanceof TileEntityChest) || clickedPos.contains(event.pos))
+                if (!(tileEntity instanceof TileEntityChest))
                     return;
                 if (((TileEntityChest) tileEntity).numPlayersUsing == 0) {
                     clickedPos.add(event.pos);
@@ -277,23 +277,24 @@ public class Waypoints {
                         return;
                     }
                     String roomName = RoomDetection.roomName;
-                    if (roomName.equals("undefined") || DungeonRooms.roomsJson.get(roomName) == null || secretsList == null) return;
+                    if (roomName.equals("undefined") || DungeonRooms.roomsJson.get(roomName) == null || secretsList == null)
+                        return;
                     if (DungeonRooms.waypointsJson.get(roomName) != null) {
                         JsonArray secretsArray = DungeonRooms.waypointsJson.get(roomName).getAsJsonArray();
                         int arraySize = secretsArray.size();
-                        for(int i = 0; i < arraySize; i++) {
+                        for (int i = 0; i < arraySize; i++) {
                             JsonObject secretsObject = secretsArray.get(i).getAsJsonObject();
                             if (secretsObject.get("category").getAsString().equals("item") || secretsObject.get("category").getAsString().equals("bat")) {
                                 BlockPos relative = new BlockPos(secretsObject.get("x").getAsInt(), secretsObject.get("y").getAsInt(), secretsObject.get("z").getAsInt());
                                 BlockPos pos = MapUtils.relativeToActual(relative, RoomDetection.roomDirection, RoomDetection.roomCorner);
 
                                 if (entity.getDistanceSq(pos) <= 36D) {
-                                    for(int j = 1; j <= secretNum; j++) {
-                                        if (secretsObject.get("secretName").getAsString().substring(0,2).replaceAll("[\\D]", "").equals(String.valueOf(j))) {
-                                            if (!Waypoints.secretsList.get(j-1)) continue;
-                                            Waypoints.secretsList.set(j-1, false);
+                                    for (int j = 1; j <= secretNum; j++) {
+                                        if (secretsObject.get("secretName").getAsString().substring(0, 2).replaceAll("[\\D]", "").equals(String.valueOf(j))) {
+                                            if (!Waypoints.secretsList.get(j - 1)) continue;
+                                            Waypoints.secretsList.set(j - 1, false);
                                             Waypoints.allSecretsMap.replace(roomName, Waypoints.secretsList);
-                                            DungeonRooms.logger.info("DungeonRooms: " + entity.getCommandSenderEntity().getName() + " picked up " +  StringUtils.stripControlCodes(name) + " from a "  + secretsObject.get("category").getAsString() + " secret, turning off waypoint for secret #" + j);
+                                            DungeonRooms.logger.info("DungeonRooms: " + entity.getCommandSenderEntity().getName() + " picked up " + StringUtils.stripControlCodes(name) + " from a " + secretsObject.get("category").getAsString() + " secret, turning off waypoint for secret #" + j);
                                             return;
                                         }
                                     }
@@ -306,38 +307,46 @@ public class Waypoints {
         } else if (event.packet instanceof S24PacketBlockAction) {
             S24PacketBlockAction packet = (S24PacketBlockAction) event.packet;
             // The chest has not been opened
-            if (packet.getData2() == 0 || packet.getBlockType() != Blocks.chest)
+            if (packet.getData2() == 0 || packet.getBlockType() != Blocks.chest || clickedPos.isEmpty())
                 return;
-            while (clickedPos.size() > 0) {
-                BlockPos pos = clickedPos.remove();
-                // Do nothing if someone else has possibly opened the chest in order to follow Hypixel rules
-                if (!packet.getBlockPosition().equals(pos))
+            boolean removed = false;
+            for (Iterator<BlockPos> it = clickedPos.iterator(); it.hasNext(); ) {
+                BlockPos pos = it.next();
+                if (!packet.getBlockPosition().equals(pos)) {
                     continue;
-                String roomName = RoomDetection.roomName;
-                if (roomName.equals("undefined") || DungeonRooms.roomsJson.get(roomName) == null || secretsList == null)
-                    return;
-                if (DungeonRooms.waypointsJson.get(roomName) != null) {
-                    JsonArray secretsArray = DungeonRooms.waypointsJson.get(roomName).getAsJsonArray();
-                    int arraySize = secretsArray.size();
-                    for (int i = 0; i < arraySize; i++) {
-                        JsonObject secretsObject = secretsArray.get(i).getAsJsonObject();
-                        if (secretsObject.get("category").getAsString().equals("chest")) {
-                            BlockPos relative = new BlockPos(secretsObject.get("x").getAsInt(), secretsObject.get("y").getAsInt(), secretsObject.get("z").getAsInt());
-                            BlockPos roomPos = MapUtils.relativeToActual(relative, RoomDetection.roomDirection, RoomDetection.roomCorner);
+                }
+                if (!removed) {
+                    String roomName = RoomDetection.roomName;
+                    if (roomName.equals("undefined") || DungeonRooms.roomsJson.get(roomName) == null || secretsList == null)
+                        continue;
+                    if (DungeonRooms.waypointsJson.get(roomName) != null) {
+                        JsonArray secretsArray = DungeonRooms.waypointsJson.get(roomName).getAsJsonArray();
+                        int arraySize = secretsArray.size();
+                        foreach:
+                        {
+                            for (int i = 0; i < arraySize; i++) {
+                                JsonObject secretsObject = secretsArray.get(i).getAsJsonObject();
+                                if (secretsObject.get("category").getAsString().equals("chest")) {
+                                    BlockPos relative = new BlockPos(secretsObject.get("x").getAsInt(), secretsObject.get("y").getAsInt(), secretsObject.get("z").getAsInt());
+                                    BlockPos roomPos = MapUtils.relativeToActual(relative, RoomDetection.roomDirection, RoomDetection.roomCorner);
 
-                            if (roomPos.equals(packet.getBlockPosition())) {
-                                for (int j = 1; j <= secretNum; j++) {
-                                    if (secretsObject.get("secretName").getAsString().substring(0, 2).replaceAll("[\\D]", "").equals(String.valueOf(j))) {
-                                        Waypoints.secretsList.set(j - 1, false);
-                                        Waypoints.allSecretsMap.replace(roomName, Waypoints.secretsList);
-                                        DungeonRooms.logger.info("DungeonRooms: Detected open " + secretsObject.get("category").getAsString() + ", turning off waypoint for secret #" + j);
-                                        return;
+                                    if (roomPos.equals(packet.getBlockPosition())) {
+                                        for (int j = 1; j <= secretNum; j++) {
+                                            if (secretsObject.get("secretName").getAsString().substring(0, 2).replaceAll("[\\D]", "").equals(String.valueOf(j))) {
+                                                Waypoints.secretsList.set(j - 1, false);
+                                                Waypoints.allSecretsMap.replace(roomName, Waypoints.secretsList);
+                                                DungeonRooms.logger.info("DungeonRooms: Detected open " + secretsObject.get("category").getAsString() + ", turning off waypoint for secret #" + j);
+                                                break foreach;
+                                            }
+                                        }
                                     }
                                 }
                             }
                         }
+                        removed = true;
                     }
                 }
+                it.remove();
             }
         }
     }
