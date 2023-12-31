@@ -18,23 +18,23 @@
 
 package io.github.quantizr.dungeonrooms;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.github.quantizr.dungeonrooms.commands.RoomCommand;
+import io.github.quantizr.dungeonrooms.dungeons.catacombs.DungeonManager;
+import io.github.quantizr.dungeonrooms.dungeons.catacombs.RoomDetection;
 import io.github.quantizr.dungeonrooms.dungeons.catacombs.Waypoints;
 import io.github.quantizr.dungeonrooms.gui.WaypointsGUI;
 import io.github.quantizr.dungeonrooms.handlers.ConfigHandler;
 import io.github.quantizr.dungeonrooms.handlers.OpenLink;
 import io.github.quantizr.dungeonrooms.handlers.PacketHandler;
 import io.github.quantizr.dungeonrooms.handlers.TextRenderer;
-import io.github.quantizr.dungeonrooms.dungeons.catacombs.DungeonManager;
-import io.github.quantizr.dungeonrooms.dungeons.catacombs.RoomDetection;
 import io.github.quantizr.dungeonrooms.utils.Utils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.ScaledResolution;
-import net.minecraft.client.settings.GameSettings;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.event.ClickEvent;
 import net.minecraft.util.ChatComponentText;
@@ -60,7 +60,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.input.Keyboard;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
@@ -68,7 +71,10 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 @Mod(modid = DungeonRooms.MODID, version = DungeonRooms.VERSION)
 public class DungeonRooms
@@ -112,7 +118,11 @@ public class DungeonRooms
 
         //start room data loading executors first or else it will block later and slow down loading by ~200ms
         List<Path> paths = Utils.getAllPaths("catacombs");
-        final ExecutorService executor = Executors.newFixedThreadPool(4); //don't need 8 threads cause it's just 1x1 that takes longest
+        final ExecutorService executor = Executors.newFixedThreadPool(4,
+                new ThreadFactoryBuilder()
+                        .setNameFormat("DungeonRooms-Initial-%d")
+                        .build()
+        ); //don't need 8 threads cause it's just 1x1 that takes longest
         Future<HashMap<String, long[]>> future1x1 = executor.submit(() -> Utils.pathsToRoomData("1x1", paths));
         Future<HashMap<String, long[]>> future1x2 = executor.submit(() -> Utils.pathsToRoomData("1x2", paths));
         Future<HashMap<String, long[]>> future1x3 = executor.submit(() -> Utils.pathsToRoomData("1x3", paths));

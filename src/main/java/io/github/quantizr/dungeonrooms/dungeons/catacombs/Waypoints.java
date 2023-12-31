@@ -336,6 +336,7 @@ public class Waypoints {
                                                 Waypoints.secretsList.set(j - 1, false);
                                                 Waypoints.allSecretsMap.replace(roomName, Waypoints.secretsList);
                                                 DungeonRooms.logger.info("DungeonRooms: Detected open " + secretsObject.get("category").getAsString() + ", turning off waypoint for secret #" + j);
+                                                removed = true;
                                                 break foreach;
                                             }
                                         }
@@ -343,7 +344,6 @@ public class Waypoints {
                                 }
                             }
                         }
-                        removed = true;
                     }
                 }
                 it.remove();

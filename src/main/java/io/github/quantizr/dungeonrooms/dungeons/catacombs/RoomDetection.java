@@ -18,6 +18,7 @@
 
 package io.github.quantizr.dungeonrooms.dungeons.catacombs;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.gson.JsonObject;
 import io.github.quantizr.dungeonrooms.DungeonRooms;
 import io.github.quantizr.dungeonrooms.utils.MapUtils;
@@ -83,7 +84,11 @@ public class RoomDetection {
                 stage2Ticks = 0;
                 //start ExecutorService with one thread
                 if (stage2Executor == null || stage2Executor.isTerminated()) {
-                    stage2Executor = Executors.newSingleThreadExecutor();
+                    stage2Executor = Executors.newSingleThreadExecutor(
+                            new ThreadFactoryBuilder()
+                                    .setNameFormat("DungeonRooms-Main")
+                                    .build()
+                    );
                     DungeonRooms.logger.debug("DungeonRooms: New Single Thread Executor Started");
                 }
                 //set entranceMapCorners
