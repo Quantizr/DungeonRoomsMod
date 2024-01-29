@@ -890,46 +890,63 @@
   "Redstone-Skull-3": {
     "category": "1x1",
     "secrets": 3,
-    "fairysoul": false
+    "fairysoul": false,
+    "dsg": "null"
   },
   "Sewer-7": {
     "category": "1x4",
     "secrets": 7,
-    "fairysoul": false
+    "fairysoul": false,
+    "dsg": "null",
+    "sbp": "null"
   },
   "Altar-6": {
     "category": "L-shape",
     "secrets": 6,
-    "fairysoul": false
+    "fairysoul": false,
+    "dsg": "null",
+    "sbp": "null"
   },
   "Slime-5": {
     "category": "1x3",
     "secrets": 5,
-    "fairysoul": false
+    "fairysoul": false,
+    "dsg": "null",
+    "sbp": "null"
   },
   "Crypts-1": {
     "category": "1x1",
     "secrets": 1,
-    "fairysoul": false
+    "fairysoul": false,
+    "dsg": "null",
+    "sbp": "null"
   },
   "Draw-Bridge-6": {
     "category": "1x1",
     "secrets": 6,
-    "fairysoul": false
+    "fairysoul": false,
+    "dsg": "null",
+    "sbp": "null"
   },
   "Double-Stair-3": {
     "category": "1x1",
     "secrets": 3,
-    "fairysoul": false
+    "fairysoul": false,
+    "dsg": "null",
+    "sbp": "null"
   },
   "Lava-Skulls-3": {
     "category": "1x1",
     "secrets": 3,
-    "fairysoul": false
+    "fairysoul": false,
+    "dsg": "null",
+    "sbp": "null"
   },
   "Four-Banner-1": {
     "category": "1x1",
     "secrets": 1,
-    "fairysoul": false
+    "fairysoul": false,
+    "dsg": "null",
+    "sbp": "null"
   }
 }
