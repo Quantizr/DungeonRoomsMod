@@ -891,7 +891,8 @@
     "category": "1x1",
     "secrets": 3,
     "fairysoul": false,
-    "dsg": "null"
+    "dsg": "null",
+    "sbp": "null"
   },
   "Sewer-7": {
     "category": "1x4",
