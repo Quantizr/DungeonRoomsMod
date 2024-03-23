@@ -49,6 +49,7 @@ public class DungeonManager {
     public static Point entrancePhysicalNWCorner;
 
     public static int tickAmount = 0;
+    public static Integer mapId = 0;
 
     long bloodTime = Long.MAX_VALUE;
 
@@ -60,6 +61,7 @@ public class DungeonManager {
         String message = event.message.getFormattedText();
 
         //gameStage set from 0 to 1 in the onTick function later
+        DungeonRooms.logger.info(message);
         if (message.startsWith("§e[NPC] §bMort§f: §rHere, I found this map when I first entered the dungeon.§r")) {
             gameStage = 2;
             DungeonRooms.logger.info("DungeonRooms: gameStage set to " + gameStage);
@@ -113,8 +115,7 @@ public class DungeonManager {
                 DungeonRooms.logger.info("DungeonRooms: gameStage set to " + gameStage);
             }
 
-            Integer[][] map = MapUtils.updatedMap();
-            if (map != null) {
+            if (MapUtils.mapExists()) {
                 DungeonRooms.logger.warn("DungeonRooms: Run started but gameStage is not on 2");
                 gameStage = 2;
                 DungeonRooms.logger.info("DungeonRooms: gameStage set to " + gameStage);
@@ -159,6 +160,7 @@ public class DungeonManager {
         tickAmount = 0;
         gameStage = 0;
 
+        mapId = null;
         map = null;
         entranceMapCorners = null;
         entrancePhysicalNWCorner = null;

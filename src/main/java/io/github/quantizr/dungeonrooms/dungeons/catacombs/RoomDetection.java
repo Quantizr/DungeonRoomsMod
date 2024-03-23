@@ -28,14 +28,18 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.settings.GameSettings;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.*;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent;
 
 import java.awt.*;
-import java.util.*;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import static io.github.quantizr.dungeonrooms.dungeons.catacombs.DungeonManager.*;
 
@@ -55,7 +59,6 @@ public class RoomDetection {
     public static String roomDirection = "undefined";
     public static Point roomCorner;
 
-
     public static HashSet<BlockPos> currentScannedBlocks = new HashSet<>();
     public static HashMap<BlockPos, Integer> blocksToCheck = new HashMap<>();
     public static int totalBlocksAvailableToCheck = 0;
@@ -72,12 +75,14 @@ public class RoomDetection {
     @SubscribeEvent
     public void onTick(TickEvent.ClientTickEvent event) {
         if (event.phase != TickEvent.Phase.START) return;
-        EntityPlayerSP player = mc.thePlayer;
-
         if (!Utils.inCatacombs) return;
+        EntityPlayerSP player = mc.thePlayer;
 
         //From this point forward, everything assumes that Utils.inCatacombs == true
         if (gameStage == 2) { //Room clearing phase
+            if (mapId == null && extractMapId() == null)  // Extract the map id
+                return; //  If we failed to extract the map id, we cannot detect the dungeon room
+
             stage2Ticks++;
             if (stage2Ticks == 10) {
                 stage2Ticks = 0;
@@ -228,7 +233,6 @@ public class RoomDetection {
         }
     }
 
-
     void updateCurrentRoom() {
         EntityPlayerSP player = mc.thePlayer;
         map = MapUtils.updatedMap();
@@ -271,6 +275,15 @@ public class RoomDetection {
         redoScan = 0;
 
         Waypoints.secretNum = 0;
+    }
+
+    public static Integer extractMapId() {
+        if (!MapUtils.mapExists())
+            return null;
+        ItemStack mapSlot = Minecraft.getMinecraft().thePlayer.inventory.getStackInSlot(8); //get map ItemStack
+        // MapUtils.updatedMap(mapSlot); // - Skip check
+        DungeonRooms.logger.info("DungeonRooms: Extracting the map id");
+        return mapId = mapSlot.getMetadata();
     }
 
     public static void newRoom() {
