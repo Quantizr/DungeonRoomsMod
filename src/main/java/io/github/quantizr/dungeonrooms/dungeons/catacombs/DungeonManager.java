@@ -49,7 +49,7 @@ public class DungeonManager {
     public static Point entrancePhysicalNWCorner;
 
     public static int tickAmount = 0;
-    public static Integer mapId = 0;
+    public static Integer mapId = null;
 
     long bloodTime = Long.MAX_VALUE;
 
