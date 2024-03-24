@@ -95,16 +95,16 @@ public class RoomDetection {
                 if (entranceMapCorners == null) {
                     map = MapUtils.updatedMap();
                     entranceMapCorners = MapUtils.entranceMapCorners(map);
-                    DungeonRooms.logger.info("DungeonRooms: Getting entrance map corners from hotbar map...");
-                } else if (entranceMapCorners[0] == null || entranceMapCorners[1] == null) { //prevent crashes if hotbar map bugged
-                    DungeonRooms.logger.warn("DungeonRooms: Entrance room not found, hotbar map possibly bugged");
+                    DungeonRooms.logger.info("DungeonRooms: Getting entrance map corners from map data...");
+                } else if (entranceMapCorners[0] == null || entranceMapCorners[1] == null) { //prevent crashes if map data bugged
+                    DungeonRooms.logger.warn("DungeonRooms: Entrance room not found, map data possibly bugged");
                     entranceMapNullCount++;
                     entranceMapCorners = null; //retry getting corners again next loop
                     if (entranceMapNullCount == 8) {
                         player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED
-                                + "Dungeon Rooms: Error with hotbar map, perhaps your texture pack is interfering with room detection?"));
+                                + "Dungeon Rooms: Error with map data, perhaps your texture pack is interfering with room detection?"));
                         DungeonRooms.textToDisplay = new ArrayList<>(Collections.singletonList(
-                                "Dungeon Rooms: " + EnumChatFormatting.RED + "Hotbar map may be bugged"
+                                "Dungeon Rooms: " + EnumChatFormatting.RED + "Entrance Room corner not found"
                         ));
                         //gameStage = 4;
                         //DungeonRooms.logger.info("DungeonRooms: gameStage set to " + gameStage);
@@ -147,7 +147,7 @@ public class RoomDetection {
                         updateCurrentRoom();
                         if (roomColor.equals("undefined")) {
                             DungeonRooms.textToDisplay = new ArrayList<>(Collections.singletonList("Dungeon Rooms: "
-                                    + EnumChatFormatting.RED + "Waiting for hotbar map to update..."));
+                                    + EnumChatFormatting.RED + "Waiting for map data to update..."));
                         } else {
                             switch (roomColor) {
                                 case "brown":

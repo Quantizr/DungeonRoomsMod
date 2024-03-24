@@ -66,7 +66,7 @@ public class MapUtils {
     }
 
     /**
-     * Reads the hotbar map and converts it into a 2D Integer array of RGB colors which can be used by the rest of the
+     * Reads the map item and converts it into a 2D Integer array of RGB colors which can be used by the rest of the
      * code
      *
      * @return null if map not found, otherwise 128x128 Array of the RGB Integer colors of each point on the map
