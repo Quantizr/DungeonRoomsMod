@@ -18,6 +18,7 @@
 
 package io.github.quantizr.dungeonrooms.utils;
 
+import io.github.quantizr.dungeonrooms.DungeonRooms;
 import io.github.quantizr.dungeonrooms.dungeons.catacombs.DungeonManager;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.client.Minecraft;
@@ -335,10 +336,7 @@ public class MapUtils {
      * @return the coordinate of the player marker on the map
      */
     public static Point playerMarkerPos() {
-        if (!mapExists()) return null; //make sure map exists
-        Minecraft mc = Minecraft.getMinecraft();
-        ItemStack mapSlot = mc.thePlayer.inventory.getStackInSlot(8); //get map ItemStack
-        MapData mapData = Items.filled_map.getMapData(mapSlot, mc.theWorld);
+        MapData mapData = (MapData) Minecraft.getMinecraft().theWorld.getMapStorage().loadData(MapData.class, "map_" + DungeonManager.mapId);
         if(mapData == null) return null;
         if (mapData.mapDecorations != null) {
             for (Map.Entry<String, Vec4b> entry : mapData.mapDecorations.entrySet()) {
