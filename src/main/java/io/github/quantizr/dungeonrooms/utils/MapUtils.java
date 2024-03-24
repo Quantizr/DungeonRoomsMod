@@ -18,7 +18,6 @@
 
 package io.github.quantizr.dungeonrooms.utils;
 
-import io.github.quantizr.dungeonrooms.DungeonRooms;
 import io.github.quantizr.dungeonrooms.dungeons.catacombs.DungeonManager;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.client.Minecraft;
