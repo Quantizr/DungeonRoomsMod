@@ -18,9 +18,7 @@
 
 package io.github.quantizr.dungeonrooms.utils;
 
-import io.github.quantizr.dungeonrooms.DungeonRooms;
 import io.github.quantizr.dungeonrooms.dungeons.catacombs.DungeonManager;
-import io.github.quantizr.dungeonrooms.dungeons.catacombs.RoomDetection;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Items;
@@ -31,8 +29,8 @@ import net.minecraft.util.Vec4b;
 import net.minecraft.world.storage.MapData;
 
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 public class MapUtils {
 

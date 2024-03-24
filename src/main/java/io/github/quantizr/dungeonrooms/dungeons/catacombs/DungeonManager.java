@@ -114,8 +114,7 @@ public class DungeonManager {
                 DungeonRooms.logger.info("DungeonRooms: gameStage set to " + gameStage);
             }
 
-            Integer[][] map = MapUtils.updatedMap();
-            if (map != null) {
+            if (MapUtils.mapExists()) {
                 DungeonRooms.logger.warn("DungeonRooms: Run started but gameStage is not on 2");
                 gameStage = 2;
                 DungeonRooms.logger.info("DungeonRooms: gameStage set to " + gameStage);
