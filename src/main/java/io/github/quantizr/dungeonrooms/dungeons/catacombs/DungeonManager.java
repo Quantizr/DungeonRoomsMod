@@ -48,7 +48,6 @@ public class DungeonManager {
     public static Point[] entranceMapCorners;
     public static Point entrancePhysicalNWCorner;
 
-    public static int tickAmount = 0;
     public static Integer mapId;
 
     long bloodTime = Long.MAX_VALUE;
@@ -91,9 +90,8 @@ public class DungeonManager {
         EntityPlayerSP player = mc.thePlayer;
 
         if (!Utils.inCatacombs) return; //From this point forward, everything assumes that Utils.inCatacombs == true
-        tickAmount++;
 
-        if ((gameStage == 0 || gameStage == 1) && tickAmount % 20 == 0) {
+        if (gameStage == 0 || gameStage == 1) {
 
             if (DungeonRooms.firstLogin) {
                 DungeonRooms.firstLogin = false;
@@ -148,15 +146,12 @@ public class DungeonManager {
                 }
                 oddRun = !oddRun;
             }
-
-            tickAmount = 0;
         }
     }
 
     @SubscribeEvent
     public void onWorldUnload(WorldEvent.Unload event) {
         Utils.inCatacombs = false;
-        tickAmount = 0;
         gameStage = 0;
 
         mapId = null;
