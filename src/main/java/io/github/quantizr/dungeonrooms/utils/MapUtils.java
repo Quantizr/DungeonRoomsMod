@@ -18,6 +18,7 @@
 
 package io.github.quantizr.dungeonrooms.utils;
 
+import io.github.quantizr.dungeonrooms.dungeons.catacombs.DungeonManager;
 import net.minecraft.block.material.MapColor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.init.Items;
@@ -28,8 +29,8 @@ import net.minecraft.util.Vec4b;
 import net.minecraft.world.storage.MapData;
 
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 public class MapUtils {
 
@@ -45,16 +46,42 @@ public class MapUtils {
     }
 
     /**
-     * Reads the hotbar map and converts it into a 2D Integer array of RGB colors which can be used by the rest of the
+     * Reads the map data and converts it into a 2D Integer array of RGB colors which can be used by the rest of the
      * code
      *
      * @return null if map not found, otherwise 128x128 Array of the RGB Integer colors of each point on the map
      */
     public static Integer[][] updatedMap() {
-        if (!mapExists()) return null; //make sure map exists
-        Minecraft mc = Minecraft.getMinecraft();
-        ItemStack mapSlot = mc.thePlayer.inventory.getStackInSlot(8); //get map ItemStack
-        MapData mapData = Items.filled_map.getMapData(mapSlot, mc.theWorld);
+        return updatedMap(DungeonManager.mapId);
+    }
+
+    /**
+     * Reads the map data and converts it into a 2D Integer array of RGB colors which can be used by the rest of the
+     * code
+     *
+     * @return null if map not found, otherwise 128x128 Array of the RGB Integer colors of each point on the map
+     */
+    public static Integer[][] updatedMap(int mapId) {
+        return updatedMap((MapData) Minecraft.getMinecraft().theWorld.getMapStorage().loadData(MapData.class, "map_" + mapId));
+    }
+
+    /**
+     * Reads the map item and converts it into a 2D Integer array of RGB colors which can be used by the rest of the
+     * code
+     *
+     * @return null if map not found, otherwise 128x128 Array of the RGB Integer colors of each point on the map
+     */
+    public static Integer[][] updatedMap(ItemStack mapSlot) {
+        return updatedMap(Items.filled_map.getMapData(mapSlot, Minecraft.getMinecraft().theWorld));
+    }
+
+    /**
+     * Reads the map data and converts it into a 2D Integer array of RGB colors which can be used by the rest of the
+     * code
+     *
+     * @return null if map not found, otherwise 128x128 Array of the RGB Integer colors of each point on the map
+     */
+    public static Integer[][] updatedMap(MapData mapData) {
         if(mapData == null) return null;
         Integer[][] map = new Integer[128][128];
 
@@ -308,10 +335,7 @@ public class MapUtils {
      * @return the coordinate of the player marker on the map
      */
     public static Point playerMarkerPos() {
-        if (!mapExists()) return null; //make sure map exists
-        Minecraft mc = Minecraft.getMinecraft();
-        ItemStack mapSlot = mc.thePlayer.inventory.getStackInSlot(8); //get map ItemStack
-        MapData mapData = Items.filled_map.getMapData(mapSlot, mc.theWorld);
+        MapData mapData = (MapData) Minecraft.getMinecraft().theWorld.getMapStorage().loadData(MapData.class, "map_" + DungeonManager.mapId);
         if(mapData == null) return null;
         if (mapData.mapDecorations != null) {
             for (Map.Entry<String, Vec4b> entry : mapData.mapDecorations.entrySet()) {
