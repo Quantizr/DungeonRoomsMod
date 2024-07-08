@@ -192,7 +192,7 @@ public class DungeonRooms
     @SubscribeEvent
     public void onServerConnect(FMLNetworkEvent.ClientConnectedToServerEvent event) {
         if (mc.getCurrentServerData() == null) return;
-        if (mc.getCurrentServerData().serverIP.toLowerCase().contains("hypixel.")) {
+        if (mc.getCurrentServerData().serverIP.toLowerCase().contains("hypixel.") || mc.getCurrentServerData().serverIP.toLowerCase().contains("fakepixel.fun")) {
             logger.info("DungeonRooms: Connecting to Hypixel...");
 
             //Packets are used in this mod solely to detect when the player picks up an item. No packets are modified or created.
