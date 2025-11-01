@@ -24,6 +24,7 @@ import com.google.gson.JsonParser;
 import io.github.quantizr.dungeonrooms.commands.RoomCommand;
 import io.github.quantizr.dungeonrooms.dungeons.catacombs.Waypoints;
 import io.github.quantizr.dungeonrooms.gui.WaypointsGUI;
+import io.github.quantizr.dungeonrooms.gui.VideoPlayerGUI;
 import io.github.quantizr.dungeonrooms.handlers.ConfigHandler;
 import io.github.quantizr.dungeonrooms.handlers.OpenLink;
 import io.github.quantizr.dungeonrooms.handlers.PacketHandler;
@@ -31,6 +32,7 @@ import io.github.quantizr.dungeonrooms.handlers.TextRenderer;
 import io.github.quantizr.dungeonrooms.dungeons.catacombs.DungeonManager;
 import io.github.quantizr.dungeonrooms.dungeons.catacombs.RoomDetection;
 import io.github.quantizr.dungeonrooms.utils.Utils;
+import io.github.quantizr.dungeonrooms.video.VideoEventHandler;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.ScaledResolution;
@@ -84,7 +86,7 @@ public class DungeonRooms
     public static HashMap<String,HashMap<String,long[]>> ROOM_DATA = new HashMap<>();
 
     public static boolean usingSBPSecrets = false;
-    public static KeyBinding[] keyBindings = new KeyBinding[3];
+    public static KeyBinding[] keyBindings = new KeyBinding[4];
     public static String imageHotkeyOpen = "gui";
     static int tickAmount = 1;
 
@@ -127,6 +129,7 @@ public class DungeonRooms
         MinecraftForge.EVENT_BUS.register(new DungeonManager());
         MinecraftForge.EVENT_BUS.register(new RoomDetection());
         MinecraftForge.EVENT_BUS.register(new Waypoints());
+        MinecraftForge.EVENT_BUS.register(new VideoEventHandler());
 
         //reload config
         ConfigHandler.reloadConfig();
@@ -135,6 +138,7 @@ public class DungeonRooms
         keyBindings[0] = new KeyBinding("Open Room Images in DSG/SBP", Keyboard.KEY_O, "Dungeon Rooms Mod");
         keyBindings[1] = new KeyBinding("Open Waypoint Config Menu", Keyboard.KEY_P, "Dungeon Rooms Mod");
         keyBindings[2] = new KeyBinding("Show Waypoints in Practice Mode", Keyboard.KEY_I, "Dungeon Rooms Mod");
+        keyBindings[3] = new KeyBinding("Open Video Player", Keyboard.KEY_U, "Dungeon Rooms Mod");
         for (KeyBinding keyBinding : keyBindings) {
             ClientRegistry.registerKeyBinding(keyBinding);
         }
@@ -301,6 +305,14 @@ public class DungeonRooms
             } else if (!Waypoints.enabled && Waypoints.practiceModeOn) {
                 player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED
                         + "Dungeon Rooms: Waypoints must be enabled for Practice Mode to work."));
+            }
+        }
+        if (keyBindings[3].isPressed()) {
+            try {
+                mc.addScheduledTask(() -> mc.displayGuiScreen(new VideoPlayerGUI()));
+            } catch (NoClassDefFoundError e) {
+                player.addChatMessage(new ChatComponentText(EnumChatFormatting.RED
+                        + "Dungeon Rooms: Video player unavailable - JavaFX not found"));
             }
         }
     }

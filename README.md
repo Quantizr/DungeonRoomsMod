@@ -29,6 +29,9 @@ Short answer: This mod follows the general interpretation of Hypixel's rules, do
 
 Long Answer: https://quantizr.github.io/posts/is-it-bannable/
 
+### What is new in this fork?
+When a secret is opened it will remove the waypoint for anyone else using this fork. That way, if you have those people that open a room, get 2 or 3 secrets and leave, you can see (or rather no longer can see) which ones they opened!
+
 
 ### Discord:
 [![Discord](https://img.shields.io/discord/804143990869590066?color=%239f00ff&label=Discord&style=for-the-badge)](https://discord.gg/7B5RbsArYK)

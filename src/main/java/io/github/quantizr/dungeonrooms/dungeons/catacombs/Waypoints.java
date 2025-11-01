@@ -75,6 +75,10 @@ public class Waypoints {
     public static List<Boolean> secretsList = new ArrayList<>(Arrays.asList(new Boolean[10]));
 
     static long lastSneakTime = 0;
+    static long lastCommandTime = 0;
+    
+    // Store coordinates of found secrets from chat messages
+    public static Set<BlockPos> foundSecretCoords = new HashSet<>();
 
     Frustum frustum = new Frustum();
 
@@ -105,6 +109,29 @@ public class Waypoints {
 
                 BlockPos relative = new BlockPos(secretsObject.get("x").getAsInt(), secretsObject.get("y").getAsInt(), secretsObject.get("z").getAsInt());
                 BlockPos pos = MapUtils.relativeToActual(relative, RoomDetection.roomDirection, RoomDetection.roomCorner);
+                
+                // Check if this waypoint was marked as found from chat
+                if (foundSecretCoords.contains(pos)) {
+                    // Mark it as found in the current room
+                    for(int j = 1; j <= secretNum; j++) {
+                        if (secretsObject.get("secretName").getAsString().substring(0,2).replaceAll("[\\D]", "").equals(String.valueOf(j))) {
+                            if (Waypoints.secretsList.get(j-1)) {
+                                Waypoints.secretsList.set(j-1, false);
+                                Waypoints.allSecretsMap.replace(roomName, Waypoints.secretsList);
+                                foundSecretCoords.remove(pos); // Remove from queue once applied
+                                
+                                // Notify player that queued secret was applied
+                                Minecraft.getMinecraft().thePlayer.addChatMessage(
+                                    new net.minecraft.util.ChatComponentText("§6[Dungeon Rooms] §aApplied queued secret #" + j + " from party")
+                                );
+                                DungeonRooms.logger.info("DungeonRooms: Applied queued secret found for #" + j + " at " + pos.getX() + "," + pos.getY() + "," + pos.getZ());
+                            }
+                            break;
+                        }
+                    }
+                    continue; // Don't render this waypoint
+                }
+                
                 Entity viewer = Minecraft.getMinecraft().getRenderViewEntity();
                 frustum.setPosition(viewer.posX, viewer.posY, viewer.posZ);
                 if (!frustum.isBoxInFrustum(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1, 255, pos.getZ() + 1)){
@@ -183,6 +210,22 @@ public class Waypoints {
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public void onChat(ClientChatReceivedEvent event) {
         if (!Utils.inCatacombs || !enabled) return;
+        
+        String message = event.message.getFormattedText();
+        
+        // Check if dungeon is starting (Mort's message)
+        if (message.startsWith("§e[NPC] §bMort§f: §rHere, I found this map when I first entered the dungeon.§r")) {
+            // Clear found secrets from previous run
+            int clearedCount = foundSecretCoords.size();
+            foundSecretCoords.clear();
+            if (clearedCount > 0) {
+                Minecraft.getMinecraft().thePlayer.addChatMessage(
+                    new net.minecraft.util.ChatComponentText("§6[Dungeon Rooms] §eCleared " + clearedCount + " pending secret(s) from party for new run")
+                );
+            }
+            DungeonRooms.logger.info("DungeonRooms: Cleared found secret coordinates for new dungeon run");
+        }
+        
         // Action Bar
         if (event.type == 2) {
             String[] actionBarSections = event.message.getUnformattedText().split(" {3,}");
@@ -200,6 +243,81 @@ public class Waypoints {
                 }
             }
         }
+        
+        // Regular chat messages (type 0)
+        if (event.type == 0) {
+            String unformattedMessage = StringUtils.stripControlCodes(event.message.getUnformattedText());
+            
+            // Check for SS-FOUND pattern with coordinates
+            if (unformattedMessage.contains("SS-FOUND-")) {
+                // Cancel the event to hide the message from chat
+                event.setCanceled(true);
+                
+                try {
+                    // Extract everything after "SS-FOUND-"
+                    String coordsStr = unformattedMessage.split("SS-FOUND-")[1].trim();
+                    String[] coords = coordsStr.split(",");
+                    
+                    if (coords.length == 3) {
+                        int x = Integer.parseInt(coords[0].trim());
+                        int y = Integer.parseInt(coords[1].trim());
+                        int z = Integer.parseInt(coords[2].trim());
+                        BlockPos foundPos = new BlockPos(x, y, z);
+                        
+                        // Add to found secrets
+                        boolean isNewSecret = foundSecretCoords.add(foundPos);
+                        
+                        // Try to disable waypoint immediately if in the right room
+                        boolean removed = removeWaypointAtPosition(foundPos);
+                        
+                        // Only notify if this is a new secret and wasn't immediately removed
+                        if (isNewSecret && !removed) {
+                            Minecraft.getMinecraft().thePlayer.addChatMessage(
+                                new net.minecraft.util.ChatComponentText("§6[Dungeon Rooms] §aQueued secret from party chat (will remove when you enter that room)")
+                            );
+                        }
+                        
+                        DungeonRooms.logger.info("DungeonRooms: Received secret found message for coordinates: " + x + "," + y + "," + z);
+                    }
+                } catch (Exception e) {
+                    // Ignore parsing errors
+                }
+            }
+        }
+    }
+    
+    // Helper method to remove waypoint at specific position
+    // Returns true if a waypoint was removed, false otherwise
+    private boolean removeWaypointAtPosition(BlockPos targetPos) {
+        String roomName = RoomDetection.roomName;
+        if (roomName.equals("undefined") || DungeonRooms.roomsJson.get(roomName) == null || secretsList == null) return false;
+        if (DungeonRooms.waypointsJson.get(roomName) != null) {
+            JsonArray secretsArray = DungeonRooms.waypointsJson.get(roomName).getAsJsonArray();
+            int arraySize = secretsArray.size();
+            for(int i = 0; i < arraySize; i++) {
+                JsonObject secretsObject = secretsArray.get(i).getAsJsonObject();
+                BlockPos relative = new BlockPos(secretsObject.get("x").getAsInt(), secretsObject.get("y").getAsInt(), secretsObject.get("z").getAsInt());
+                BlockPos pos = MapUtils.relativeToActual(relative, RoomDetection.roomDirection, RoomDetection.roomCorner);
+                
+                if (pos.equals(targetPos)) {
+                    for(int j = 1; j <= secretNum; j++) {
+                        if (secretsObject.get("secretName").getAsString().substring(0,2).replaceAll("[\\D]", "").equals(String.valueOf(j))) {
+                            if (!Waypoints.secretsList.get(j-1)) return false; // Already removed
+                            Waypoints.secretsList.set(j-1, false);
+                            Waypoints.allSecretsMap.replace(roomName, Waypoints.secretsList);
+                            
+                            // Send feedback to player
+                            Minecraft.getMinecraft().thePlayer.addChatMessage(
+                                new net.minecraft.util.ChatComponentText("§6[Dungeon Rooms] §aRemoved secret #" + j + " waypoint from party chat")
+                            );
+                            DungeonRooms.logger.info("DungeonRooms: Marked secret #" + j + " as found from party chat at " + pos.getX() + "," + pos.getY() + "," + pos.getZ());
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     @SubscribeEvent
@@ -227,6 +345,13 @@ public class Waypoints {
                                     Waypoints.secretsList.set(j-1, false);
                                     Waypoints.allSecretsMap.replace(roomName, Waypoints.secretsList);
                                     DungeonRooms.logger.info("DungeonRooms: Detected " + secretsObject.get("category").getAsString() + " click, turning off waypoint for secret #" + j);
+                                    
+                                    // Send command with cooldown check
+                                    long currentTime = System.currentTimeMillis();
+                                    if (currentTime - lastCommandTime >= 750) {
+                                        Minecraft.getMinecraft().thePlayer.sendChatMessage("/pc SS-FOUND-" + pos.getX() + "," + pos.getY() + "," + pos.getZ());
+                                        lastCommandTime = currentTime;
+                                    }
                                     break;
                                 }
                             }
@@ -276,6 +401,13 @@ public class Waypoints {
                                             Waypoints.secretsList.set(j-1, false);
                                             Waypoints.allSecretsMap.replace(roomName, Waypoints.secretsList);
                                             DungeonRooms.logger.info("DungeonRooms: " + entity.getCommandSenderEntity().getName() + " picked up " +  StringUtils.stripControlCodes(name) + " from a "  + secretsObject.get("category").getAsString() + " secret, turning off waypoint for secret #" + j);
+                                            
+                                            // Send command with cooldown check
+                                            long currentTime = System.currentTimeMillis();
+                                            if (currentTime - lastCommandTime >= 750) {
+                                                mc.thePlayer.sendChatMessage("/pc SS-FOUND-" + pos.getX() + "," + pos.getY() + "," + pos.getZ());
+                                                lastCommandTime = currentTime;
+                                            }
                                             return;
                                         }
                                     }
@@ -315,6 +447,13 @@ public class Waypoints {
                                         Waypoints.secretsList.set(j-1, false);
                                         Waypoints.allSecretsMap.replace(roomName, Waypoints.secretsList);
                                         DungeonRooms.logger.info("DungeonRooms: Player sneaked near " + secretsObject.get("category").getAsString() + " secret, turning off waypoint for secret #" + j);
+                                        
+                                        // Send command with cooldown check
+                                        long currentTime = System.currentTimeMillis();
+                                        if (currentTime - lastCommandTime >= 750) {
+                                            player.sendChatMessage("/pc SS-FOUND-" + pos.getX() + "," + pos.getY() + "," + pos.getZ());
+                                            lastCommandTime = currentTime;
+                                        }
                                         return;
                                     }
                                 }
