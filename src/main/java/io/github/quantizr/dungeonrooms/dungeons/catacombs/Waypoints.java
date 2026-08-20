@@ -164,10 +164,15 @@ public class Waypoints {
                 double distSq = x*x + y*y + z*z;
 
                 GlStateManager.disableDepth();
-                GlStateManager.disableCull();
+                // Keep face culling enabled for the filled box: with it disabled, staring at (or
+                // standing inside) a secret's box renders every inward-facing wall with no depth
+                // test to hide them, tinting the whole screen with the secret's color (#24).
+                // Culling is still disabled below for the beacon beam, which needs to be visible
+                // from both sides.
                 if (showBoundingBox && frustum.isBoxInFrustum(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1, pos.getY() + 1, pos.getZ() + 1)) {
                     WaypointUtils.drawFilledBoundingBox(new AxisAlignedBB(x, y, z, x + 1, y + 1, z + 1), color, 0.4f);
                 }
+                GlStateManager.disableCull();
                 GlStateManager.disableTexture2D();
                 if (showBeacon && distSq > 5*5) WaypointUtils.renderBeaconBeam(x, y + 1, z, color.getRGB(), 0.25f, event.partialTicks);
                 if (showWaypointText) WaypointUtils.renderWaypointText(secretsObject.get("secretName").getAsString(), pos.up(2), event.partialTicks);
