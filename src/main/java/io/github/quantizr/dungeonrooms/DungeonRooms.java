@@ -243,8 +243,9 @@ public class DungeonRooms
                         logger.info("DungeonRooms: MOTD has been checked");
                     }
                 } catch (IOException | InterruptedException e) {
-                    mc.thePlayer.addChatMessage(new ChatComponentText(EnumChatFormatting.RED + "Dungeon Rooms: An error has occured. See logs for more details."));
-                    e.printStackTrace();
+                    // Update check / MOTD fetch are non-critical, and commonly fail on outdated Java
+                    // trust stores (SSLHandshakeException) - don't alarm the player in chat for this.
+                    logger.warn("DungeonRooms: Failed to check for updates or fetch MOTD", e);
                 }
 
             }).start();
